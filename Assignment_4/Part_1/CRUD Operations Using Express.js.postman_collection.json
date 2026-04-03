@@ -171,6 +171,33 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Get Single User",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n\"name\": \"Ahmed Ali\",\r\n\"age\": 44, \r\n\"email\": \"markyouhanna@gmal.com\" \r\n}\r\n"
+        },
+        "url": {
+          "raw": "http://localhost:4000/user/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "user",
+            "2"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

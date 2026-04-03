@@ -131,7 +131,16 @@ app.get("/user/filter",(req,res)=>{
     }
     res.json(filteredUsers)
 })
-
+// Task 7
+app.get("/user/:id",(req,res)=>{
+    const userId = parseInt(req.params.id)
+    const users = readUsers()
+    const user = users.find(user => user.id === userId)
+    if(!user){
+        return res.status(404).json({message: "User ID not found."})
+    }
+    res.json(user)
+})
 
 app.listen(4000,()=>{
     console.log("Server running on port 4000");
