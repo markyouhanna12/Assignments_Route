@@ -1,0 +1,28 @@
+CREATE DATABASE retail_store;
+
+
+CREATE TABLE suppliers(
+    SupplierID INT AUTO_INCREMENT PRIMARY KEY,
+    SupplierName VARCHAR(255) NOT NULL,
+    ContactNumber VARCHAR(255)
+);
+
+
+CREATE TABLE Products(
+   	ProductID INT AUTO_INCREMENT PRIMARY KEY,
+   	ProductName VARCHAR(255) NOT NULL,
+   	Price DECIMAL (10,2) NOT NULL,
+    StockQuantity INT NOT NULL,
+    SupplierID INT,
+    FOREIGN KEY (SupplierID) REFERENCES suppliers(SupplierID) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE sales(
+    SaleID INT AUTO_INCREMENT PRIMARY KEY,
+    ProductID INT,
+    QuantitySold INT NOT NULL,
+    SaleDate DATE NOT NULL,
+    FOREIGN KEY (ProductID) REFERENCES products(ProductID) ON DELETE CASCADE ON UPDATE CASCADE
+
+);
