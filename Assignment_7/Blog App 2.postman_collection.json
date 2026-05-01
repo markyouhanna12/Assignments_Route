@@ -1,0 +1,461 @@
+{
+  "info": {
+    "_postman_id": "e50589f9-d457-4a46-8d33-b5e2949202ca",
+    "name": "Blog App 2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53693814",
+    "_collection_link": "https://go.postman.co/collection/53693814-e50589f9-d457-4a46-8d33-b5e2949202ca?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"mayar\",\r\n    \"email\": \"mayarmohmaed@yahoo.com\",\r\n    \"password\": \"mayar12344\",\r\n    \"role\": \"admin\"\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/user/signup",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetByEmail",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Mark\",\r\n    \"email\": \"markyouhanna@yahoo.com\",\r\n    \"password\": \"MArkyou123\",\r\n    \"role\": \"user\"\r\n  }"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/user/by-email?email=markyouhanna@yahoo.com",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "by-email"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "markyouhanna@yahoo.com"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetByID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/user/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update & insert User",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"updated name\",\r\n    \"email\": \"updated email\",\r\n    \"password\": \"MArkyou123\",\r\n    \"role\": \"user\",\r\n    \"age\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/user/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Third title blog\",\r\n    \"content\":\"Third content blog\",\r\n    \"userId\": 3\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/post/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "post",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"userId\": 1 \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/post/5",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "post",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetBlogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/post/details",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "post",
+                "details"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get blogs & comments count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/post/comment-count",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "post",
+                "comment-count"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Create bulk of Comments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"comments\":[\r\n        {\r\n            \"content\": \"This is the First comment.\",\r\n            \"postId\": 1,\r\n            \"userId\": 1\r\n\r\n        },\r\n        {\r\n            \"content\": \"Amazing post!\",\r\n            \"postId\": 1,\r\n            \"userId\": 2\r\n\r\n        },\r\n        {\r\n            \"content\": \"I totally agree with this post.\",\r\n            \"postId\": 2,\r\n            \"userId\":3\r\n\r\n        },\r\n        {\r\n            \"content\": \"Thanks for sharing your thoughts\",\r\n            \"postId\": 2,\r\n            \"userId\":1\r\n\r\n        },\r\n        {\r\n            \"content\": \"Looking forward to more posts like this!\",\r\n            \"postId\": 4,\r\n            \"userId\": 3\r\n\r\n        }\r\n    ]\r\n   \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update comment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userId\": 1 ,\r\n    \"content\":\"updated comment\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find or Create comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"postId\": 1,\r\n    \"userId\": 2,\r\n    \"content\":\"This is a sample comment\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/find-or-create",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                "find-or-create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search word",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/search/?word=this",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                "search",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "word",
+                  "value": "this"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Newest comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/newest/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                "newest",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get specific comment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:3000/api/v1/comment/details/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "comment",
+                "details",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
