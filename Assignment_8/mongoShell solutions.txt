@@ -1,0 +1,220 @@
+// 1. Create explicit books collection with validation
+db.createCollection("books", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["title"],
+      properties: {
+        title: {
+          bsonType: "string"
+        }
+      }
+    }
+  }
+})
+
+
+
+// 2. Create implicit authors collection
+db.authors.insertOne({
+  name: "Author1",
+  nationality: "British"
+})
+
+
+
+// 3. Create capped logs collection
+db.createCollection("logs", {
+  capped: true,
+  size: 1024 * 1024
+})
+
+
+
+// 4. Create index on title
+db.books.createIndex({ title: 1 })
+
+
+
+// 5. Insert one book
+db.books.insertOne({
+  title: "Book1",
+  author: "Ali",
+  year: 1937,
+  genres: ["Fantasy", "Adventure"]
+})
+
+
+
+// 6. Insert multiple books
+db.books.insertMany([
+  {
+    title: "Future",
+    author: "George Orwell",
+    year: 2020,
+    genres: ["Science Fiction"]
+  },
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    year: 1960,
+    genres: ["Classic", "Fiction"]
+  },
+  {
+    title: "Brave New World",
+    author: "Aldous Huxley",
+    year: 2006,
+    genres: ["Dystopian", "Science Fiction"]
+  }
+])
+
+
+
+// 7. Insert log document
+db.logs.insertOne({
+  book_id: ObjectId("PUT_BOOK_ID_HERE"),
+  action: "borrowed"
+})
+
+
+
+// 8. Update book year
+db.books.updateOne(
+  { title: "Future" },
+  {
+    $set: {
+      year: 2022
+    }
+  }
+)
+
+
+
+// 9. Find book by title
+db.books.findOne({
+  title: "Brave New World"
+})
+
+
+
+// 10. Find books between years
+db.books.find({
+  year: {
+    $gte: 1990,
+    $lte: 2010
+  }
+})
+
+
+
+// 11. Find books by genre
+db.books.find({
+  genres: "Science Fiction"
+})
+
+
+
+// 12. Skip first 2 books and limit next 3 sorted descending
+db.books.find()
+  .sort({ year: -1 })
+  .skip(2)
+  .limit(3)
+
+
+
+// 13. Find books where year is stored as number
+db.books.find({
+  year: {
+    $type: "number"
+  }
+})
+
+
+
+// 14. Exclude Horror and Science Fiction genres
+db.books.find({
+  genres: {
+    $nin: ["Horror", "Science Fiction"]
+  }
+})
+
+
+
+// 15. Delete books before 2000
+db.books.deleteMany({
+  year: {
+    $lt: 2000
+  }
+})
+
+
+
+// 16. Aggregation: books after 2000 sorted descending
+db.books.aggregate([
+  {
+    $match: {
+      year: {
+        $gt: 2000
+      }
+    }
+  },
+  {
+    $sort: {
+      year: -1
+    }
+  }
+])
+
+
+
+// 17. Aggregation: show only title, author, year
+db.books.aggregate([
+  {
+    $match: {
+      year: {
+        $gt: 2000
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      title: 1,
+      author: 1,
+      year: 1
+    }
+  }
+])
+
+
+
+// 18. Aggregation: unwind genres array
+db.books.aggregate([
+  {
+    $unwind: "$genres"
+  },
+  {
+    $project: {
+      _id: 0,
+      title: 1,
+      genres: 1
+    }
+  }
+])
+
+
+
+// 19. Aggregation: join books with logs
+db.logs.aggregate([
+  {
+    $lookup: {
+      from: "books",
+      localField: "book_id",
+      foreignField: "_id",
+      as: "book_details"
+    }
+  },
+  {
+    $unwind: "$book_details"
+  }
+])
