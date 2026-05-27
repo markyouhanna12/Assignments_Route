@@ -1,0 +1,522 @@
+{
+  "info": {
+    "_postman_id": "fd0f6bf4-682e-4b58-bf10-71d5c74bd0b5",
+    "name": "Sticky Notes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53693814",
+    "_collection_link": "https://go.postman.co/collection/53693814-fd0f6bf4-682e-4b58-bf10-71d5c74bd0b5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"name\":\"Mark\", \r\n    \"email\":\"markyouhanna@gmail.com\", \r\n    \"password\":\"1234\", \r\n    \"phone\":\"0121324153\", \r\n    \"age\":30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/signup",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"markyouhanna@gmail.com\",\r\n    \"password\":\"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc2MzE0NywiZXhwIjoxNzc4NzY2NzQ3fQ.FT39km7ww-SZWVk7dqhwXEQDcwfsh7A7TJar_C_yeeg",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/users/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Data",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODYyMTc5NCwiZXhwIjoxNzc4NjI1Mzk0fQ.xhop0hiBNEqoVnggZqtjdDux5e7SoEeXjxO6U3kOz9U",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \r\n    \"name\":\"Mark Youhanna ishak\", \r\n    \"email\":\"markyouhanna@gmail.com\", \r\n    \"age\":25\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODYyMTc5NCwiZXhwIjoxNzc4NjI1Mzk0fQ.xhop0hiBNEqoVnggZqtjdDux5e7SoEeXjxO6U3kOz9U",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"markyouhanna@gmail.com\",\r\n    \"password\":\"1234\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Post Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc1OTQ3OSwiZXhwIjoxNzc4NzYzMDc5fQ.w0mgbogh_M6mTYpJ7SQ4Vp_xhorahsXfNESSFCwk820",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\":\"Note1\",\r\n    \"content\":\"this post for Note 1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/notes/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODczMDc4OCwiZXhwIjoxNzc4NzM0Mzg4fQ.xWifx5YdQZV-sYNa90COhyLb7xg44pmV565qVaA5SH0",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\":\"updated Note\",\r\n    \"content\":\"this post for Note 1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/notes/6a05479a1e61978f7e4dd141",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "6a05479a1e61978f7e4dd141"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update All titles",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODczMzg4OSwiZXhwIjoxNzc4NzM3NDg5fQ.XPTMbLd81zgGuy7P3el_sTi_gmAEKi0MF5PY2BzBDQ0",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\":\"all One title\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/notes/all",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Replace Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODczMDc4OCwiZXhwIjoxNzc4NzM0Mzg4fQ.xWifx5YdQZV-sYNa90COhyLb7xg44pmV565qVaA5SH0",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\":\"replaced Note\",\r\n    \"content\":\"this replaced for Note 1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/notes/replace/6a05479a1e61978f7e4dd141",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "replace",
+                "6a05479a1e61978f7e4dd141"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc1OTQ3OSwiZXhwIjoxNzc4NzYzMDc5fQ.w0mgbogh_M6mTYpJ7SQ4Vp_xhorahsXfNESSFCwk820",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/6a05479a1e61978f7e4dd141",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "6a05479a1e61978f7e4dd141"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Notes",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc2MzE0NywiZXhwIjoxNzc4NzY2NzQ3fQ.FT39km7ww-SZWVk7dqhwXEQDcwfsh7A7TJar_C_yeeg",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "paginate Notes",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc1OTQ3OSwiZXhwIjoxNzc4NzYzMDc5fQ.w0mgbogh_M6mTYpJ7SQ4Vp_xhorahsXfNESSFCwk820",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\":\"Note1\",\r\n    \"content\":\"this post for Note 1\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/notes/paginate-sort?page=2&limit=3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "paginate-sort"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get Single Note",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc1OTQ3OSwiZXhwIjoxNzc4NzYzMDc5fQ.w0mgbogh_M6mTYpJ7SQ4Vp_xhorahsXfNESSFCwk820",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/6a05b7b762291a5cfcb7b703",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "6a05b7b762291a5cfcb7b703"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get Note By Content",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc1OTQ3OSwiZXhwIjoxNzc4NzYzMDc5fQ.w0mgbogh_M6mTYpJ7SQ4Vp_xhorahsXfNESSFCwk820",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/note-by-content?content=this post for Note 1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "note-by-content"
+              ],
+              "query": [
+                {
+                  "key": "content",
+                  "value": "this post for Note 1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get Notes With User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc2MzE0NywiZXhwIjoxNzc4NzY2NzQ3fQ.FT39km7ww-SZWVk7dqhwXEQDcwfsh7A7TJar_C_yeeg",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/note-with-user",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "note-with-user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "aggregate Notes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDM5ZDYwYmIwNDYwNDQ3MTc2ZDYyMyIsImlhdCI6MTc3ODc2MzE0NywiZXhwIjoxNzc4NzY2NzQ3fQ.FT39km7ww-SZWVk7dqhwXEQDcwfsh7A7TJar_C_yeeg",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/notes/aggregate?title=Note1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "notes",
+                "aggregate"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Note1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
