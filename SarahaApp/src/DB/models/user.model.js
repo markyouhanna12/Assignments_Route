@@ -77,7 +77,7 @@ userSchema.virtual("username").set(function(value){
     return `${this.firstName} ${this.lastName}`
 })
 
-const User = mongoose.model("User",userSchema)
+const UserModel = mongoose.model("User",userSchema)
 
 
-export default User
+export default UserModel
