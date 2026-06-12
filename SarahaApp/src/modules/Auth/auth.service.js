@@ -3,6 +3,7 @@ import UserModel from "../../DB/models/user.model.js"
 import { HashEnum } from "../../utils/enums/security.enum.js"
 import { BadRequestException, ConflictException, NotFoundException } from "../../utils/response/error.response.js"
 import { successResponse } from "../../utils/response/success.response.js"
+import { encrypt } from "../../utils/security/encryption.security.js"
 import { genrateHash , compareHash } from "../../utils/security/hash.security.js"
 
 
@@ -15,10 +16,12 @@ export const signup = async (req,res) =>{
     }
 
     const hashedPassword = await genrateHash({plaintext:password , algorithm:HashEnum.Argon})
+    
+    const encryptedData = await encrypt(phone)
 
     const newUser = await create({model:UserModel ,
         data:[{
-            firstName,lastName,email,password:hashedPassword , phone:phone
+            firstName,lastName,email,password:hashedPassword , phone:encryptedData
         }] 
     })
     return successResponse({res,statusCode:201,message:"User Created successfully",data:{newUser}})
