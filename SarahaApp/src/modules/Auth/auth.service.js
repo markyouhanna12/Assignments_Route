@@ -1,3 +1,4 @@
+import { ACCESS_TOKEN_EXPIRES_IN, ACCESS_TOKEN_SECRET } from "../../../config/config.service.js"
 import { create, findOne } from "../../DB/database.repository.js"
 import UserModel from "../../DB/models/user.model.js"
 import { HashEnum } from "../../utils/enums/security.enum.js"
@@ -5,6 +6,7 @@ import { BadRequestException, ConflictException, NotFoundException } from "../..
 import { successResponse } from "../../utils/response/success.response.js"
 import { encrypt } from "../../utils/security/encryption.security.js"
 import { genrateHash , compareHash } from "../../utils/security/hash.security.js"
+import jwt from "jsonwebtoken"
 
 
 export const signup = async (req,res) =>{
@@ -43,5 +45,21 @@ export const login = async (req,res) =>{
         throw BadRequestException({message:"Invalid email or password"})
     }
 
-    return successResponse({res,statusCode:200,message:"Login successfully"})
+    const token = jwt.sign(
+        {userId:user._id} ,
+        ACCESS_TOKEN_SECRET ,
+        {expiresIn:ACCESS_TOKEN_EXPIRES_IN,
+        audience:["web","mobile"],
+        issuer:"SarahaApp",
+        subject:"User Authentication"
+        },
+
+    )
+
+    return successResponse({
+        res,
+        statusCode:200,
+        message:"Login successfully",
+        data:{token}
+    })
 }
