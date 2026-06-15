@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken"
-import { ACCESS_TOKEN_SECRET } from "../../../config/config.service.js";
 import { findById } from "../../DB/database.repository.js";
 import { NotFoundException } from "../../utils/response/error.response.js";
 import { decrypt } from "../../utils/security/encryption.security.js";
