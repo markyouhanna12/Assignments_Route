@@ -9,7 +9,8 @@ export const genrateToken = ({payload ,secretKey , options = {}}) =>{
 }
 
 export const verifyToken = ({token , secretKey}) =>{
-    return jwt.verify(token , secretKey)
+
+    return jwt.verify(token,secretKey)
 }
 
 export const getSignature = ({signatureLevel = SignatureEnum.User}) =>{
@@ -28,7 +29,7 @@ export const getSignature = ({signatureLevel = SignatureEnum.User}) =>{
         default:
             signature.accessSignature = ACCESS_USER_SECRET_KEY
             signature.refreshSignature = REFRESH_USER_SECRET_KEY
-
+            break
 
     }
 
@@ -38,7 +39,7 @@ export const getSignature = ({signatureLevel = SignatureEnum.User}) =>{
 export const getNewLoginCredentials = async (user) =>{
 
     const signature = await getSignature({
-        signatureLevel : user.role != RoleEnum.Admin ? SignatureEnum.Admin : SignatureEnum.User
+        signatureLevel : user.role != RoleEnum.Admin ? SignatureEnum.User : SignatureEnum.Admin
     })
 
     const jwtid = uuidv4()

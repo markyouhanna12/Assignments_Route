@@ -21,3 +21,8 @@ export const ProviderEnum ={
     Google:1
 }
 
+
+export const TokenTypeEnum = {
+    Access : 0,
+    Refresh : 1
+}

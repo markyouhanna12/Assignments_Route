@@ -1,6 +1,5 @@
 import express from "express"
 import connectDB from "./DB/connection.js"
-import { successResponse } from "./utils/response/success.response.js"
 import { globalErrorHandler, NotFoundException } from "./utils/response/error.response.js"
 import authRouter from "./modules/Auth/auth.controller.js"
 import userRouter from "./modules/User/user.controller.js"

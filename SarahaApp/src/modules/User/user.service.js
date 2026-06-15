@@ -1,28 +1,11 @@
-import jwt from "jsonwebtoken"
-import { findById } from "../../DB/database.repository.js";
-import { NotFoundException } from "../../utils/response/error.response.js";
 import { decrypt } from "../../utils/security/encryption.security.js";
-import UserModel from "../../DB/models/user.model.js";
 import { successResponse } from "../../utils/response/success.response.js";
 
-export const getProfile = async (req, res) => {
-    const {authorization} = req.headers;
-    // TODO: get user profile from database
-    const payload = jwt.verify(authorization, ACCESS_TOKEN_SECRET)
 
-    const user = await findById({
-        model:UserModel,
-        id:payload.userId
-    })
+export const getProfile = async (req,res) => {
 
-    if(!user){
-        throw NotFoundException("User not found")
-    }
-    user.phone = decrypt(user.phone)
+    req.user.phone = await decrypt(req.user.phone)
+    
+    return successResponse({res,message:"Done",statusCode:200,data:req.user})
 
-return successResponse({
-        res,
-        statusCode:200,
-        message:"User profile retrieved successfully",
-        data:user
-    })}
+}
