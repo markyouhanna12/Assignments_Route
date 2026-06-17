@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import { dbUrl } from "../../config/config.service.js";
-
+import chalk from "chalk";
 
 const connectDB = async () =>{
    try {
      mongoose.connection.on("connected",()=>{
-        console.log("MongoDB connected successfully");
+        console.log(chalk.bold.green("MongoDB connected successfully"));
         
     })
     mongoose.connect(dbUrl,{
@@ -13,7 +13,7 @@ const connectDB = async () =>{
     })
     
    } catch (error) {
-        console.log("Error connecting Database",error);
+        console.log(chalk.bold.red("Error connecting Database"),error);
    }
 
 }
