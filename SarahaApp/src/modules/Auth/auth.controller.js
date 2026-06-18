@@ -9,4 +9,6 @@ router.post("/login",authService.login)
 
 router.post("/refresh-token",authService.refreshToken)
 
+router.post("/social-login",authService.loginWithGoogle)
+
 export default router

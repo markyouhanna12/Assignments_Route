@@ -1,4 +1,5 @@
-import { ACCESS_ADMIN_SECRET_KEY, REFRESH_ADMIN_SECRET_KEY } from "../../../config/config.service.js"
+import { OAuth2Client } from "google-auth-library"
+import { ACCESS_ADMIN_SECRET_KEY, Client_ID, REFRESH_ADMIN_SECRET_KEY } from "../../../config/config.service.js"
 import { create, findById, findOne } from "../../DB/database.repository.js"
 import UserModel from "../../DB/models/user.model.js"
 import { HashEnum } from "../../utils/enums/security.enum.js"
@@ -7,6 +8,7 @@ import { successResponse } from "../../utils/response/success.response.js"
 import { encrypt } from "../../utils/security/encryption.security.js"
 import { genrateHash , compareHash } from "../../utils/security/hash.security.js"
 import { genrateToken, getNewLoginCredentials, verifyToken } from "../../utils/tokens/token.js"
+import { ProviderEnum } from "../../utils/enums/user.enum.js"
 
 
 export const signup = async (req,res) =>{
@@ -82,4 +84,60 @@ export const refreshToken = async (req,res) =>{
         message:"Token successfully refreshed",
         data:{accessToken}
     })
-} 
+}
+
+export const verifyGoogleAccount = async ({idToken}) =>{
+
+    const client = new OAuth2Client()
+    const ticket = await client.verifyIdToken({
+        idToken,
+        audience:Client_ID
+    })
+
+    const payload = ticket.getPayload()
+
+    return payload
+}
+
+
+export const loginWithGoogle = async (req,res) =>{
+    const {idToken} = req.body
+
+    const {email 
+        , picture
+         , given_name
+          , family_name 
+          , email_verified} = await verifyGoogleAccount({idToken})
+    
+    if(!email_verified){
+        throw BadRequestException({message:"Email not verified"})
+    }
+
+    let user = await findOne({
+        model:UserModel,
+        filter:{email}
+    })
+
+    if(!user){
+        user = await create({
+            model:UserModel,
+            data:[{
+                firstName: given_name,
+                lastName : family_name,
+                email,
+                profilePic:picture,
+                provider: ProviderEnum.Google
+            }]
+        })
+    }else if (user.provider === ProviderEnum.System){
+        throw BadRequestException({message:"This Email already exists"})
+    }
+
+    const credentials = await getNewLoginCredentials(user)
+
+    return successResponse({
+        res,statusCode: user.createdAt === user.updatedAt ? 201 : 200,
+        message:"Login Successfully",
+        data: credentials
+    })
+}
