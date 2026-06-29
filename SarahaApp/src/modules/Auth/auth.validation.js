@@ -27,3 +27,14 @@ export const loginSchema = {
         password: generalFields.password.required()
     })
 }
+
+export const confirmEmailSchema = {
+    body: joi.object({
+
+    email : generalFields.email.required(),
+
+    otp : generalFields.otp.required()
+
+})
+
+}

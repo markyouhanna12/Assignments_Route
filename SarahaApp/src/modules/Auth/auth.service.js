@@ -1,6 +1,6 @@
 import { OAuth2Client } from "google-auth-library"
 import { ACCESS_ADMIN_SECRET_KEY, Client_ID, REFRESH_ADMIN_SECRET_KEY } from "../../../config/config.service.js"
-import { create, findById, findOne } from "../../DB/database.repository.js"
+import { create, findById, findOne, updateOne } from "../../DB/database.repository.js"
 import UserModel from "../../DB/models/user.model.js"
 import { HashEnum } from "../../utils/enums/security.enum.js"
 import { BadRequestException, ConflictException, NotFoundException } from "../../utils/response/error.response.js"
@@ -9,6 +9,8 @@ import { encrypt } from "../../utils/security/encryption.security.js"
 import { genrateHash , compareHash } from "../../utils/security/hash.security.js"
 import { genrateToken, getNewLoginCredentials, verifyToken } from "../../utils/tokens/token.js"
 import { ProviderEnum } from "../../utils/enums/user.enum.js"
+import { generateOTP } from "../../utils/generateOTP.js"
+import { emailEvent } from "../../utils/events/email.events.js"
 
 
 export const signup = async (req,res) =>{
@@ -23,11 +25,23 @@ export const signup = async (req,res) =>{
     
     const encryptedData = await encrypt(phone)
 
+    const otp = generateOTP()
+
+    const hashedOtp = await genrateHash({plaintext : otp , algorithm : HashEnum.Argon})
+
     const newUser = await create({model:UserModel ,
         data:[{
-            firstName,lastName,email,password:hashedPassword , phone:encryptedData
+            firstName,
+            lastName,
+            email,
+            password:hashedPassword,
+            phone:encryptedData,
+            cofirmEmailOTP : hashedOtp
         }] 
     })
+
+    emailEvent.emit("confirmEmail", {to:email , otp , firstName})
+    
     return successResponse({res,statusCode:201,message:"User Created successfully",data:{newUser}})
 }
 
@@ -45,6 +59,15 @@ export const login = async (req,res) =>{
     })
     if(!isPasswordValid){
         throw BadRequestException({message:"Invalid email or password"})
+    }
+
+    const confrimedAccount = await findOne({
+        model: UserModel, 
+        filter:{email , confirmEmail:{$exists : true}}
+    })
+
+    if(!confrimedAccount){
+        throw BadRequestException({message:"Email not confirmed, please check your email"})
     }
 
     const tokens = await getNewLoginCredentials(user)
@@ -140,4 +163,42 @@ export const loginWithGoogle = async (req,res) =>{
         message:"Login Successfully",
         data: credentials
     })
+}
+
+
+export const confirmEmail = async (req,res) =>{
+    const {email , otp} = req.body
+    const user = await findOne({
+        model : UserModel,
+        filter : {
+            confirmEmail :{$exists : false},
+            cofirmEmailOTP : {$exists : true}
+        }
+    })
+    if(!user){
+        throw NotFoundException({message : "User not found"})
+    }
+    const isOtpValid = await compareHash({
+        plaintext : otp,
+        ciphertext:user.cofirmEmailOTP,
+        algorithm : HashEnum.Argon
+    })
+
+    if(!isOtpValid){
+        throw BadRequestException({message : "Invalid otp"})
+    }
+    await updateOne({
+        model : UserModel,
+        filter : {email},
+        update:{confirmEmail:Date.now(), $unset: {cofirmEmailOTP :true}}
+    })
+
+     return successResponse({
+        res,
+        statusCode:200,
+        message:"Email confirmed successfully"
+    })
+
+
+
 }

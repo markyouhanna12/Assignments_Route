@@ -60,6 +60,9 @@ const userSchema = new mongoose.Schema({
         minLength:18,
         maxLength:50
     },
+    cofirmEmailOTP:{
+        type : String
+    }
 
 
 

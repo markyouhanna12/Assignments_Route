@@ -13,4 +13,7 @@ router.post("/refresh-token",authService.refreshToken)
 
 router.post("/social-login",authService.loginWithGoogle)
 
+router.patch("/confirm-email",validation(authValidation.confirmEmailSchema),authService.confirmEmail)
+
+
 export default router
