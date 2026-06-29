@@ -38,3 +38,28 @@ export const confirmEmailSchema = {
 })
 
 }
+
+export const sendOtpSchema = {
+    body: joi.object({
+
+    email : generalFields.email.required()
+
+})
+
+}
+
+export const resetPasswordSchema = {
+    body: joi.object({
+
+    email : generalFields.email.required(),
+
+    otp : generalFields.otp.required(),
+
+    newPassword : generalFields.password.required(),
+
+    confirmPassword : generalFields.confirmPassword
+
+})
+
+}
+

@@ -1,6 +1,6 @@
 import { OAuth2Client } from "google-auth-library"
 import { ACCESS_ADMIN_SECRET_KEY, Client_ID, REFRESH_ADMIN_SECRET_KEY } from "../../../config/config.service.js"
-import { create, findById, findOne, updateOne } from "../../DB/database.repository.js"
+import { create, findById, findOne, findOneAndUpdate, updateOne } from "../../DB/database.repository.js"
 import UserModel from "../../DB/models/user.model.js"
 import { HashEnum } from "../../utils/enums/security.enum.js"
 import { BadRequestException, ConflictException, NotFoundException } from "../../utils/response/error.response.js"
@@ -197,6 +197,90 @@ export const confirmEmail = async (req,res) =>{
         res,
         statusCode:200,
         message:"Email confirmed successfully"
+    })
+
+
+
+}
+
+export const forgetPassword = async (req , res) =>{
+    const {email} = req.body
+    console.log(email);
+    
+
+    const otp = generateOTP()
+
+    const hashedOtp = await genrateHash({plaintext:otp , algorithm :HashEnum.Argon})
+
+     const user = await findOneAndUpdate({
+        model:UserModel,
+        filter:{
+            email,
+            provider:ProviderEnum.System,
+            confirmEmail: {$exists: true}
+
+        },
+        update:{forgetPasswordOTP:hashedOtp}
+    })
+
+    if(!user){
+        throw NotFoundException ({message : "User not found or already confirmed"})
+    }
+
+    emailEvent.emit("forgetPassword", {to:email , otp , firstName:user.firstName})
+
+    return successResponse({
+        res, message:"OTP sent successfully"
+    })
+
+}
+
+export const resetPassword = async (req,res) =>{
+
+    const {email , otp , newPassword } = req.body
+
+    const user = await findOne({
+        model : UserModel, 
+        filter:{
+            email, 
+            provider: ProviderEnum.System,
+            confirmEmail : {$exists : true},
+            forgetPasswordOTP : {$exists : true}
+        }
+    })
+
+    if(!user){
+        throw NotFoundException({message : "User Not Found"})
+    }
+
+    const isOtpValid = await compareHash({
+        plaintext : otp,
+        ciphertext : user.forgetPasswordOTP,
+        algorithm : HashEnum.Argon
+    })
+
+     if(!isOtpValid){
+        throw BadRequestException({message:"Invalid OTP"})
+    }
+
+    const hashedPassword = await genrateHash({
+        plaintext : newPassword,
+        algorithm : HashEnum.Argon
+    })
+
+    await updateOne({
+        model : UserModel,
+        filter:{email},
+        update:{
+            password : hashedPassword,
+            $unset : {forgetPasswordOTP :true}
+        }
+    })
+
+    return successResponse({
+        res,
+        statusCode:200,
+        message:"Password Reset Successfully"
     })
 
 

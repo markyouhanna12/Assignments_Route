@@ -62,6 +62,9 @@ const userSchema = new mongoose.Schema({
     },
     cofirmEmailOTP:{
         type : String
+    },
+    forgetPasswordOTP :{
+        type : String
     }
 
 
