@@ -32,4 +32,11 @@ router.patch("/update-profile-Cover",
     userService.updateCoverPic
 )
 
+router.patch("/update-password",
+    authentication({tokenType:TokenTypeEnum.Access}),
+    authorization({accessRoles:[RoleEnum.User , RoleEnum.Admin]}),
+    validation(userValidation.updatePasswordSchema),
+    userService.updatePassword
+)
+
 export default router

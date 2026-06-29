@@ -40,3 +40,16 @@ export const coverImagesSchema = {
     .required()
 
 }
+
+export const updatePasswordSchema = {
+    body: joi.object({
+
+    oldPassword :generalFields.password.required(),
+    
+    newPassword : generalFields.password.required(),
+
+    confirmPassword : joi.ref("newPassword")
+
+})
+
+}

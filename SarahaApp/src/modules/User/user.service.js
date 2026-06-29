@@ -1,7 +1,10 @@
 import { decrypt } from "../../utils/security/encryption.security.js";
 import { successResponse } from "../../utils/response/success.response.js";
-import { findByIdAndUpdate } from "../../DB/database.repository.js";
+import { findById, findByIdAndUpdate, updateOne } from "../../DB/database.repository.js";
 import UserModel from "../../DB/models/user.model.js";
+import { compareHash, genrateHash } from "../../utils/security/hash.security.js";
+import { HashEnum } from "../../utils/enums/security.enum.js";
+import { BadRequestException } from "../../utils/response/error.response.js";
 
 
 export const getProfile = async (req,res) => {
@@ -40,5 +43,38 @@ export const updateCoverPic= async (req,res) => {
         {res,message:"Done",
         statusCode:200,
         data:user})
+
+}
+
+
+export const updatePassword = async (req,res) =>{
+    const {oldPassword , newPassword , confirmPassword} = req.body
+
+    const isValidOldPassword = await compareHash({
+        plaintext : oldPassword,
+        ciphertext : req.user.password,
+        algorithm : HashEnum.Argon
+    }) 
+
+    if(!isValidOldPassword){
+        throw BadRequestException({message : "Invalid Credentials"})
+    }
+
+    const hashedPassword = await genrateHash({
+        plaintext : newPassword,
+        algorithm : HashEnum.Argon
+    })
+    await updateOne({
+        model : UserModel,
+        filter : {_id : req.user._id},
+        update : {password : hashedPassword}
+    })
+
+    successResponse({
+        res,
+        message : "Password updated successfully"
+    })
+
+
 
 }
