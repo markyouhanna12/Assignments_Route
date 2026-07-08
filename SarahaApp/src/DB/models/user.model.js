@@ -65,9 +65,19 @@ const userSchema = new mongoose.Schema({
     },
     forgetPasswordOTP :{
         type : String
+    },
+    freezedBy:{
+        type: mongoose.Schema.Types.ObjectId, ref: "User"
+    },
+    freezedAt :{
+        type:Date
+    },
+    restoredBy :{
+        type: mongoose.Schema.Types.ObjectId, ref: "User"
+    },
+    restoredAt :{
+        type: Date
     }
-
-
 
 },
 {

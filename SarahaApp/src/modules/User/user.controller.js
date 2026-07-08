@@ -39,4 +39,12 @@ router.patch("/update-password",
     userService.updatePassword
 )
 
+router.delete("{/:userId}/freeze-account",
+    authentication({tokenType : TokenTypeEnum.Access}),
+    authorization({accessRoles : [RoleEnum.Admin , RoleEnum.User]}),
+    validation(userValidation.freezeAccountSchema),
+    userService.freezeAccount
+
+)
+
 export default router
