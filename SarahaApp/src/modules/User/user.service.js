@@ -115,3 +115,33 @@ export const freezeAccount = async (req , res) => {
 
     
 }
+
+export const restoreAccount = async (req , res) => {
+
+    const {userId} = req.params
+
+    const updatedUser = await findOneAndUpdate({
+        model : UserModel , 
+        filter : {
+            _id : userId || req.user._id,
+            freezedAt : {$exists : true},
+            freezedBy : {$ne : userId}
+        },
+        update : {
+            restoredAt : Date.now(),
+            restoredBy : req.user._id,
+            $unset : {
+                freezedAt : true ,
+                freezedBy : true
+            }
+        }
+    })
+
+    return successResponse({
+        res,
+        statusCode : 200,
+        message : "The account has been restored",
+        data : {updatedUser}
+    })
+
+}
