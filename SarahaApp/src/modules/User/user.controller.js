@@ -56,4 +56,12 @@ router.patch("/:userId/restore-account",
     userService.restoreAccount
 )
 
+// hard delete user by admin only
+router.delete("/:userId/hard-delete",
+    authentication({tokenType: TokenTypeEnum.Access}),
+    authorization({accessRoles: [RoleEnum.Admin]}),
+    validation(userValidation.hardDeleteAccountSchema),
+    userService.hardDeleteAccount
+)
+
 export default router

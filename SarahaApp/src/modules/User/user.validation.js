@@ -65,3 +65,9 @@ export const restoreAccountSchema = {
         userId : generalFields.id
     })
 }
+
+export const hardDeleteAccountSchema = {
+    params: joi.object({
+        userId : generalFields.id
+    })
+}

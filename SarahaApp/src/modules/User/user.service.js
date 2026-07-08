@@ -1,10 +1,10 @@
 import { decrypt } from "../../utils/security/encryption.security.js";
 import { successResponse } from "../../utils/response/success.response.js";
-import { findById, findByIdAndUpdate, findOneAndUpdate, updateOne } from "../../DB/database.repository.js";
+import { deleteOne, findById, findByIdAndUpdate, findOne, findOneAndUpdate, updateOne } from "../../DB/database.repository.js";
 import UserModel from "../../DB/models/user.model.js";
 import { compareHash, genrateHash } from "../../utils/security/hash.security.js";
 import { HashEnum } from "../../utils/enums/security.enum.js";
-import { BadRequestException, ForbiddenException } from "../../utils/response/error.response.js";
+import { BadRequestException, ForbiddenException, NotFoundException } from "../../utils/response/error.response.js";
 import { RoleEnum } from "../../utils/enums/user.enum.js";
 
 
@@ -144,4 +144,25 @@ export const restoreAccount = async (req , res) => {
         data : {updatedUser}
     })
 
+}
+
+export const hardDeleteAccount = async (req, res) =>{
+
+    const {userId} = req.params
+
+    const deletedAccount = await deleteOne({
+        model : UserModel,
+        filter : {_id : userId , freezedAt: {$exists : true}}
+    })
+
+    if(deletedAccount.deletedCount){
+        return successResponse({
+        res,
+        message:"The account has been Deleted",
+        statusCode:200,
+        data :{deletedAccount}
+    })
+    } else {
+        throw NotFoundException({message:"User Not Found"})
+    }
 }
