@@ -4,11 +4,13 @@ import { globalErrorHandler, NotFoundException } from "./utils/response/error.re
 import authRouter from "./modules/Auth/auth.controller.js"
 import userRouter from "./modules/User/user.controller.js"
 import cors from "cors"
+import helmet from "helmet"
 import { corsOptions } from "./utils/cors/cors.utils.js"
 const app = express()
 
 app.use(express.json())
 app.use(cors(corsOptions()))
+app.use(helmet())
 
 await connectDB()
 app.use("/auth",authRouter)
