@@ -8,9 +8,10 @@ import { successResponse } from "../../utils/response/success.response.js"
 import { encrypt } from "../../utils/security/encryption.security.js"
 import { genrateHash , compareHash } from "../../utils/security/hash.security.js"
 import { genrateToken, getNewLoginCredentials, verifyToken } from "../../utils/tokens/token.js"
-import { ProviderEnum } from "../../utils/enums/user.enum.js"
+import { LogoutTypeEnum, ProviderEnum } from "../../utils/enums/user.enum.js"
 import { generateOTP } from "../../utils/generateOTP.js"
 import { emailEvent } from "../../utils/events/email.events.js"
+import { revokeAllTokenKey, revokeTokenKey, set } from "../../DB/redis.repository.js"
 
 
 export const signup = async (req,res) =>{
@@ -292,6 +293,37 @@ export const resetPassword = async (req,res) =>{
         message:"Password Reset Successfully"
     })
 
+
+
+}
+
+export const logoutWithRedis = async (req,res) =>{
+    const {flag} = req.body
+    let status = 200
+    switch (flag){
+        case LogoutTypeEnum.logout :
+            await set({
+                key : revokeTokenKey({userId : req.user._id , jti : req.decoded.jti}),
+                value : req.decoded.jti,
+                ttl : req.decoded.exp - Math.floor(Date.now()/1000)
+            })
+            status = 201
+            break
+        case LogoutTypeEnum.logoutFromAll :
+            await set({
+                key : revokeAllTokenKey({
+                    userId : req.user._id,
+                }),
+                value : Math.floor(Date.now()/1000)
+            })
+            status = 200
+            break
+    }
+
+     return successResponse({
+        res, message:"Logout Successfully",
+        statusCode: status
+    })
 
 
 }

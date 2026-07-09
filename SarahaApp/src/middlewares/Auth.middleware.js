@@ -23,13 +23,13 @@ export const decodedToken = async ({authorization , tokenType = TokenTypeEnum.Ac
         : signature.refreshSignature})
 
     const isRevoked = await get({
-        key : revokeTokenKey({userId : decoded.id , jti :decoded.jti})
+        key: revokeTokenKey({userId: decoded._id , jti : decoded.jti})
     })
 
     if(isRevoked){
-        throw unauthorizedException({message :"Token is revoked" })
+       throw unauthorizedException({message:"Token is revoked"}) 
     }
-   
+
 
     const user = await findById({
         model:UserModel,
@@ -44,7 +44,7 @@ export const decodedToken = async ({authorization , tokenType = TokenTypeEnum.Ac
         throw unauthorizedException({message : "Token is expired"})
     }
     const logoutAllTime = await get({
-        key : revokeAllTokenKey({userId : decoded.id})
+        key : revokeAllTokenKey({userId : decoded._id})
     })
 
     if(logoutAllTime && logoutAllTime > decoded.iat){

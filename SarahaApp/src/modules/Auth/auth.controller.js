@@ -2,6 +2,8 @@ import express from "express"
 import * as authService from "./auth.service.js";
 import { validation } from "../../middlewares/Validation.middleware.js";
 import * as authValidation from "./auth.validation.js"
+import { authentication } from "../../middlewares/Auth.middleware.js";
+import { TokenTypeEnum } from "../../utils/enums/user.enum.js";
 
 const router = express.Router()
 
@@ -29,5 +31,11 @@ router.patch("/forget-password",
 router.patch("/reset-password",
     validation(authValidation.resetPasswordSchema),
     authService.resetPassword)
+
+
+router.post("/logout-with-Redis",
+    authentication({tokenType:TokenTypeEnum.Access})
+    ,authService.logoutWithRedis)
+
 
 export default router
