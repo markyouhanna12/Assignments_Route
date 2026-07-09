@@ -1,4 +1,4 @@
-import { redisClient } from "./redis.connection";
+import { redisClient } from "./redis.connection.js";
 
 export const revokeTokenKeyPrefix = ({userId}) =>{
     return `user:revokedTokens:${userId}`

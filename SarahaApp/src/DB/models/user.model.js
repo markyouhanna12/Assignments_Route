@@ -77,6 +77,9 @@ const userSchema = new mongoose.Schema({
     },
     restoredAt :{
         type: Date
+    },
+    changeCredentialsTime : {
+        type : Date
     }
 
 },

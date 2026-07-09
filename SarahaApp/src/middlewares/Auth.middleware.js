@@ -1,7 +1,8 @@
 import { findById } from "../DB/database.repository.js";
 import UserModel from "../DB/models/user.model.js";
+import { get, revokeAllTokenKey, revokeTokenKey } from "../DB/redis.repository.js";
 import { SignatureEnum, TokenTypeEnum } from "../utils/enums/user.enum.js";
-import { BadRequestException, ForbiddenException, NotFoundException } from "../utils/response/error.response.js";
+import { BadRequestException, ForbiddenException, NotFoundException, unauthorizedException } from "../utils/response/error.response.js";
 import { getSignature, verifyToken } from "../utils/tokens/token.js";
 
 
@@ -21,7 +22,14 @@ export const decodedToken = async ({authorization , tokenType = TokenTypeEnum.Ac
         ? signature.accessSignature
         : signature.refreshSignature})
 
-        
+    const isRevoked = await get({
+        key : revokeTokenKey({userId : decoded.id , jti :decoded.jti})
+    })
+
+    if(isRevoked){
+        throw unauthorizedException({message :"Token is revoked" })
+    }
+   
 
     const user = await findById({
         model:UserModel,
@@ -30,6 +38,17 @@ export const decodedToken = async ({authorization , tokenType = TokenTypeEnum.Ac
     
     if(!user){
         throw NotFoundException({message:"Not Registered Account"})
+    }
+
+    if(user.changeCredentialsTime?.getTime() > decoded.iat * 1000){
+        throw unauthorizedException({message : "Token is expired"})
+    }
+    const logoutAllTime = await get({
+        key : revokeAllTokenKey({userId : decoded.id})
+    })
+
+    if(logoutAllTime && logoutAllTime > decoded.iat){
+        throw unauthorizedException({message:"Token is expired"})
     }
 
     return {user , decoded}
