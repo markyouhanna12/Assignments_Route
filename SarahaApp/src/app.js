@@ -8,6 +8,7 @@ import helmet from "helmet"
 import { corsOptions } from "./utils/cors/cors.utils.js"
 import { attachRouterWithLogger } from "./logger/morgan.logger.js"
 import { customRateLimiter } from "./middlewares/rateLimitter.middleware.js"
+import { connectRedis } from "./DB/redis.connection.js"
 
 const app = express()
 
@@ -20,6 +21,7 @@ attachRouterWithLogger(app , "/auth" ,authRouter , "auth.log" )
 attachRouterWithLogger(app , "/user" ,userRouter , "user.log" )
 
 await connectDB()
+await connectRedis()
 
 app.all("/*dummy",(req,res)=>{
     throw NotFoundException({messaage:"Not found Handler!!"})
