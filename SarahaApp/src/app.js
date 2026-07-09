@@ -7,12 +7,14 @@ import cors from "cors"
 import helmet from "helmet"
 import { corsOptions } from "./utils/cors/cors.utils.js"
 import { attachRouterWithLogger } from "./logger/morgan.logger.js"
+import { customRateLimiter } from "./middlewares/rateLimitter.middleware.js"
 
 const app = express()
 
 app.use(express.json())
 app.use(cors(corsOptions()))
 app.use(helmet())
+app.use(customRateLimiter)
 
 attachRouterWithLogger(app , "/auth" ,authRouter , "auth.log" )
 attachRouterWithLogger(app , "/user" ,userRouter , "user.log" )
