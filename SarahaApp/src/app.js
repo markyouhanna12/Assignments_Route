@@ -3,6 +3,7 @@ import connectDB from "./DB/connection.js"
 import { globalErrorHandler, NotFoundException } from "./utils/response/error.response.js"
 import authRouter from "./modules/Auth/auth.controller.js"
 import userRouter from "./modules/User/user.controller.js"
+import messageRouter from "./modules/message/message.controller.js"
 import cors from "cors"
 import helmet from "helmet"
 import { corsOptions } from "./utils/cors/cors.utils.js"
@@ -19,6 +20,8 @@ app.use(customRateLimiter)
 
 attachRouterWithLogger(app , "/auth" ,authRouter , "auth.log" )
 attachRouterWithLogger(app , "/user" ,userRouter , "user.log" )
+attachRouterWithLogger(app , "/message" ,messageRouter , "message.log" )
+
 
 await connectDB()
 await connectRedis()
