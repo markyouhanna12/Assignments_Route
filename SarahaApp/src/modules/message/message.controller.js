@@ -1,27 +1,48 @@
-import express from "express"
-import * as messageService from "./message.service.js"
-import {authentication , authorization} from "../../middlewares/Auth.middleware.js"
-import {validation} from "../../middlewares/Validation.middleware.js"
-import { sendMessageValidation } from "./message.validation.js"
-import { RoleEnum, TokenTypeEnum } from "../../utils/enums/user.enum.js"
+import express from 'express';
+import * as messageService from './message.service.js';
+import { authentication, authorization } from '../../middlewares/Auth.middleware.js';
+import { validation } from '../../middlewares/Validation.middleware.js';
+import {
+  sendMessageValidation,
+  toggleFavoriteSchema,
+  toggleReadSchema,
+} from './message.validation.js';
+import { RoleEnum, TokenTypeEnum } from '../../utils/enums/user.enum.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/send-message/:receiverId",
-    validation(sendMessageValidation),
-    messageService.sendMessage
-)
+router.post(
+  '/send-message/:receiverId',
+  validation(sendMessageValidation),
+  messageService.sendMessage,
+);
 
-router.get("/get-messages-admin",
-    authentication({tokenType : TokenTypeEnum.Access}),
-    authorization({accessRoles : [RoleEnum.Admin]}),
-    messageService.getMessagesAdmin
-)
+router.get(
+  '/get-messages-admin',
+  authentication({ tokenType: TokenTypeEnum.Access }),
+  authorization({ accessRoles: [RoleEnum.Admin] }),
+  messageService.getMessagesAdmin,
+);
 
-router.get("/get-messages" ,
-    authentication({tokenType : TokenTypeEnum.Access}),
-    authorization({accessRoles : [RoleEnum.User]}),
-    messageService.getMessages
-)
+router.get(
+  '/get-messages',
+  authentication({ tokenType: TokenTypeEnum.Access }),
+  authorization({ accessRoles: [RoleEnum.User] }),
+  messageService.getMessages,
+);
 
-export default router
+router.patch(
+  '/messageId/read',
+  authentication({ tokenType: TokenTypeEnum.Access }),
+  validation(toggleReadSchema),
+  messageService.toggleRead,
+);
+
+router.patch(
+  '/messageId/favorite',
+  authentication({ tokenType: TokenTypeEnum.Access }),
+  validation(toggleFavoriteSchema),
+  messageService.toggleFavourite,
+);
+
+export default router;
