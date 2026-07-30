@@ -21,5 +21,14 @@ export const dbUrl = requiredEnv('DB_URL');
 export const SALT = requiredEnv('SALT');
 export const ENCRYPTION_SECRET_KEY = requiredEnv('ENCRYPTION_SECRET_KEY');
 
+export const TOKEN_ACCESS_USER_SECRET_KEY = requiredEnv('TOKEN_ACCESS_USER_SECRET_KEY');
+export const TOKEN_REFRESH_USER_SECRET_KEY = requiredEnv('TOKEN_REFRESH_USER_SECRET_KEY');
+
+export const TOKEN_ACCESS_ADMIN_SECRET_KEY = requiredEnv('TOKEN_ACCESS_ADMIN_SECRET_KEY');
+export const TOKEN_REFRESH_ADMIN_SECRET_KEY = requiredEnv('TOKEN_REFRESH_ADMIN_SECRET_KEY');
+
+export const ACCESS_EXPIRES = requiredEnv('ACCESS_EXPIRES');
+export const REFRESH_EXPIRES = requiredEnv('REFRESH_EXPIRES');
+
 // WHITE_LIST for cors
 export const WHITE_LIST = requiredEnv('WHITE_LIST');
