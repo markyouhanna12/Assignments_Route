@@ -30,5 +30,10 @@ export const TOKEN_REFRESH_ADMIN_SECRET_KEY = requiredEnv('TOKEN_REFRESH_ADMIN_S
 export const ACCESS_EXPIRES = requiredEnv('ACCESS_EXPIRES');
 export const REFRESH_EXPIRES = requiredEnv('REFRESH_EXPIRES');
 
+// send Email configs
+
+export const USER_EMAIL = requiredEnv('USER_EMAIL');
+export const USER_PASSWORD = requiredEnv('USER_PASSWORD');
+
 // WHITE_LIST for cors
 export const WHITE_LIST = requiredEnv('WHITE_LIST');
