@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WHITE_LIST = exports.dbUrl = exports.PORT = void 0;
+exports.WHITE_LIST = exports.ENCRYPTION_SECRET_KEY = exports.SALT = exports.dbUrl = exports.PORT = void 0;
 const path_1 = require("path");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({
@@ -18,6 +18,8 @@ const requiredEnv = (key) => {
 };
 exports.PORT = requiredEnv('PORT');
 exports.dbUrl = requiredEnv('DB_URL');
+exports.SALT = requiredEnv('SALT');
+exports.ENCRYPTION_SECRET_KEY = requiredEnv('ENCRYPTION_SECRET_KEY');
 // WHITE_LIST for cors
 exports.WHITE_LIST = requiredEnv('WHITE_LIST');
 //# sourceMappingURL=config.service.js.map
