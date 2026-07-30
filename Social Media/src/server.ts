@@ -8,7 +8,7 @@ const httpServer = createServer(app);
 const startServer = async () => {
   try {
     httpServer.listen(PORT, () => {
-      console.log(chalk.bold.blue(`HTTP & Socket.IO server running on port ${PORT}`));
+      console.log(chalk.bold.blue(`HTTP server running on port ${PORT}`));
     });
   } catch (error) {
     console.log(chalk.red(String(error)));

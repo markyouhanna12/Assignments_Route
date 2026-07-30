@@ -11,7 +11,7 @@ const httpServer = (0, http_1.createServer)(app_controller_1.default);
 const startServer = async () => {
     try {
         httpServer.listen(config_service_1.PORT, () => {
-            console.log(chalk_1.default.bold.blue(`HTTP & Socket.IO server running on port ${config_service_1.PORT}`));
+            console.log(chalk_1.default.bold.blue(`HTTP server running on port ${config_service_1.PORT}`));
         });
     }
     catch (error) {
