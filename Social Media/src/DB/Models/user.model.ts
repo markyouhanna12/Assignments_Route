@@ -96,6 +96,16 @@ export const userSchema = new Schema<IUser>(
   },
 );
 
+userSchema
+  .virtual('username')
+  .set(function (value: string) {
+    const [firstName, lastName] = value.split(' ') || [];
+    this.set({ firstName, lastName });
+  })
+  .get(function () {
+    return `${this.firstName} ${this.lastName}`;
+  });
+
 export const UserModel = mongoose.model<IUser>('User', userSchema);
 
 export type HUserDocument = HydratedDocument<IUser>;
