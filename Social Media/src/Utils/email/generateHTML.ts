@@ -5,7 +5,7 @@ export const generateHTML = (firstName = '', otp = '') => {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SarahaApp - OTP Verification</title>
+    <title>Social Media App - OTP Verification</title>
   </head>
   <body style="margin:0; padding:0; background-color:#f4f5f7; font-family:'Segoe UI', Arial, sans-serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f5f7; padding:40px 0;">
@@ -45,7 +45,7 @@ export const generateHTML = (firstName = '', otp = '') => {
             <tr>
               <td style="background-color:#fafafa; padding:24px 40px; text-align:center; border-top:1px solid #eee;">
                 <p style="margin:0; color:#aaa; font-size:13px;">
-                  &copy; ${new Date().getFullYear()} SarahaApp. All rights reserved.
+                  &copy; ${new Date().getFullYear()} Social Media App. All rights reserved.
                 </p>
               </td>
             </tr>
