@@ -11,8 +11,10 @@ const rateLimitter_middleware_1 = require("./Middlewares/rateLimitter.middleware
 const error_response_1 = require("./Utils/response/error.response");
 const connection_1 = __importDefault(require("./DB/connection"));
 const auth_controller_1 = __importDefault(require("./Modules/Auth/auth.controller"));
+const redis_connection_1 = require("./DB/redis.connection");
 const app = (0, express_1.default)();
 (0, connection_1.default)();
+(0, redis_connection_1.redisConnection)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)(cors_utils_1.corsOptions));
 app.use((0, helmet_1.default)());

@@ -6,10 +6,12 @@ import { customRateLimiter } from './Middlewares/rateLimitter.middleware';
 import { globalErrorHandler, NotFoundException } from './Utils/response/error.response';
 import connectDB from './DB/connection';
 import AuthRouter from './Modules/Auth/auth.controller';
+import { redisConnection } from './DB/redis.connection';
 
 const app = express();
 
 connectDB();
+redisConnection();
 
 app.use(express.json());
 app.use(cors(corsOptions));

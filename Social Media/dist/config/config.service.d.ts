@@ -1,5 +1,6 @@
 export declare const PORT: string;
 export declare const dbUrl: string;
+export declare const REDIS_URI: string;
 export declare const SALT: string;
 export declare const ENCRYPTION_SECRET_KEY: string;
 export declare const TOKEN_ACCESS_USER_SECRET_KEY: string;
