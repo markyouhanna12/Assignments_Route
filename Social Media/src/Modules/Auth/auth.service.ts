@@ -12,6 +12,9 @@ import { generateOTP } from '../../Utils/generateOTP';
 import { compareHash, genrateHash } from '../../Utils/security/hash';
 import { successResponse } from '../../Utils/response/success.response';
 import { emailEvents } from '../../Utils/events/email.event';
+import { LogoutTypeEnum } from '../../Utils/enums/auth.enum';
+import { revokeTokenKey, set } from '../../DB/redis.repository';
+import { ACCESS_EXPIRES } from '../../config/config.service';
 
 class AuthenticationService {
   private _userRepo = new UserRepository(UserModel);
@@ -115,6 +118,35 @@ class AuthenticationService {
       statusCode: 200,
       message: 'Login successful',
       data: { credentails },
+    });
+  };
+
+  logoutWithRedis = async (req: Request, res: Response): Promise<Response> => {
+    const { flag } = req.body;
+
+    let status = 200;
+    switch (flag) {
+      case LogoutTypeEnum.logout:
+        await set({
+          key: revokeTokenKey({ userId: req.decoded.id, jti: req.decoded.jti }),
+          value: req.decoded.jti,
+          ttl: Number(ACCESS_EXPIRES),
+        });
+        status = 201;
+        break;
+      case LogoutTypeEnum.logoutFromAll:
+        await this._userRepo.updateOne({
+          filter: { _id: req.decoded.id },
+          update: { changeCredentialsTime: Date.now() },
+        });
+
+        status = 200;
+        break;
+    }
+    return successResponse({
+      res,
+      statusCode: status,
+      message: 'Logout successfully',
     });
   };
 }
