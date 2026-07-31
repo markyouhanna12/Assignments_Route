@@ -15,7 +15,7 @@ export const generateHTML = (firstName = '', otp = '') => {
             <!-- Header -->
             <tr>
               <td style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); padding:32px; text-align:center;">
-                <h1 style="margin:0; color:#ffffff; font-size:28px; letter-spacing:1px;">SarahaApp</h1>
+                <h1 style="margin:0; color:#ffffff; font-size:28px; letter-spacing:1px;">Social Media App</h1>
               </td>
             </tr>
 
