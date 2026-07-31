@@ -10,14 +10,15 @@ class UserService {
   constructor() {}
 
   getProfile = async (req: Request, res: Response): Promise<Response> => {
-    const user = req.user;
-    user.phone = await decrypt(user.phone);
+    const userProfile = req.user;
+
+    userProfile.phone = await decrypt(userProfile.phone);
 
     return successResponse({
       res,
       message: 'Done',
       statusCode: 200,
-      data: user,
+      data: userProfile,
     });
   };
 }

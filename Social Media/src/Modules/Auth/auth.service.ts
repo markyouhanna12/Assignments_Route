@@ -15,6 +15,7 @@ import { emailEvents } from '../../Utils/events/email.event';
 import { LogoutTypeEnum } from '../../Utils/enums/auth.enum';
 import { revokeTokenKey, set } from '../../DB/redis.repository';
 import { ACCESS_EXPIRES } from '../../config/config.service';
+import { encrypt } from '../../Utils/security/encryption';
 
 class AuthenticationService {
   private _userRepo = new UserRepository(UserModel);
@@ -37,13 +38,15 @@ class AuthenticationService {
 
     const hashedPassword = await genrateHash(password);
 
+    const encryptedPhone = await encrypt(phone);
+
     const user = await this._userRepo.create({
       data: [
         {
           username,
           email,
           password: hashedPassword,
-          phone,
+          phone: encryptedPhone,
           confirmEmailOTP: await genrateHash(otp),
         },
       ],

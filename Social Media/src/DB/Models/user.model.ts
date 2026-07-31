@@ -11,12 +11,13 @@ export interface IUser {
   confirmEmailAt?: Date;
 
   password: string;
-  resetPasswordOTP?: string;
 
   phone: string;
+
   address?: string;
 
   gender?: GenderEnum;
+
   role?: RoleEnum;
 
   createdAt: Date;
@@ -27,8 +28,6 @@ export interface IUser {
   provider?: string;
 
   profilePic?: string;
-
-  friends?: Types.ObjectId[];
 }
 
 export const userSchema = new Schema<IUser>(
@@ -87,6 +86,9 @@ export const userSchema = new Schema<IUser>(
     },
     profilePic: {
       type: String,
+    },
+    changeCredentialsTime: {
+      type: Date,
     },
   },
   {

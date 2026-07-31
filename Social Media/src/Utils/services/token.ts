@@ -11,7 +11,12 @@ import {
   TOKEN_REFRESH_USER_SECRET_KEY,
 } from '../../config/config.service';
 import { v4 as uuid } from 'uuid';
-import { BadRequestException, NotFoundException } from '../response/error.response';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '../response/error.response';
+import { get, revokeTokenKey } from '../../DB/redis.repository';
 
 export interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -92,9 +97,22 @@ export class TokenService {
 
     const decoded = await this.verify(token, secret);
 
+    const isRevoked = await get({
+      key: revokeTokenKey({ userId: decoded.id, jti: decoded.jti }),
+    });
+
+    if (isRevoked) {
+      throw new UnauthorizedException('Token is revoked');
+    }
+
     const user = await this._userRepo.findById({ id: decoded.id });
+
     if (!user) {
       throw new NotFoundException('Not Registered Account');
+    }
+
+    if (user.changeCredentialsTime?.getTime()! > decoded.iat! * 1000) {
+      throw new UnauthorizedException('Token is expired');
     }
 
     return { decoded, user };

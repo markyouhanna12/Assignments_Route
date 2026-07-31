@@ -18,6 +18,8 @@ export const authentication = ({ tokenType = TokenTypeEnum.ACCESS }) => {
 
     req.user = user;
     req.decoded = decoded;
+
+    return next();
   };
 };
 
