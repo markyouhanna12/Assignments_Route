@@ -7,6 +7,8 @@ import { globalErrorHandler, NotFoundException } from './Utils/response/error.re
 import connectDB from './DB/connection';
 import AuthRouter from './Modules/Auth/auth.controller';
 import UserRouter from './Modules/User/user.controller';
+import PostRouter from './Modules/Post/post.controller';
+
 import { redisConnection } from './DB/redis.connection';
 
 const app = express();
@@ -21,6 +23,7 @@ app.use(customRateLimiter);
 
 app.use('/api/auth', AuthRouter);
 app.use('/api/user', UserRouter);
+app.use('/api/post', PostRouter);
 
 app.use(globalErrorHandler);
 

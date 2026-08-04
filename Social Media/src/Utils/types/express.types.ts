@@ -7,3 +7,21 @@ declare module 'express-serve-static-core' {
     decoded: CustomJwtPayload;
   }
 }
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        _id: string;
+      };
+    }
+
+    namespace Multer {
+      interface File {
+        finalPath?: string;
+      }
+    }
+  }
+}
+
+export {};
