@@ -35,4 +35,10 @@ router.patch(
   userService.acceptFriendRequest,
 );
 
+router.delete(
+  '/:requestId/reject',
+  validation(userValidation.rejectFriendRequestSchema),
+  userService.rejectFriendRequest,
+);
+
 export default router;

@@ -12,3 +12,9 @@ export const acceptFriendRequestSchema = {
     requestId: generalFields.id,
   }),
 };
+
+export const rejectFriendRequestSchema = {
+  params: z.strictObject({
+    requestId: generalFields.id,
+  }),
+};

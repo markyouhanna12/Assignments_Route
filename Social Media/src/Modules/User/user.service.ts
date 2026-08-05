@@ -140,6 +140,28 @@ class UserService {
       message: 'Friend Request Accepted',
     });
   };
+
+  rejectFriendRequest = async (req: Request, res: Response): Promise<Response> => {
+    const { requestId } = req.params as unknown as { requestId: Types.ObjectId };
+
+    const friendRequest = await this._friendRepo.findOneAndDelete({
+      filter: {
+        _id: requestId,
+        $or: [{ sendTo: req.user!._id }, { sendBy: req.user!._id }],
+        acceptedAt: { $exists: false },
+      },
+    });
+
+    if (!friendRequest) {
+      throw new NotFoundException('Friend Request not found');
+    }
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Friend Request Removed',
+    });
+  };
 }
 
 export default new UserService();
