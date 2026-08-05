@@ -2,14 +2,29 @@ import express, { Router } from 'express';
 import { authentication, authorization } from '../../Middlewares/Auth.middleware';
 import { RoleEnum, TokenTypeEnum } from '../../Utils/enums/auth.enum';
 import userService from './user.service';
+import { validation } from '../../Middlewares/Validation.middleware';
+import * as userValidation from './user.validation';
 
 const router: Router = express.Router();
 
-router.get(
-  '/profile',
-  authentication({ tokenType: TokenTypeEnum.ACCESS }),
-  authorization({ accessRoles: [RoleEnum.USER, RoleEnum.ADMIN] }),
-  userService.getProfile,
+router.use(
+  authentication({
+    tokenType: TokenTypeEnum.ACCESS,
+  }),
+);
+
+router.use(
+  authorization({
+    accessRoles: [RoleEnum.USER, RoleEnum.ADMIN],
+  }),
+);
+
+router.get('/profile', userService.getProfile);
+
+router.post(
+  '/:userId/friend-request',
+  validation(userValidation.sendFriendRequestSchema),
+  userService.sendFriendRequest,
 );
 
 export default router;
