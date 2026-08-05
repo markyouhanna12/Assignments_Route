@@ -28,6 +28,10 @@ export interface IUser {
   provider?: string;
 
   profilePic?: string;
+
+  friends?: Types.ObjectId[];
+
+  blockedUsers?: Types.ObjectId[];
 }
 
 export const userSchema = new Schema<IUser>(
@@ -90,6 +94,18 @@ export const userSchema = new Schema<IUser>(
     changeCredentialsTime: {
       type: Date,
     },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    blockedUsers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
