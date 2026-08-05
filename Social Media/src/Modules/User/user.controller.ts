@@ -41,4 +41,10 @@ router.delete(
   userService.rejectFriendRequest,
 );
 
+router.delete(
+  '/friend/:userId',
+  validation(userValidation.removeFriendSchema),
+  userService.removeFriend,
+);
+
 export default router;

@@ -18,3 +18,9 @@ export const rejectFriendRequestSchema = {
     requestId: generalFields.id,
   }),
 };
+
+export const removeFriendSchema = {
+  params: z.strictObject({
+    userId: generalFields.id,
+  }),
+};

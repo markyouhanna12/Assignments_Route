@@ -162,6 +162,41 @@ class UserService {
       message: 'Friend Request Removed',
     });
   };
+
+  removeFriend = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.params as { userId: string };
+    const myId = req.user!._id;
+
+    await Promise.all([
+      this._userRepo.updateOne({
+        filter: {
+          _id: myId,
+        },
+        update: {
+          $pull: {
+            friends: userId,
+          },
+        },
+      }),
+
+      this._userRepo.updateOne({
+        filter: {
+          _id: userId,
+        },
+        update: {
+          $pull: {
+            friends: myId,
+          },
+        },
+      }),
+    ]);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Friend has been Removed successfully',
+    });
+  };
 }
 
 export default new UserService();
