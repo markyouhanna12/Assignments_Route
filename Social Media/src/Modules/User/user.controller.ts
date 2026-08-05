@@ -27,4 +27,10 @@ router.post(
   userService.sendFriendRequest,
 );
 
+router.patch(
+  '/:requestId/accept',
+  validation(userValidation.acceptFriendRequestSchema),
+  userService.acceptFriendRequest,
+);
+
 export default router;

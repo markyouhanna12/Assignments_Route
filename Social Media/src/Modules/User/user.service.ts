@@ -76,6 +76,54 @@ class UserService {
       data: friend,
     });
   };
+
+  acceptFriendRequest = async (req: Request, res: Response): Promise<Response> => {
+    const { requestId } = req.params as unknown as { requestId: Types.ObjectId };
+
+    const checkFriendRequestExists = await this._friendRepo.findOneAndUpdate({
+      filter: {
+        _id: requestId,
+        sendTo: req.user?._id,
+        acceptedAt: { $exists: false },
+      },
+      update: {
+        acceptedAt: new Date(),
+      },
+    });
+
+    if (!checkFriendRequestExists) {
+      throw new NotFoundException('Friend Request not found');
+    }
+
+    await Promise.all([
+      await this._userRepo.updateOne({
+        filter: {
+          _id: checkFriendRequestExists.sendBy,
+        },
+        update: {
+          $addToSet: {
+            friends: checkFriendRequestExists.sendTo,
+          },
+        },
+      }),
+      await this._userRepo.updateOne({
+        filter: {
+          _id: checkFriendRequestExists.sendTo,
+        },
+        update: {
+          $addToSet: {
+            friends: checkFriendRequestExists.sendBy,
+          },
+        },
+      }),
+    ]);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Friend Request Accepted',
+    });
+  };
 }
 
 export default new UserService();
