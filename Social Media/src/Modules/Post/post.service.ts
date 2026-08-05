@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ICreatePostDTO } from './post.dto';
+import { ICreatePostDTO, IUpdatePostDTO } from './post.dto';
 import { BadRequestException, NotFoundException } from '../../Utils/response/error.response';
 import { PostRepository } from '../../DB/repositories/post.repo';
 import { PostModel } from '../../DB/Models/post.model';
@@ -21,6 +21,11 @@ export const getAvailability = (user: HUserDocument) => {
 class PostService {
   private readonly _postRepo = new PostRepository(PostModel);
   private readonly _userRepo = new UserRepository(UserModel);
+  private readonly activePostFilter = (postId: string, userId: string) => ({
+    _id: postId,
+    createdBy: userId,
+    freezedAt: { $exists: false },
+  });
 
   constructor() {}
 
@@ -77,6 +82,109 @@ class PostService {
       res,
       statusCode: 200,
       data: post,
+    });
+  };
+
+  updatePost = async (req: Request, res: Response): Promise<Response> => {
+    const { postId } = req.params;
+    const { content, availability, tags }: IUpdatePostDTO = req.body;
+
+    const files = req.files as Express.Multer.File[] | undefined;
+
+    if (!content && !availability && !tags && (!files || files.length === 0)) {
+      throw new BadRequestException('Please provide at least one field to update.');
+    }
+    const payload: any = {};
+
+    if (content) payload.content = content;
+
+    if (availability) payload.availability = availability;
+
+    if (tags) payload.tags = tags;
+
+    if (files?.length) {
+      payload.attachments = files.map((file) => file.path);
+    }
+    const post = await this._postRepo.findOneAndUpdate({
+      filter: this.activePostFilter(postId as any, req.user!._id.toString()),
+      update: payload,
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found.');
+    }
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Post updated successfully.',
+      data: post,
+    });
+  };
+
+  deletePost = async (req: Request, res: Response): Promise<Response> => {
+    const { postId } = req.params;
+
+    const post = await this._postRepo.findOneAndUpdate({
+      filter: this.activePostFilter(postId as any, req.user!._id.toString()),
+      update: {
+        freezedAt: new Date(),
+      },
+    });
+    if (!post) {
+      throw new NotFoundException('Post not found.');
+    }
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Post deleted successfully.',
+    });
+  };
+
+  getMyPosts = async (req: Request, res: Response): Promise<Response> => {
+    const posts = await this._postRepo.find({
+      filter: {
+        createdBy: req.user!._id,
+        freezedAt: { $exists: false },
+      },
+      options: {
+        sort: {
+          createdAt: -1,
+        },
+      },
+    });
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      data: posts,
+    });
+  };
+
+  getUserPosts = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.params;
+
+    let filter: any = {
+      createdBy: userId,
+      freezedAt: { $exists: false },
+    };
+
+    if (userId !== req.user!._id.toString()) {
+      filter.availability = AvailabitlityEnum.PUBLIC;
+    }
+
+    const posts = await this._postRepo.find({
+      filter,
+      options: {
+        sort: {
+          createdAt: -1,
+        },
+      },
+    });
+    return successResponse({
+      res,
+      statusCode: 200,
+      data: posts,
     });
   };
 }

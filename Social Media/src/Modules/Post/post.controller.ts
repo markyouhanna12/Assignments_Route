@@ -31,4 +31,24 @@ router.post(
 
 router.patch('/:postId/react', validation(postValidation.reactPostSchema), postService.reactPost);
 
+router.patch(
+  '/:postId',
+  localFileUpload({
+    validation: fileValidation.images,
+    customPath: 'posts',
+  }).array('attachments', 10),
+  validation(postValidation.updatePostSchema),
+  postService.updatePost,
+);
+
+router.delete('/:postId', validation(postValidation.deletePostSchema), postService.deletePost);
+
+router.get('/me', postService.getMyPosts);
+
+router.get(
+  '/user/:userId',
+  validation(postValidation.getUserPostsSchema),
+  postService.getUserPosts,
+);
+
 export default router;
