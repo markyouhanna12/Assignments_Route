@@ -30,3 +30,9 @@ export const blockFriendSchema = {
     userId: generalFields.id,
   }),
 };
+
+export const unblockFriendSchema = {
+  params: z.strictObject({
+    userId: generalFields.id,
+  }),
+};

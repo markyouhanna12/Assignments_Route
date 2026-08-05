@@ -47,4 +47,10 @@ router.patch(
   userService.blockFriend,
 );
 
+router.patch(
+  '/unblock/:userId',
+  validation(userValidation.unblockFriendSchema),
+  userService.unblockFriend,
+);
+
 export default router;

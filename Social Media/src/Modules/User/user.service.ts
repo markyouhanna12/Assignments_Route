@@ -242,6 +242,37 @@ class UserService {
       message: 'User has been blocked',
     });
   };
+
+  unblockFriend = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.params as { userId: string };
+    const myId = req.user!._id;
+
+    if (userId === myId.toString()) {
+      throw new BadRequestException('You cannot unblock yourself');
+    }
+
+    const target = await this._userRepo.findById({
+      id: userId,
+    });
+    if (!target) {
+      throw new NotFoundException('User Not Found');
+    }
+
+    await Promise.all([
+      this._userRepo.updateOne({
+        filter: { _id: myId },
+        update: {
+          $pull: { blockedUsers: new Types.ObjectId(userId) },
+        },
+      }),
+    ]);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'User has been unblocked',
+    });
+  };
 }
 
 export default new UserService();
