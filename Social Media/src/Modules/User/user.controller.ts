@@ -27,6 +27,8 @@ router.post(
   userService.sendFriendRequest,
 );
 
+router.get('/friend-request', userService.listFriendRequests);
+
 router.patch(
   '/:requestId/accept',
   validation(userValidation.acceptFriendRequestSchema),

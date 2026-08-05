@@ -31,6 +31,22 @@ class UserService {
     });
   };
 
+  listFriendRequests = async (req: Request, res: Response): Promise<Response> => {
+    const friendRequest = await FriendModel.find({
+      sendTo: req.user!._id,
+      acceptedAt: { $exists: false },
+    })
+      .populate('sendBy', 'firstName lastName email -_id')
+      .lean();
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Done',
+      data: { friendRequest },
+    });
+  };
+
   sendFriendRequest = async (req: Request, res: Response): Promise<Response> => {
     const { userId } = req.params as unknown as { userId: Types.ObjectId };
 
