@@ -29,4 +29,6 @@ router.post(
   postService.createPost,
 );
 
+router.patch('/:postId/react', validation(postValidation.reactPostSchema), postService.reactPost);
+
 export default router;

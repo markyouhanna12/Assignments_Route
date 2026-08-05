@@ -79,4 +79,16 @@ export const generalFields = {
   id: z.string().refine((value) => {
     return Types.ObjectId.isValid(value);
   }, 'Invalid ObjectId'),
+
+  file: function (mimeType: string[]) {
+    return z.strictObject({
+      fieldname: z.string(),
+      originalname: z.string(),
+      encoding: z.string(),
+      mimetype: z.enum(mimeType),
+      size: z.number(),
+      path: z.string().optional(),
+      buffer: z.any().optional(),
+    });
+  },
 };

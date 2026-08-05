@@ -29,7 +29,7 @@ export enum ProviderEnum {
 }
 
 export enum AvailabitlityEnum {
-  PUBLIC,
-  FRIENDS,
-  ONLY_ME,
+  PUBLIC = 'PUBLIC',
+  FRIENDS = 'FRIENDS',
+  ONLY_ME = 'ONLY_ME',
 }

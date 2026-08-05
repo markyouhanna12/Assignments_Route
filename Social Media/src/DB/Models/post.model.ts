@@ -1,4 +1,5 @@
 import { HydratedDocument, model, Model, Schema, Types } from 'mongoose';
+import { AvailabitlityEnum } from '../../Utils/enums/auth.enum';
 
 export interface IPost {
   _id: Types.ObjectId;
@@ -12,6 +13,8 @@ export interface IPost {
   likes?: Types.ObjectId[];
 
   tags?: Types.ObjectId[];
+
+  availability?: AvailabitlityEnum;
 
   freezedAt?: Date;
 
@@ -56,16 +59,34 @@ export const postSchema = new Schema<IPost>(
       },
     ],
 
+    availability: {
+      type: String,
+      enum: AvailabitlityEnum,
+      default: AvailabitlityEnum.PUBLIC,
+    },
+
     freezedAt: {
       type: Date,
     },
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
   },
 );
 
 postSchema.index({ createdBy: 1, createdAt: -1 });
+
+postSchema.virtual('comments', {
+  localField: '_id',
+  foreignField: 'postId',
+  ref: 'Comment',
+});
 
 export const PostModel: Model<IPost> = model<IPost>('Post', postSchema);
 export type HPostDocument = HydratedDocument<IPost>;
