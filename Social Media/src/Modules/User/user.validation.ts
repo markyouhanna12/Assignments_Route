@@ -24,3 +24,9 @@ export const removeFriendSchema = {
     userId: generalFields.id,
   }),
 };
+
+export const blockFriendSchema = {
+  params: z.strictObject({
+    userId: generalFields.id,
+  }),
+};

@@ -197,6 +197,51 @@ class UserService {
       message: 'Friend has been Removed successfully',
     });
   };
+
+  blockFriend = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.params as { userId: string };
+    const myId = req.user!._id;
+
+    if (userId === myId.toString()) {
+      throw new BadRequestException('You cannot block yourself');
+    }
+    const target = await this._userRepo.findById({
+      id: userId,
+    });
+    if (!target) {
+      throw new NotFoundException('User Not Found');
+    }
+
+    await Promise.all([
+      this._userRepo.updateOne({
+        filter: { _id: myId },
+        update: {
+          $addToSet: { blockedUsers: new Types.ObjectId(userId) },
+          $pull: { friends: userId },
+        },
+      }),
+
+      this._userRepo.updateOne({
+        filter: { _id: userId },
+        update: { $pull: { friends: myId } },
+      }),
+
+      this._friendRepo.deleteMany({
+        filter: {
+          $or: [
+            { sendBy: myId, sendTo: userId },
+            { sendBy: userId, sendTo: myId },
+          ],
+        },
+      }),
+    ]);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'User has been blocked',
+    });
+  };
 }
 
 export default new UserService();
