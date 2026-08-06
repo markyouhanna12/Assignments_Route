@@ -38,4 +38,10 @@ router.patch(
 
 router.get('/', validation(commentValidation.getCommentsSchema), commentService.getComments);
 
+router.get(
+  '/:commentId/replies',
+  validation(commentValidation.getRepliesSchema),
+  commentService.getReplies,
+);
+
 export default router;

@@ -68,3 +68,14 @@ export const getCommentsSchema = {
     limit: z.coerce.number().min(1).max(100).default(10).optional(),
   }),
 };
+
+export const getRepliesSchema = {
+  params: z.strictObject({
+    postId: generalFields.id,
+    commentId: generalFields.id,
+  }),
+  query: z.strictObject({
+    page: z.coerce.number().min(1).default(1).optional(),
+    limit: z.coerce.number().min(1).max(100).default(10).optional(),
+  }),
+};

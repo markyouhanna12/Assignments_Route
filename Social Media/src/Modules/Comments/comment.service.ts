@@ -14,6 +14,7 @@ import {
   CreateCommentParamsDTO,
   DeleteCommentParamsDTO,
   GetCommentsParamsDTO,
+  GetRepliesParamsDTO,
   ReactCommentParamsDTO,
   ReactCommentQueryDTO,
   ReplyCommentBodyDTO,
@@ -351,6 +352,65 @@ class CommentService {
         page,
         limit,
         comments,
+      },
+    });
+  };
+
+  getReplies = async (req: Request<GetRepliesParamsDTO>, res: Response): Promise<Response> => {
+    const { postId, commentId } = req.params;
+
+    const page = Number(req.query['page'] || 1);
+    const limit = Number(req.query['limit'] || 10);
+
+    const skip = (page - 1) * limit;
+
+    const comment = await this._commentRepo.findOne({
+      filter: {
+        _id: commentId,
+        postId,
+        deletedAt: { $exists: false },
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    const replies = await this._commentRepo.find({
+      filter: {
+        postId,
+        commentId,
+        deletedAt: { $exists: false },
+      },
+      options: {
+        populate: [
+          {
+            path: 'createdBy',
+            select: 'username profilePicture',
+          },
+          {
+            path: 'tags',
+            select: 'username profilePicture',
+          },
+          {
+            path: 'likes',
+            select: 'username profilePicture',
+          },
+        ],
+        sort: {
+          createdAt: -1,
+        },
+        skip,
+        limit,
+      },
+    });
+
+    return successResponse({
+      res,
+      data: {
+        page,
+        limit,
+        replies,
       },
     });
   };
