@@ -13,6 +13,8 @@ import {
   CreateCommentBodyDTO,
   CreateCommentParamsDTO,
   DeleteCommentParamsDTO,
+  ReactCommentParamsDTO,
+  ReactCommentQueryDTO,
   ReplyCommentBodyDTO,
   ReplyCommentParamsDTO,
   UpdateCommentBodyDTO,
@@ -253,6 +255,42 @@ class CommentService {
     return successResponse({
       res,
       message: 'Comment deleted successfully',
+    });
+  };
+
+  reactComment = async (req: Request<ReactCommentParamsDTO>, res: Response): Promise<Response> => {
+    const { postId, commentId } = req.params;
+    const react = Number(req.query['react']);
+
+    const comment = await this._commentRepo.findOneAndUpdate({
+      filter: {
+        _id: commentId,
+        postId,
+        deletedAt: { $exists: false },
+      },
+      update: {
+        ...(Number(react) > 0
+          ? {
+              $addToSet: {
+                likes: req.user._id,
+              },
+            }
+          : {
+              $pull: {
+                likes: req.user._id,
+              },
+            }),
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    return successResponse({
+      res,
+      message: Number(react) > 0 ? 'Comment liked successfully' : 'Comment unliked successfully',
+      data: comment,
     });
   };
 }

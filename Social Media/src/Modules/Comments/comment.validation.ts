@@ -46,3 +46,15 @@ export const deleteCommentSchema = {
     commentId: generalFields.id,
   }),
 };
+
+export const reactCommentSchema = {
+  params: z.strictObject({
+    postId: generalFields.id,
+    commentId: generalFields.id,
+  }),
+  query: z.strictObject({
+    react: z.coerce.number().refine((value) => value === 1 || value === -1, {
+      message: 'react must be either 1 or -1',
+    }),
+  }),
+};

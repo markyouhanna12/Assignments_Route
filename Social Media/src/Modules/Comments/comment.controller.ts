@@ -30,4 +30,10 @@ router.delete(
   commentService.deleteComment,
 );
 
+router.patch(
+  '/:commentId/react',
+  validation(commentValidation.reactCommentSchema),
+  commentService.reactComment,
+);
+
 export default router;

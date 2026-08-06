@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   createCommentSchema,
   deleteCommentSchema,
+  reactCommentSchema,
   replyCommentSchema,
   updateCommentSchema,
 } from './comment.validation';
@@ -16,3 +17,6 @@ export type UpdateCommentBodyDTO = z.infer<typeof updateCommentSchema.body>;
 export type UpdateCommentParamsDTO = z.infer<typeof updateCommentSchema.params>;
 
 export type DeleteCommentParamsDTO = z.infer<typeof deleteCommentSchema.params>;
+
+export type ReactCommentParamsDTO = z.infer<typeof reactCommentSchema.params>;
+export type ReactCommentQueryDTO = z.infer<typeof reactCommentSchema.query>;
