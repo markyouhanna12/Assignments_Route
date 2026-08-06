@@ -91,4 +91,6 @@ export const generalFields = {
       buffer: z.any().optional(),
     });
   },
+
+  FCM: z.string(),
 };

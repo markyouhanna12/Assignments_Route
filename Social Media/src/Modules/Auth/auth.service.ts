@@ -13,9 +13,10 @@ import { compareHash, genrateHash } from '../../Utils/security/hash';
 import { successResponse } from '../../Utils/response/success.response';
 import { emailEvents } from '../../Utils/events/email.event';
 import { LogoutTypeEnum } from '../../Utils/enums/auth.enum';
-import { revokeTokenKey, set } from '../../DB/redis.repository';
+import { addFCM, getFCMs, revokeTokenKey, set } from '../../DB/redis.repository';
 import { ACCESS_EXPIRES } from '../../config/config.service';
 import { encrypt } from '../../Utils/security/encryption';
+import { notification } from '../../Utils/services/notification.service';
 
 class AuthenticationService {
   private _userRepo = new UserRepository(UserModel);
@@ -99,7 +100,7 @@ class AuthenticationService {
   };
 
   login = async (req: Request, res: Response): Promise<Response> => {
-    const { email, password }: loginDTO = req.body;
+    const { email, password, FCM }: loginDTO = req.body;
     const user = await this._userRepo.findOne({
       filter: {
         email,
@@ -112,6 +113,22 @@ class AuthenticationService {
 
     if (!(await compareHash(password, user.password))) {
       throw new BadRequestException('Invalid password');
+    }
+
+    if (FCM) {
+      await addFCM(user._id, FCM);
+      const tokens = await getFCMs(user._id);
+      console.log(tokens);
+
+      if (tokens?.length) {
+        await notification.sendNotifications({
+          tokens,
+          data: {
+            title: 'Login',
+            body: `New Login at ${Date.now()}`,
+          },
+        });
+      }
     }
 
     const credentails = await this._tokenService.getNewLoginCredentials(user as any);

@@ -7,6 +7,8 @@ export const loginSchema = {
     email: generalFields.email,
 
     password: generalFields.password,
+
+    FCM: generalFields.FCM.optional(),
   }),
 };
 

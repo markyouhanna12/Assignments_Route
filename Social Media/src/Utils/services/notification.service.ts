@@ -29,3 +29,5 @@ export class NotificationService {
     );
   }
 }
+
+export const notification = new NotificationService();
