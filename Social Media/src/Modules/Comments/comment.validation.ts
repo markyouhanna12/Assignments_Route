@@ -58,3 +58,13 @@ export const reactCommentSchema = {
     }),
   }),
 };
+
+export const getCommentsSchema = {
+  params: z.strictObject({
+    postId: generalFields.id,
+  }),
+  query: z.strictObject({
+    page: z.coerce.number().min(1).default(1).optional(),
+    limit: z.coerce.number().min(1).max(100).default(10).optional(),
+  }),
+};

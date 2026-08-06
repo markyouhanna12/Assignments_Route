@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   createCommentSchema,
   deleteCommentSchema,
+  getCommentsSchema,
   reactCommentSchema,
   replyCommentSchema,
   updateCommentSchema,
@@ -20,3 +21,6 @@ export type DeleteCommentParamsDTO = z.infer<typeof deleteCommentSchema.params>;
 
 export type ReactCommentParamsDTO = z.infer<typeof reactCommentSchema.params>;
 export type ReactCommentQueryDTO = z.infer<typeof reactCommentSchema.query>;
+
+export type GetCommentsParamsDTO = z.infer<typeof getCommentsSchema.params>;
+export type GetCommentsQueryDTO = z.infer<typeof getCommentsSchema.query>;

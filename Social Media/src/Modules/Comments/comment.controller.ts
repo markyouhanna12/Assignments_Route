@@ -36,4 +36,6 @@ router.patch(
   commentService.reactComment,
 );
 
+router.get('/', validation(commentValidation.getCommentsSchema), commentService.getComments);
+
 export default router;

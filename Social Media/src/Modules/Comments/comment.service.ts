@@ -13,6 +13,7 @@ import {
   CreateCommentBodyDTO,
   CreateCommentParamsDTO,
   DeleteCommentParamsDTO,
+  GetCommentsParamsDTO,
   ReactCommentParamsDTO,
   ReactCommentQueryDTO,
   ReplyCommentBodyDTO,
@@ -291,6 +292,66 @@ class CommentService {
       res,
       message: Number(react) > 0 ? 'Comment liked successfully' : 'Comment unliked successfully',
       data: comment,
+    });
+  };
+
+  getComments = async (req: Request<GetCommentsParamsDTO>, res: Response): Promise<Response> => {
+    const { postId } = req.params;
+
+    const page = Number(req.query['page'] || 1);
+    const limit = Number(req.query['limit'] || 10);
+
+    const skip = (page - 1) * limit;
+
+    const post = await this._postRepo.findOne({
+      filter: {
+        _id: postId,
+        $or: getAvailability(req.user),
+      },
+    });
+
+    console.log(post);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const comments = await this._commentRepo.find({
+      filter: {
+        postId,
+        commentId: null,
+        deletedAt: { $exists: false },
+      },
+      options: {
+        populate: [
+          {
+            path: 'createdBy',
+            select: 'username profilePicture',
+          },
+          {
+            path: 'tags',
+            select: 'username profilePicture',
+          },
+          {
+            path: 'likes',
+            select: 'username profilePicture',
+          },
+        ],
+        sort: {
+          createdAt: -1,
+        },
+        skip,
+        limit,
+      },
+    });
+
+    return successResponse({
+      res,
+      data: {
+        page,
+        limit,
+        comments,
+      },
     });
   };
 }
