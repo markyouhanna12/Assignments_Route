@@ -18,4 +18,10 @@ router.post(
   commentService.createReply,
 );
 
+router.patch(
+  '/:commentId',
+  validation(commentValidation.updateCommentSchema),
+  commentService.updateComment,
+);
+
 export default router;

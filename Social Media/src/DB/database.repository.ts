@@ -116,7 +116,7 @@ export abstract class DatabaseRepository<TDocument> {
       return await this.model.findOneAndUpdate(filter, update, { ...options }).select(select || '');
     }
     return await this.model
-      .findOneAndUpdate(filter, update, { ...options, inc: { __v: 1 } })
+      .findOneAndUpdate(filter, update, { ...options, $inc: { __v: 1 } })
       .select(select || '');
   }
 

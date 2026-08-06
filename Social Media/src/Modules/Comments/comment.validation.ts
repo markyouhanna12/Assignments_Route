@@ -31,3 +31,11 @@ export const replyCommentSchema = {
   }),
   body: createCommentSchema.body,
 };
+
+export const updateCommentSchema = {
+  params: z.strictObject({
+    postId: generalFields.id,
+    commentId: generalFields.id,
+  }),
+  body: createCommentSchema.body,
+};
