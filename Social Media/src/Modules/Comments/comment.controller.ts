@@ -24,4 +24,10 @@ router.patch(
   commentService.updateComment,
 );
 
+router.delete(
+  '/:commentId',
+  validation(commentValidation.deleteCommentSchema),
+  commentService.deleteComment,
+);
+
 export default router;

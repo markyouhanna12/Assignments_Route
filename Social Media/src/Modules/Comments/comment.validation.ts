@@ -39,3 +39,10 @@ export const updateCommentSchema = {
   }),
   body: createCommentSchema.body,
 };
+
+export const deleteCommentSchema = {
+  params: z.strictObject({
+    postId: generalFields.id,
+    commentId: generalFields.id,
+  }),
+};

@@ -12,6 +12,7 @@ import { Types, UpdateQuery } from 'mongoose';
 import {
   CreateCommentBodyDTO,
   CreateCommentParamsDTO,
+  DeleteCommentParamsDTO,
   ReplyCommentBodyDTO,
   ReplyCommentParamsDTO,
   UpdateCommentBodyDTO,
@@ -211,6 +212,47 @@ class CommentService {
       res,
       message: 'Comment updated successfully',
       data: updatedComment,
+    });
+  };
+
+  deleteComment = async (
+    req: Request<DeleteCommentParamsDTO>,
+    res: Response,
+  ): Promise<Response> => {
+    const { postId, commentId } = req.params;
+
+    const comment = await this._commentRepo.findOne({
+      filter: {
+        _id: commentId,
+        postId,
+        deletedAt: { $exists: false },
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (
+      req.user.role !== RoleEnum.ADMIN &&
+      comment.createdBy.toString() !== req.user._id.toString()
+    ) {
+      throw new ForbiddenException('You are not allowed to delete this comment');
+    }
+
+    await this._commentRepo.updateOne({
+      filter: {
+        _id: commentId,
+      },
+      update: {
+        deletedAt: new Date(),
+        updatedBy: req.user._id,
+      },
+    });
+
+    return successResponse({
+      res,
+      message: 'Comment deleted successfully',
     });
   };
 }
