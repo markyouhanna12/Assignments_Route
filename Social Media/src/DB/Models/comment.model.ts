@@ -9,7 +9,7 @@ export interface IComment {
   likes?: Types.ObjectId[] | IUser[];
   tags?: Types.ObjectId[] | string[];
 
-  commentId: Types.ObjectId;
+  commentId?: Types.ObjectId;
 
   postId: Types.ObjectId | IPost;
 
@@ -48,16 +48,16 @@ const commentSchema = new Schema<IComment>(
       },
     ],
 
-    postId: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Post',
-      },
-    ],
+    postId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+      required: true,
+    },
 
     commentId: {
       type: Schema.Types.ObjectId,
       ref: 'Comment',
+      default: null,
     },
 
     createdBy: {

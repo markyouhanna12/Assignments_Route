@@ -5,8 +5,11 @@ import { fileValidation, localFileUpload } from '../../Utils/multer/local.multer
 import { validation } from '../../Middlewares/Validation.middleware';
 import * as postValidation from './post.validation';
 import postService from './post.service';
+import CommentsRouter from '../Comments/comment.controller';
 
 const router: Router = express.Router();
+
+router.use('/:postId/comment', CommentsRouter);
 
 router.use(
   authentication({
