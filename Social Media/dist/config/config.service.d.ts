@@ -12,4 +12,5 @@ export declare const REFRESH_EXPIRES: string;
 export declare const USER_EMAIL: string;
 export declare const USER_PASSWORD: string;
 export declare const WHITE_LIST: string;
+export declare const FIREBASE_SERVICE_ACCOUNT: string;
 //# sourceMappingURL=config.service.d.ts.map

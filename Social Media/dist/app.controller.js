@@ -14,9 +14,11 @@ const auth_controller_1 = __importDefault(require("./Modules/Auth/auth.controlle
 const user_controller_1 = __importDefault(require("./Modules/User/user.controller"));
 const post_controller_1 = __importDefault(require("./Modules/Post/post.controller"));
 const redis_connection_1 = require("./DB/redis.connection");
+const notification_service_1 = require("./Utils/services/notification.service");
 const app = (0, express_1.default)();
 (0, connection_1.default)();
 (0, redis_connection_1.redisConnection)();
+const notificationService = new notification_service_1.NotificationService();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)(cors_utils_1.corsOptions));
 app.use((0, helmet_1.default)());
@@ -24,6 +26,35 @@ app.use(rateLimitter_middleware_1.customRateLimiter);
 app.use('/api/auth', auth_controller_1.default);
 app.use('/api/user', user_controller_1.default);
 app.use('/api/post', post_controller_1.default);
+app.post('/send-notification', async (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: 'FCM token is required',
+            });
+        }
+        await notificationService.sendNotification({
+            token,
+            data: {
+                title: 'Hello from Social Media App 👋',
+                body: 'This notification was sent successfully!',
+            },
+        });
+        return res.status(200).json({
+            success: true,
+            message: 'Notification sent successfully',
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to send notification',
+            error: error instanceof Error ? error.message : error,
+        });
+    }
+});
 app.use(error_response_1.globalErrorHandler);
 app.use('/*dummy', (req, res) => {
     throw new error_response_1.NotFoundException('Not Found Handler!');

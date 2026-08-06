@@ -38,3 +38,5 @@ export const USER_PASSWORD = requiredEnv('USER_PASSWORD');
 
 // WHITE_LIST for cors
 export const WHITE_LIST = requiredEnv('WHITE_LIST');
+
+export const FIREBASE_SERVICE_ACCOUNT = requiredEnv('FIREBASE_SERVICE_ACCOUNT');

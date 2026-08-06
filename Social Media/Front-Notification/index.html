@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Notifications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4fc3f7;
+        }
+        .token-box {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 12px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            color: #aaa;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+        .btn-generate {
+            background: #4fc3f7;
+            color: #1a1a2e;
+        }
+        .btn-send {
+            background: #66bb6a;
+            color: #1a1a2e;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .status.success { color: #66bb6a; }
+        .status.error { color: #ef5350; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Push Notifications</h1>
+
+        <button class="btn btn-generate" id="generateBtn" onclick="generateToken()">
+            Generate Token
+        </button>
+
+        <div class="token-box" id="tokenBox">Token will appear here...</div>
+
+        <button class="btn btn-send" id="sendBtn" onclick="sendNotification()" disabled>
+            Send Notification
+        </button>
+
+        <p class="status" id="status"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqvjzALoYc58FdlQm0462VCXoRnsw0PIk",
+            authDomain: "social-media-app-79e10.firebaseapp.com",
+            projectId: "social-media-app-79e10",
+            storageBucket: "social-media-app-79e10.firebasestorage.app",
+            messagingSenderId: "208278841275",
+            appId: "1:208278841275:web:bc15de8a6565896670c69e",
+            measurementId: "G-7G1LKBNCF6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        const VAPID_KEY = "BFvMtyjI260O_mQoke6ykK6CWIR1WcONBrrw-lC71LeqbkJdG7GNib9skUU3orr9nCDMm2CYrIi3Jf1nVf-NRlY";
+
+        let currentToken = null;
+
+        window.generateToken = async function () {
+            const status = document.getElementById("status");
+            const tokenBox = document.getElementById("tokenBox");
+            const sendBtn = document.getElementById("sendBtn");
+
+            status.textContent = "Requesting permission...";
+            status.className = "status";
+
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== "granted") {
+                    status.textContent = "Notification permission denied.";
+                    status.className = "status error";
+                    return;
+                }
+
+                status.textContent = "Generating token...";
+
+                const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+
+                if (token) {
+                    currentToken = token;
+                    tokenBox.textContent = token;
+                    sendBtn.disabled = false;
+                    status.textContent = "Token generated successfully!";
+                    status.className = "status success";
+                } else {
+                    status.textContent = "Failed to generate token.";
+                    status.className = "status error";
+                }
+            } catch (err) {
+                console.error(err);
+                status.textContent = "Error: " + err.message;
+                status.className = "status error";
+            }
+        };
+
+        window.sendNotification = async function () {
+            const status = document.getElementById("status");
+
+            if (!currentToken) {
+                status.textContent = "Generate a token first!";
+                status.className = "status error";
+                return;
+            }
+
+            status.textContent = "Sending notification...";
+            status.className = "status";
+
+            try {
+                const res = await fetch("http://localhost:3000/send-notification", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: currentToken })
+                });
+
+                if (res.ok) {
+                    status.textContent = "Notification sent successfully!";
+                    status.className = "status success";
+                } else {
+                    const data = await res.text();
+                    status.textContent = "Server error: " + data;
+                    status.className = "status error";
+                }
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+                status.className = "status error";
+            }
+        };
+
+        onMessage(messaging, (payload) => {
+            console.log("Foreground message:", payload);
+            const { title, body } = payload.data || payload.notification || {};
+            if (title) {
+                new Notification(title, { body });
+            }
+        });
+    </script>
+</body>
+</html>
