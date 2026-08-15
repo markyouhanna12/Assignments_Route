@@ -36,6 +36,10 @@ export interface IUser {
   friends?: Types.ObjectId[];
 
   blockedUsers?: Types.ObjectId[];
+
+  deviceTokens?: string[];
+
+  notficationEnabled?: boolean;
 }
 
 export const userSchema = new Schema<IUser>(
@@ -110,6 +114,15 @@ export const userSchema = new Schema<IUser>(
         ref: 'User',
       },
     ],
+    deviceTokens: [
+      {
+        type: String,
+      },
+    ],
+    notficationEnabled: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
