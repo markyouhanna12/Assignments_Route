@@ -37,17 +37,13 @@ class AuthenticationService {
     }
     const otp = generateOTP();
 
-    const hashedPassword = await genrateHash(password);
-
-    const encryptedPhone = await encrypt(phone);
-
     const user = await this._userRepo.create({
       data: [
         {
           username,
           email,
-          password: hashedPassword,
-          phone: encryptedPhone,
+          password,
+          phone,
           confirmEmailOTP: await genrateHash(otp),
         },
       ],

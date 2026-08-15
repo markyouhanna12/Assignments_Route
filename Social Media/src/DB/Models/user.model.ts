@@ -1,5 +1,9 @@
 import mongoose, { HydratedDocument, Schema, Types } from 'mongoose';
 import { GenderEnum, ProviderEnum, RoleEnum } from '../../Utils/enums/auth.enum';
+import { genrateHash } from '../../Utils/security/hash';
+import { encrypt } from '../../Utils/security/encryption';
+import { emailEvents } from '../../Utils/events/email.event';
+import { generateOTP } from '../../Utils/generateOTP';
 
 export interface IUser {
   firstName: string;
@@ -123,6 +127,33 @@ userSchema
   .get(function () {
     return `${this.firstName} ${this.lastName}`;
   });
+
+userSchema.pre('validate', function () {
+  this.email = this.email.toLowerCase().trim();
+});
+
+userSchema.pre('save', async function (this: HUserDocument & { wasNew: boolean }) {
+  // logic of middleware
+  this.wasNew = this.isNew;
+  if (this.isModified('password')) {
+    this.password = await genrateHash(this.password);
+  }
+
+  if (this.isModified('phone')) {
+    this.phone = await encrypt(this.phone);
+  }
+});
+
+userSchema.post('save', async function () {
+  const that = this as HUserDocument & { wasNew: boolean };
+  if (that.wasNew) {
+    await emailEvents.emit('confirmEmail', {
+      to: this.email,
+      username: this.username,
+      otp: generateOTP(),
+    });
+  }
+});
 
 export const UserModel = mongoose.model<IUser>('User', userSchema);
 
