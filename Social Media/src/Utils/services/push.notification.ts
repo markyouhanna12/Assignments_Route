@@ -11,9 +11,9 @@ export interface INotificationPayload {
   title: string;
   body: string;
 
-  postId: Types.ObjectId;
-  commentId: Types.ObjectId;
-  requestId: Types.ObjectId;
+  postId?: Types.ObjectId;
+  commentId?: Types.ObjectId;
+  requestId?: Types.ObjectId;
 }
 
 // function  values to be string
