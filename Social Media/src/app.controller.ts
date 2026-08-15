@@ -11,11 +11,13 @@ import PostRouter from './Modules/Post/post.controller';
 
 import { redisConnection } from './DB/redis.connection';
 import { NotificationService } from './Utils/services/notification.service';
+import { initalizeFirebase } from './Utils/services/notification.config';
 
 const app = express();
 
 connectDB();
 redisConnection();
+initalizeFirebase();
 
 const notificationService = new NotificationService();
 
