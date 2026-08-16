@@ -19,7 +19,7 @@ const notification_config_1 = require("./Utils/services/notification.config");
 const app = (0, express_1.default)();
 (0, connection_1.default)();
 (0, redis_connection_1.redisConnection)();
-(0, notification_config_1.initalizeFirebase)();
+(0, notification_config_1.initializeFirebase)();
 const notificationService = new notification_service_1.NotificationService();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)(cors_utils_1.corsOptions));

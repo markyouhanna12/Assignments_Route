@@ -1,11 +1,14 @@
-import admin from 'firebase-admin';
+import { App, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getMessaging, Messaging } from 'firebase-admin/messaging';
 import { existsSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { FIREBASE_SERVICE_ACCOUNT } from '../../config/config.service';
 import chalk from 'chalk';
-let messaging: admin.messaging.Messaging | null = null;
 
-export const initalizeFirebase = (): void => {
+let firebaseApp: App | undefined;
+let messaging: Messaging | undefined;
+
+export const initializeFirebase = (): void => {
   const keyPath = resolve(FIREBASE_SERVICE_ACCOUNT);
 
   if (!existsSync(keyPath)) {
@@ -15,17 +18,30 @@ export const initalizeFirebase = (): void => {
   try {
     const serviceAccount = JSON.parse(readFileSync(keyPath, 'utf-8'));
 
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
+    if (getApps().length === 0) {
+      firebaseApp = initializeApp({
+        credential: cert(serviceAccount),
+      });
+    } else {
+      firebaseApp = getApps()[0];
+    }
 
-    messaging = admin.messaging();
+    if (!firebaseApp) {
+      throw new Error('[Firebase] Failed to initialize Firebase app');
+    }
+
+    messaging = getMessaging(firebaseApp);
+
     console.log(chalk.bold.green('[Firebase] Initialized successfully.'));
   } catch (error) {
     console.error(chalk.red('[Firebase] Initialization failed:'), error);
   }
 };
 
-export const getMessaging = (): admin.messaging.Messaging | null => messaging;
+export const getFirebaseMessaging = (): Messaging | undefined => {
+  return messaging;
+};
 
-export { admin };
+export const getFirebaseApp = (): App | undefined => {
+  return firebaseApp;
+};

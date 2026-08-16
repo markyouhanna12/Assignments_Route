@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { NotificationModel, NotificationTypeEnum } from '../../DB/Models/notification.model';
 import { UserModel } from '../../DB/Models/user.model';
-import { getMessaging } from './notification.config';
+import { getFirebaseMessaging } from './notification.config';
 
 export interface INotificationPayload {
   userId: Types.ObjectId;
@@ -81,17 +81,22 @@ export const sendNotification = async (payload: INotificationPayload): Promise<v
       return;
     }
 
-    const messaging = getMessaging();
+    const messaging = getFirebaseMessaging();
+
     if (!messaging) {
       console.log('[Push] skipped - Firebase is not initalized');
       return;
     }
 
-    const response = await messaging.sendMulticast({
+    const response = await messaging.sendEachForMulticast({
       tokens,
-      notification: { title: payload.title, body: payload.body },
+      notification: {
+        title: payload.title,
+        body: payload.body,
+      },
       data: buildData(payload),
     });
+
     console.log(`[Push] success:${response.successCount} , failure:${response.failureCount}`);
   } catch (error) {
     console.error('[Push] error', error);

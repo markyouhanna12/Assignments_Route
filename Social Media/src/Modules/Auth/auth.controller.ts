@@ -24,4 +24,6 @@ router.patch(
   authService.logoutWithRedis,
 );
 
+router.post('/test-notification', authService.testNotification);
+
 export default router;

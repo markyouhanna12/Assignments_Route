@@ -17,6 +17,7 @@ import { addFCM, getFCMs, revokeTokenKey, set } from '../../DB/redis.repository'
 import { ACCESS_EXPIRES } from '../../config/config.service';
 import { encrypt } from '../../Utils/security/encryption';
 import { notification } from '../../Utils/services/notification.service';
+import { notificationEvent } from '../../Utils/events/notification.event';
 
 class AuthenticationService {
   private _userRepo = new UserRepository(UserModel);
@@ -163,6 +164,54 @@ class AuthenticationService {
       res,
       statusCode: status,
       message: 'Logout successfully',
+    });
+  };
+
+  testNotification = async (req: Request, res: Response): Promise<Response> => {
+    const { senderId, recipientId, FCM } = req.body;
+
+    const sender = await UserModel.findById(senderId).select('firstName lastName');
+
+    if (!sender) {
+      throw new NotFoundException('Sender user not found');
+    }
+
+    const recipient = await UserModel.findById(recipientId).select(
+      '_id deviceTokens notficationEnabled',
+    );
+
+    if (!recipient) {
+      throw new NotFoundException('Recipient user not found');
+    }
+
+    if (!FCM) {
+      throw new BadRequestException('FCM token is required');
+    }
+
+    await UserModel.updateOne(
+      {
+        _id: recipient._id,
+      },
+      {
+        $addToSet: {
+          deviceTokens: FCM,
+        },
+      },
+    );
+
+    notificationEvent.emit('testNotification', {
+      to: recipient._id,
+      sender: {
+        _id: sender._id,
+        firstName: sender.firstName,
+        lastName: sender.lastName,
+      },
+    });
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Test notification event emitted successfully',
     });
   };
 }
