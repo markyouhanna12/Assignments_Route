@@ -7,7 +7,11 @@ import { PostRepository } from '../../DB/repositories/post.repo';
 import { UserRepository } from '../../DB/repositories/user.repo';
 import { successResponse } from '../../Utils/response/success.response';
 import { getAvailability } from '../Post/post.service';
-import { ForbiddenException, NotFoundException } from '../../Utils/response/error.response';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '../../Utils/response/error.response';
 import { Types, UpdateQuery } from 'mongoose';
 import {
   CreateCommentBodyDTO,
@@ -23,6 +27,7 @@ import {
   UpdateCommentParamsDTO,
 } from './comment.dto';
 import { RoleEnum } from '../../Utils/enums/auth.enum';
+import { notificationEvent } from '../../Utils/events/notification.event';
 
 class CommentService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -75,6 +80,22 @@ class CommentService {
           },
         ],
       })) || [];
+
+    if (!comment) {
+      throw new BadRequestException('Failed to create comment');
+    }
+
+    notificationEvent.emit('postComment', {
+      to: post.createdBy,
+      sender: {
+        _id: req.user._id as Types.ObjectId,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+      },
+      postId: post._id,
+      commentId: comment._id,
+      content: comment.content,
+    });
 
     return successResponse({
       res,
@@ -143,6 +164,22 @@ class CommentService {
           },
         ],
       })) || [];
+
+    if (!reply) {
+      throw new BadRequestException('Failed to create reply');
+    }
+
+    notificationEvent.emit('commentReply', {
+      to: comment.createdBy,
+      sender: {
+        _id: req.user._id as Types.ObjectId,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+      },
+      postId: postObjectId,
+      commentId: commentObjectId,
+      content: reply.content,
+    });
 
     return successResponse({
       res,

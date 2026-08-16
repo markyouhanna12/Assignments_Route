@@ -81,6 +81,10 @@ notificationEvent.on(
     commentId: Types.ObjectId;
     content: string;
   }) => {
+    console.log('🔥 commentReply event received');
+    console.log('Recipient:', data.to.toString());
+    console.log('Sender:', data.sender._id.toString());
+
     await sendNotification({
       userId: data.to,
       senderId: data.sender._id,
