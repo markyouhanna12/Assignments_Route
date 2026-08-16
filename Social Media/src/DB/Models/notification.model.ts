@@ -6,6 +6,7 @@ export enum NotificationTypeEnum {
   POST_LIKE = 'POST_LIKE',
   POST_COMMENT = 'POST_COMMENT',
   COMMENT_REPLY = 'COMMENT_REPLY',
+  LOGIN = 'LOGIN',
 }
 
 export interface INotification {

@@ -92,3 +92,17 @@ notificationEvent.on(
     });
   },
 );
+
+notificationEvent.on('Login', async (data: { to: Types.ObjectId; sender: IActor }) => {
+  console.log('🔥 LOGIN EVENT RECEIVED');
+  console.log('TO:', data.to);
+  console.log('SENDER:', data.sender._id);
+
+  await sendNotification({
+    userId: data.to,
+    senderId: data.sender._id,
+    type: NotificationTypeEnum.LOGIN,
+    title: 'Login Test',
+    body: `${fullName(data.sender)} logged in`,
+  });
+});
