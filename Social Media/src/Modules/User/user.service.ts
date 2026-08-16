@@ -11,6 +11,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '../../Utils/response/error.response';
+import { notificationEvent } from '../../Utils/events/notification.event';
 
 class UserService {
   private _userRepo = new UserRepository(UserModel);
@@ -48,12 +49,14 @@ class UserService {
   };
 
   sendFriendRequest = async (req: Request, res: Response): Promise<Response> => {
-    const { userId } = req.params as unknown as { userId: Types.ObjectId };
+    const { userId } = req.params as { userId: string };
+
+    const recipientId = new Types.ObjectId(userId);
 
     const checkFriendRequestExists = await this._friendRepo.findOne({
       filter: {
-        sendBy: { $in: [req.user?._id, userId] },
-        sendTo: { $in: [req.user?._id, userId] },
+        sendBy: { $in: [req.user?._id, recipientId] },
+        sendTo: { $in: [req.user?._id, recipientId] },
       },
     });
 
@@ -63,7 +66,7 @@ class UserService {
 
     const user = await this._userRepo.findOne({
       filter: {
-        _id: userId,
+        _id: recipientId,
       },
     });
 
@@ -76,7 +79,7 @@ class UserService {
         data: [
           {
             sendBy: req.user?._id as Types.ObjectId,
-            sendTo: userId,
+            sendTo: recipientId,
           },
         ],
       })) || [];
@@ -84,6 +87,16 @@ class UserService {
     if (!friend) {
       throw new BadRequestException('Fail to send friend Request');
     }
+
+    notificationEvent.emit('friendRequest', {
+      to: recipientId,
+      sender: {
+        _id: req.user?._id as Types.ObjectId,
+        firstName: req.user?.firstName as string,
+        lastName: req.user?.lastName as string,
+      },
+      requestId: friend._id,
+    });
 
     return successResponse({
       res,
@@ -94,11 +107,16 @@ class UserService {
   };
 
   acceptFriendRequest = async (req: Request, res: Response): Promise<Response> => {
-    const { requestId } = req.params as unknown as { requestId: Types.ObjectId };
+    const { requestId } = req.params as { requestId: string };
+
+    if (!Types.ObjectId.isValid(requestId)) {
+      throw new BadRequestException('Invalid request ID');
+    }
+    const requestObjectId = new Types.ObjectId(requestId);
 
     const checkFriendRequestExists = await this._friendRepo.findOneAndUpdate({
       filter: {
-        _id: requestId,
+        _id: requestObjectId,
         sendTo: req.user?._id,
         acceptedAt: { $exists: false },
       },
@@ -133,6 +151,15 @@ class UserService {
         },
       }),
     ]);
+
+    notificationEvent.emit('friendAccepted', {
+      to: checkFriendRequestExists.sendBy,
+      sender: {
+        _id: req.user?._id as Types.ObjectId,
+        firstName: req.user?.firstName as string,
+        lastName: req.user?.lastName as string,
+      },
+    });
 
     return successResponse({
       res,
