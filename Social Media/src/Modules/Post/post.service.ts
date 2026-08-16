@@ -5,10 +5,11 @@ import { PostRepository } from '../../DB/repositories/post.repo';
 import { PostModel } from '../../DB/Models/post.model';
 import { any, file } from 'zod';
 import { successResponse } from '../../Utils/response/success.response';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose, { ObjectId, Types } from 'mongoose';
 import { AvailabitlityEnum } from '../../Utils/enums/auth.enum';
 import { UserRepository } from '../../DB/repositories/user.repo';
 import { HUserDocument, UserModel } from '../../DB/Models/user.model';
+import { notificationEvent } from '../../Utils/events/notification.event';
 
 export const getAvailability = (user: HUserDocument) => {
   return [
@@ -62,20 +63,32 @@ class PostService {
     const { postId } = req.params;
     const { react } = req.query;
 
+    const isLike = Number(react) > 0;
+
     const post = await this._postRepo.findOneAndUpdate({
       filter: {
         _id: postId as string,
         $or: getAvailability(req.user),
       },
       update: {
-        ...(Number(react) > 0
-          ? { $addToSet: { likes: req.user._id } }
-          : { $pull: { likes: req.user._id } }),
+        ...(isLike ? { $addToSet: { likes: req.user._id } } : { $pull: { likes: req.user._id } }),
       },
     });
 
     if (!post) {
       throw new NotFoundException('Fail to found matching post');
+    }
+
+    if (isLike) {
+      notificationEvent.emit('postLike', {
+        to: post.createdBy,
+        sender: {
+          _id: req.user._id as Types.ObjectId,
+          firstName: req.user.firstName,
+          lastName: req.user.lastName,
+        },
+        postId: post._id,
+      });
     }
 
     return successResponse({
