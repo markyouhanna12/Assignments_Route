@@ -1,21 +1,16 @@
+// utils/socket/socket.types.ts
+
 import { Socket } from 'socket.io';
 
 export interface ISocketUser {
   userId: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface ISocketData {
   user: ISocketUser;
 }
-
-export type AppSocket = Socket<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  ISocketData
->;
 
 export interface ClientToServerEvents {
   sendMessage: (data: { to: string; content: string }) => void;
@@ -29,7 +24,8 @@ export interface ClientToServerEvents {
 
 export interface ServerToClientEvents {
   onlineFriends: (data: { friends: string[] }) => void;
-  userOnline: (data: { userId: string; firstName?: string }) => void;
+
+  userOnline: (data: { userId: string; firstName: string }) => void;
 
   userOffline: (data: { userId: string }) => void;
 
@@ -39,7 +35,7 @@ export interface ServerToClientEvents {
 
   messagesRead: (data: { by: string; count: number }) => void;
 
-  userTyping: (data: { userId: string; firstName?: string }) => void;
+  userTyping: (data: { userId: string; firstName: string }) => void;
 
   userStopTyping: (data: { userId: string }) => void;
 
@@ -49,3 +45,10 @@ export interface ServerToClientEvents {
 export interface InterServerEvents {
   ping: () => void;
 }
+
+export type AppSocket = Socket<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  ISocketData
+>;
