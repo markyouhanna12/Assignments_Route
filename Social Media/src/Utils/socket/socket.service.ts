@@ -7,18 +7,11 @@ import {
   ClientToServerEvents,
   InterServerEvents,
   ISocketData,
-  ISocketUser,
   ServerToClientEvents,
 } from './socket.types';
 import { TokenService } from '../services/token';
 import { UserModel } from '../../DB/Models/user.model';
-
-interface SocketServiceOptions {
-  corsOrigin: string | string[];
-  authenticate: (token: string) => Promise<ISocketUser>;
-
-  getFriendIds: (userId: string) => Promise<string[]>;
-}
+import { TokenTypeEnum } from '../enums/auth.enum';
 
 export class SocketService {
   private io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, ISocketData>;
@@ -26,9 +19,9 @@ export class SocketService {
   private readonly userSockets = new Map<string, Set<string>>();
   private readonly tokenService = new TokenService();
 
-  constructor(private readonly options: SocketServiceOptions) {}
+  constructor() {}
 
-  public initialize(httpServer: HttpServer): Server {
+  public initialize(httpServer: HttpServer) {
     this.io = new Server<
       ClientToServerEvents,
       ServerToClientEvents,
@@ -36,7 +29,7 @@ export class SocketService {
       ISocketData
     >(httpServer, {
       cors: {
-        origin: this.options.corsOrigin,
+        origin: true,
         credentials: true,
       },
     });
@@ -57,6 +50,7 @@ export class SocketService {
         }
         const result = await this.tokenService.decodedToken({
           authorization,
+          tokenType: TokenTypeEnum.ACCESS,
         });
 
         if (!result?.user) {

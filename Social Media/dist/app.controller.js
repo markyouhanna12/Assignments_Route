@@ -25,9 +25,9 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)(cors_utils_1.corsOptions));
 app.use((0, helmet_1.default)());
 app.use(rateLimitter_middleware_1.customRateLimiter);
-app.use('/api/auth', auth_controller_1.default);
-app.use('/api/user', user_controller_1.default);
-app.use('/api/post', post_controller_1.default);
+app.use('/api/v1/auth', auth_controller_1.default);
+app.use('/api/v1/user', user_controller_1.default);
+app.use('/api/v1/post', post_controller_1.default);
 app.post('/send-notification', async (req, res) => {
     try {
         const { token } = req.body;

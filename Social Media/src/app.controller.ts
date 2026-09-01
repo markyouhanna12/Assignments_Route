@@ -26,9 +26,9 @@ app.use(cors(corsOptions));
 app.use(helmet());
 app.use(customRateLimiter);
 
-app.use('/api/auth', AuthRouter);
-app.use('/api/user', UserRouter);
-app.use('/api/post', PostRouter);
+app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/user', UserRouter);
+app.use('/api/v1/post', PostRouter);
 
 app.post('/send-notification', async (req: Request, res: Response) => {
   try {
