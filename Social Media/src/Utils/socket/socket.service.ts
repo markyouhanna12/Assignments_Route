@@ -10,6 +10,8 @@ import {
   ISocketUser,
   ServerToClientEvents,
 } from './socket.types';
+import { TokenService } from '../services/token';
+import { UserModel } from '../../DB/Models/user.model';
 
 interface SocketServiceOptions {
   corsOrigin: string | string[];
@@ -22,6 +24,7 @@ export class SocketService {
   private io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, ISocketData>;
 
   private readonly userSockets = new Map<string, Set<string>>();
+  private readonly tokenService = new TokenService();
 
   constructor(private readonly options: SocketServiceOptions) {}
 
@@ -38,29 +41,34 @@ export class SocketService {
       },
     });
 
-    this.registerMiddleware();
+    this.registerAuthentication();
     this.registerConnectionHandler();
 
     return this.io;
   }
 
-  private registerMiddleware(): void {
+  private registerAuthentication(): void {
     this.io.use(async (socket, next) => {
       try {
-        const rawToken = socket.handshake.auth?.['token'];
+        const authorization = socket.handshake.auth?.['token'];
 
-        if (!rawToken) {
-          return next(new Error('Authentication token is required'));
+        if (!authorization) {
+          return next(new Error('authorization token is required'));
+        }
+        const result = await this.tokenService.decodedToken({
+          authorization,
+        });
+
+        if (!result?.user) {
+          return next(new Error('invalid or expired access token'));
         }
 
-        const token = this.extractToken(rawToken);
-        const user = await this.options.authenticate(token);
+        socket.data.user = {
+          userId: result.user._id.toString(),
+          firstName: result.user.firstName,
+          lastName: result.user.lastName,
+        };
 
-        if (!user?.userId) {
-          return next(new Error('Invalid authentication token'));
-        }
-
-        socket.data.user = user;
         next();
       } catch (error) {
         next(new Error(error instanceof Error ? error.message : 'Socket authentication failed'));
@@ -77,31 +85,39 @@ export class SocketService {
   private async handleConnection(socket: AppSocket): Promise<void> {
     const { userId } = socket.data.user;
 
-    const wasOnline = this.isUserOnline(userId);
+    const wasAlreadyOnline = this.isUserOnline(userId);
 
     this.addSocket(userId, socket.id);
-    socket.join(SOCKET_ROOMS.user(userId));
+
+    await socket.join(SOCKET_ROOMS.user(userId));
+
     await this.sendOnlineFriends(socket);
 
-    if (!wasOnline) {
+    if (!wasAlreadyOnline) {
       await this.broadcastUserOnline(socket);
     }
+
+    console.log(`Socket connected: ${userId} (${socket.id})`);
 
     socket.on('disconnect', (reason) => {
       void this.handleDisconnect(socket, reason);
     });
   }
 
-  private async handleDisconnect(socket: AppSocket, _reason: string): Promise<void> {
+  private async handleDisconnect(socket: AppSocket, reason: string): Promise<void> {
     const { userId } = socket.data.user;
 
     this.removeSocket(userId, socket.id);
 
     if (this.isUserOnline(userId)) {
+      console.log(`Socket disconnected: ${userId} (${socket.id}) - ${reason}`);
+
       return;
     }
 
     await this.broadcastUserOffline(socket);
+
+    console.log(`User offline: ${userId}`);
   }
 
   private addSocket(userId: string, socketId: string): void {
@@ -149,6 +165,16 @@ export class SocketService {
     this.io.to(SOCKET_ROOMS.user(userId)).emit(event, ...args);
   }
 
+  private async getFriendIds(userId: string): Promise<string[]> {
+    const user = await UserModel.findById(userId).select('friends').lean();
+
+    if (!user?.friends) {
+      return [];
+    }
+
+    return user.friends.map((id) => id.toString());
+  }
+
   public async joinConversation(socketId: string, conversationId: string): Promise<void> {
     const socket = this.io.sockets.sockets.get(socketId);
 
@@ -184,18 +210,10 @@ export class SocketService {
     return this.io;
   }
 
-  private extractToken(value: string): string {
-    if (value.startsWith('Bearer ')) {
-      return value.substring(7);
-    }
-
-    return value;
-  }
-
   private async sendOnlineFriends(socket: AppSocket): Promise<void> {
     const { userId } = socket.data.user;
 
-    const friendIds = await this.options.getFriendIds(userId);
+    const friendIds = await this.getFriendIds(userId);
 
     const onlineFriends = friendIds.filter((friendId) => this.isUserOnline(friendId));
 
@@ -207,7 +225,7 @@ export class SocketService {
   private async broadcastUserOnline(socket: AppSocket): Promise<void> {
     const { userId, firstName } = socket.data.user as any;
 
-    const friendIds = await this.options.getFriendIds(userId);
+    const friendIds = await this.getFriendIds(userId);
 
     for (const friendId of friendIds) {
       if (!this.isUserOnline(friendId)) {
@@ -224,7 +242,7 @@ export class SocketService {
   private async broadcastUserOffline(socket: AppSocket): Promise<void> {
     const { userId } = socket.data.user;
 
-    const friendIds = await this.options.getFriendIds(userId);
+    const friendIds = await this.getFriendIds(userId);
 
     for (const friendId of friendIds) {
       if (!this.isUserOnline(friendId)) {
