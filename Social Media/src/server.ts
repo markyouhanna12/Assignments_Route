@@ -3,8 +3,23 @@ import { createServer } from 'http';
 import { PORT } from './config/config.service';
 import app from './app.controller';
 import { Server, Socket } from 'socket.io';
+import { SocketService } from './Utils/socket/socket.service';
 
 const httpServer = createServer(app);
+
+const socketService = new SocketService({
+  corsOrigin: 'http://localhost:5173',
+  authenticate: async (token) => {
+    throw new Error('Socket authentication is not implemented yet');
+  },
+  getFriendIds: async (userId) => {
+    // We will connect this to your existing User model/repository
+    // in the next step.
+
+    return [];
+  },
+});
+socketService.initialize(httpServer);
 
 const startServer = async () => {
   try {
