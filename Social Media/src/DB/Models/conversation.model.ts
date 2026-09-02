@@ -28,7 +28,6 @@ export const conversationSchema = new Schema<IConversation>(
     lastMessageBy: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
-      required: true,
     },
   },
   {
