@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { ConversationModel } from '../../DB/Models/conversation.model';
 import { MessageModel } from '../../DB/Models/message.model';
 import { UserModel } from '../../DB/Models/user.model';
@@ -112,6 +113,86 @@ export class ChatService {
       message: populatedMessage ?? message,
       receiverId,
       senderId,
+    };
+  }
+
+  public async getChat(
+    userId: Types.ObjectId,
+    friendId: Types.ObjectId,
+    page: number,
+    limit: number,
+  ) {
+    const conversation = await this.conversationRepo.findOne({
+      filter: {
+        participants: {
+          $all: [userId, friendId],
+        },
+        $expr: {
+          $eq: [{ $size: '$participants' }, 2],
+        },
+      },
+    });
+
+    /**
+     * No conversation yet.
+     *
+     * This is completely valid for a new friendship.
+     */
+    if (!conversation) {
+      return {
+        conversation: null,
+        messages: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          pages: 0,
+        },
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [messages, total] = await Promise.all([
+      this.messageRepo.find({
+        filter: {
+          conversationId: conversation._id,
+        },
+
+        options: {
+          sort: {
+            createdAt: 1,
+          },
+
+          skip,
+          limit,
+
+          populate: [
+            {
+              path: 'senderId',
+              select: 'firstName lastName username profilePic',
+            },
+          ],
+        },
+      }),
+
+      this.messageRepo.countDocuments({
+        filter: {
+          conversationId: conversation._id,
+        },
+      }),
+    ]);
+
+    return {
+      conversation,
+      messages,
+
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
     };
   }
 }

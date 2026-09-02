@@ -12,6 +12,7 @@ import PostRouter from './Modules/Post/post.controller';
 import { redisConnection } from './DB/redis.connection';
 import { NotificationService } from './Utils/services/notification.service';
 import { initializeFirebase } from './Utils/services/notification.config';
+import chatRouter from './Modules/Chat/chat.routes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(customRateLimiter);
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/user', UserRouter);
 app.use('/api/v1/post', PostRouter);
+app.use('/api/v1/chat', chatRouter);
 
 app.post('/send-notification', async (req: Request, res: Response) => {
   try {

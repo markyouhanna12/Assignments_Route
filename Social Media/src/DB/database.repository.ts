@@ -191,4 +191,8 @@ export abstract class DatabaseRepository<TDocument> {
     }
     return await doc.exec();
   }
+
+  async countDocuments({ filter }: { filter?: QueryFilter<TDocument> }): Promise<number> {
+    return await this.model.countDocuments(filter || {});
+  }
 }

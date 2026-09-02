@@ -16,8 +16,10 @@ export const getChatSchema = {
   params: z.strictObject({
     userId: generalFields.id,
   }),
+
   query: z.strictObject({
     page: z.coerce.number().int().min(1).default(1),
+
     limit: z.coerce.number().int().min(1).max(100).default(50),
   }),
 };

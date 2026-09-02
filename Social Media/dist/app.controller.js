@@ -16,6 +16,7 @@ const post_controller_1 = __importDefault(require("./Modules/Post/post.controlle
 const redis_connection_1 = require("./DB/redis.connection");
 const notification_service_1 = require("./Utils/services/notification.service");
 const notification_config_1 = require("./Utils/services/notification.config");
+const chat_routes_1 = __importDefault(require("./Modules/Chat/chat.routes"));
 const app = (0, express_1.default)();
 (0, connection_1.default)();
 (0, redis_connection_1.redisConnection)();
@@ -28,6 +29,7 @@ app.use(rateLimitter_middleware_1.customRateLimiter);
 app.use('/api/v1/auth', auth_controller_1.default);
 app.use('/api/v1/user', user_controller_1.default);
 app.use('/api/v1/post', post_controller_1.default);
+app.use('/api/v1/chat', chat_routes_1.default);
 app.post('/send-notification', async (req, res) => {
     try {
         const { token } = req.body;
