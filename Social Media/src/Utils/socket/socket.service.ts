@@ -12,12 +12,14 @@ import {
 import { TokenService } from '../services/token';
 import { UserModel } from '../../DB/Models/user.model';
 import { TokenTypeEnum } from '../enums/auth.enum';
+import { ChatSocket } from '../../Modules/Chat/chat.socket';
 
 export class SocketService {
   private io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, ISocketData>;
 
   private readonly userSockets = new Map<string, Set<string>>();
   private readonly tokenService = new TokenService();
+  private readonly chatSocket = new ChatSocket(this);
 
   constructor() {}
 
@@ -84,6 +86,8 @@ export class SocketService {
     this.addSocket(userId, socket.id);
 
     await socket.join(SOCKET_ROOMS.user(userId));
+
+    this.chatSocket.register(socket);
 
     await this.sendOnlineFriends(socket);
 

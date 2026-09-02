@@ -20,7 +20,10 @@ class UserService {
   constructor() {}
 
   getProfile = async (req: Request, res: Response): Promise<Response> => {
-    const userProfile = req.user;
+    const userProfile = await req.user.populate({
+      path: 'friends',
+      select: 'firstName lastName username profilePic',
+    });
 
     userProfile.phone = await decrypt(userProfile.phone);
 
