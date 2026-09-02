@@ -8,7 +8,7 @@ export interface IMessage {
   recieverId: Types.ObjectId;
 
   content: string;
-  readAt: Date;
+  readAt?: Date;
 
   createdAt?: Date;
   updatedAt?: Date;
