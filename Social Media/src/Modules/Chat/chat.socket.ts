@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { SocketService } from '../../Utils/socket/socket.service';
 import { AppSocket } from '../../Utils/socket/socket.types';
 import { ChatService } from './chat.service';
-import { sendMessageSchema } from './chat.validation';
+import { markAsReadSchema, sendMessageSchema } from './chat.validation';
 import { ZodError } from 'zod';
 
 export class ChatSocket {
@@ -12,6 +12,7 @@ export class ChatSocket {
 
   public register(socket: AppSocket): void {
     this.registerSendMessage(socket);
+    this.registerMarkAsRead(socket);
   }
 
   private registerSendMessage(socket: AppSocket): void {
@@ -67,5 +68,41 @@ export class ChatSocket {
 
       delivered: true,
     };
+  }
+
+  private registerMarkAsRead(socket: AppSocket): void {
+    socket.on('markAsRead', async (payload) => {
+      try {
+        const { from } = markAsReadSchema.body.parse(payload);
+
+        const readerId = new Types.ObjectId(socket.data.user.userId);
+
+        const senderId = new Types.ObjectId(from);
+
+        const result = await this.chatService.markAsRead(readerId, senderId);
+
+        if (result.count === 0) {
+          return;
+        }
+
+        this.socketService.emitToUser(from, 'messagesRead', {
+          by: readerId.toString(),
+
+          count: result.count,
+        });
+      } catch (error) {
+        const message =
+          error instanceof ZodError
+            ? error.issues.map((issue) => issue.message).join(', ')
+            : error instanceof Error
+              ? error.message
+              : 'Failed to mark messages as read';
+
+        socket.emit('socketError', {
+          event: 'markAsRead',
+          error: message,
+        });
+      }
+    });
   }
 }

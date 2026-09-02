@@ -195,4 +195,16 @@ export abstract class DatabaseRepository<TDocument> {
   async countDocuments({ filter }: { filter?: QueryFilter<TDocument> }): Promise<number> {
     return await this.model.countDocuments(filter || {});
   }
+
+  async updateMany({
+    filter,
+    update,
+    options,
+  }: {
+    filter: QueryFilter<TDocument>;
+    update: UpdateQuery<TDocument>;
+    options?: MongooseUpdateQueryOptions<TDocument> | null;
+  }) {
+    return await this.model.updateMany(filter, { ...update, $inc: { __v: 1 } }, options);
+  }
 }

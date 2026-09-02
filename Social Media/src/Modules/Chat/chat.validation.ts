@@ -23,3 +23,9 @@ export const getChatSchema = {
     limit: z.coerce.number().int().min(1).max(100).default(50),
   }),
 };
+
+export const markAsReadSchema = {
+  body: z.strictObject({
+    from: generalFields.id,
+  }),
+};

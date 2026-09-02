@@ -133,11 +133,6 @@ export class ChatService {
       },
     });
 
-    /**
-     * No conversation yet.
-     *
-     * This is completely valid for a new friendship.
-     */
     if (!conversation) {
       return {
         conversation: null,
@@ -193,6 +188,53 @@ export class ChatService {
         total,
         pages: Math.ceil(total / limit),
       },
+    };
+  }
+
+  public async markAsRead(userId: Types.ObjectId, senderId: Types.ObjectId) {
+    if (userId.equals(senderId)) {
+      throw new BadRequestException('You cannot mark your own messages as read');
+    }
+
+    const conversation = await this.conversationRepo.findOne({
+      filter: {
+        participants: {
+          $all: [userId, senderId],
+        },
+        $expr: {
+          $eq: [
+            {
+              $size: '$participants',
+            },
+            2,
+          ],
+        },
+      },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    const result = await this.messageRepo.updateMany({
+      filter: {
+        conversationId: conversation._id,
+        senderId: senderId,
+        recieverId: userId,
+        readAt: null,
+      },
+      update: {
+        $set: {
+          readAt: new Date(),
+        },
+      },
+    });
+
+    return {
+      conversation,
+      count: result.modifiedCount,
+      by: userId,
+      senderId,
     };
   }
 }
