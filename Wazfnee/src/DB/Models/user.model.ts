@@ -2,7 +2,7 @@ import { Provider } from '../../Utils/enums/provider.enum';
 import { Gender } from '../../Utils/enums/gender.enum';
 import { Role } from '../../Utils/enums/role.enum';
 import { OTPType } from '../../Utils/enums/otp-type.enum';
-import { model, Schema, Types } from 'mongoose';
+import { HydratedDocument, model, Schema, Types } from 'mongoose';
 import { genrateHash } from '../../Utils/security/hash.security';
 import { encrypt } from '../../Utils/security/encryption.security';
 
@@ -37,7 +37,7 @@ export interface IUser {
   otp?: IOTP[];
 }
 
-export interface IUserDocument extends IUser, Document {}
+export type IUserDocument = HydratedDocument<IUser>;
 
 const profilePictureSchema = new Schema<IProfilePicture>(
   {
@@ -78,7 +78,7 @@ const otpSchema = new Schema<IOTP>(
   },
 );
 
-const userSchema = new Schema<IUserDocument>(
+const userSchema = new Schema<IUser>(
   {
     firstName: {
       type: String,
@@ -204,4 +204,4 @@ userSchema.pre('save', async function () {
   }
 });
 
-export const UserModel = model<IUserDocument>('User', userSchema);
+export const UserModel = model<IUser>('User', userSchema);

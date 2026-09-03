@@ -9,7 +9,7 @@ import {
   TOKEN_REFRESH_USER_SECRET_KEY,
 } from '../../Config/config.service';
 import { UserRepository } from '../../DB/repositories/user.repository';
-import { UserModel } from '../../DB/Models/user.model';
+import { IUserDocument, UserModel } from '../../DB/Models/user.model';
 import { Signature, TokenType } from '../enums/auth.enum';
 import { Role } from '../enums/role.enum';
 import {
@@ -96,7 +96,7 @@ export class TokenService {
     authorization: string;
     tokenType?: TokenType;
   }): Promise<{
-    user: Awaited<ReturnType<typeof this.userRepository.findById>>;
+    user: IUserDocument;
     decoded: CustomJwtPayload;
   }> => {
     if (!authorization) {
