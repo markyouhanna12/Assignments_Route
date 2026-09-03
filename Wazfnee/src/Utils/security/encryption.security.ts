@@ -28,7 +28,7 @@ export const decrypt = async (text: string): Promise<string> => {
 
   const iv: Buffer = Buffer.from(ivHex, 'hex');
 
-  const decipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
 
   let decryptedData: string = decipher.update(encryptedData, 'hex', 'utf8');
 
