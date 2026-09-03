@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { PORT } from './config/config.service';
+import { PORT } from './Config/config.service';
 import chalk from 'chalk';
 import app from './app.controller';
 
