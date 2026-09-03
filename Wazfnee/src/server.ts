@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { createServer } from 'http';
 import { PORT } from './Config/config.service';
 import chalk from 'chalk';
