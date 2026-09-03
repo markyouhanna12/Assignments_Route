@@ -19,3 +19,6 @@ export const PORT = requiredEnv('PORT');
 export const dbUrl = requiredEnv('DB_URL');
 
 export const WHITE_LIST = requiredEnv('WHITE_LIST');
+
+export const SALT = requiredEnv('SALT');
+export const ENCRYPTION_SECRET_KEY = requiredEnv('ENCRYPTION_SECRET_KEY');
