@@ -1,0 +1,33 @@
+import { Transform, Type } from 'class-transformer';
+import { generalFields } from '../../Utils/validation/general-fields';
+import { IsMatch } from '../../Utils/validation/decorators/match.decorator';
+import { Gender } from '../../Utils/enums/gender.enum';
+
+export class SignUpDTO {
+  @generalFields.firstName()
+  firstName!: string;
+
+  @generalFields.lastName()
+  lastName!: string;
+
+  @generalFields.email()
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  email!: string;
+
+  @generalFields.password()
+  password!: string;
+
+  @generalFields.confirmPassword()
+  @IsMatch('password')
+  confirmPassword!: string;
+
+  @generalFields.gender()
+  gender!: Gender;
+
+  @Type(() => Date)
+  @generalFields.dob()
+  dob!: Date;
+
+  @generalFields.phone()
+  mobileNumber!: string;
+}

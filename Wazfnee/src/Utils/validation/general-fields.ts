@@ -71,7 +71,11 @@ export const generalFields = {
 
   lastName: () => composeDecorators(IsString(), MinLength(2), Length(2, 50)),
 
-  email: () => composeDecorators(IsString(), IsEmail()),
+  email: () =>
+    composeDecorators(
+      IsString({ message: 'Email is required' }),
+      IsEmail({}, { message: 'Invalid email address' }),
+    ),
 
   password: () => composeDecorators(IsString(), MinLength(8)),
 
