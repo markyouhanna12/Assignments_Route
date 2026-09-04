@@ -2,53 +2,109 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Wazfnee - Google Signup</title>
+    <title>Wazfnee Authentication</title>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+
+      section {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+
+      pre {
+        background: #f5f5f5;
+        padding: 15px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+      }
+    </style>
   </head>
 
   <body>
     <h1>Wazfnee</h1>
 
-    <h2>Sign Up with Google</h2>
+    <!-- Google Signup -->
+    <section>
+      <h2>Google Sign Up</h2>
 
-    <div id="googleButton"></div>
+      <div id="googleSignupButton"></div>
 
-    <br />
+      <label for="gender"> Gender </label>
 
-    <label for="gender">Gender:</label>
+      <select id="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
 
-    <select id="gender">
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select>
+      <label for="dob"> Date of Birth </label>
 
-    <br />
-    <br />
+      <input type="date" id="dob" />
 
-    <label for="dob">Date of Birth:</label>
+      <label for="mobileNumber"> Mobile Number </label>
 
-    <input type="date" id="dob" />
+      <input type="text" id="mobileNumber" placeholder="01112345678" />
+    </section>
 
-    <br />
-    <br />
+    <!-- Google Signin -->
+    <section>
+      <h2>Google Sign In</h2>
 
-    <label for="mobileNumber">Mobile Number:</label>
+      <div id="googleSigninButton"></div>
+    </section>
 
-    <input type="text" id="mobileNumber" placeholder="01012345678" />
+    <!-- Result -->
+    <section>
+      <h2>Response</h2>
 
-    <br />
-    <br />
-
-    <pre id="result"></pre>
+      <pre id="result">
+Waiting for authentication...
+    </pre
+      >
+    </section>
 
     <script>
       const GOOGLE_CLIENT_ID =
         '916935334688-uu6ie8o54r90kh5798dmne0aghrk1oju.apps.googleusercontent.com';
 
-      const API_URL = 'http://localhost:3000/api/v1/auth/google/signup';
+      const API_BASE_URL = 'http://localhost:3000/api/v1/auth';
+
+      /*
+    |--------------------------------------------------------------------------
+    | Google Initialization
+    |--------------------------------------------------------------------------
+    */
 
       window.onload = () => {
         google.accounts.id.initialize({
@@ -57,14 +113,79 @@
           callback: handleGoogleCredential,
         });
 
-        google.accounts.id.renderButton(document.getElementById('googleButton'), {
+        /*
+      |--------------------------------------------------------------------------
+      | Google Sign Up Button
+      |--------------------------------------------------------------------------
+      */
+
+        google.accounts.id.renderButton(document.getElementById('googleSignupButton'), {
           theme: 'outline',
           size: 'large',
-          text: 'continue_with',
+          text: 'signup_with',
+        });
+
+        /*
+      |--------------------------------------------------------------------------
+      | Google Sign In Button
+      |--------------------------------------------------------------------------
+      */
+
+        google.accounts.id.renderButton(document.getElementById('googleSigninButton'), {
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
         });
       };
 
+      /*
+    |--------------------------------------------------------------------------
+    | Google Callback
+    |--------------------------------------------------------------------------
+    */
+
       async function handleGoogleCredential(response) {
+        console.log('Google credential received');
+
+        /*
+      We need to know which operation
+      triggered the Google button.
+      */
+
+        const clickedElement = document.activeElement;
+
+        /*
+      Since both buttons use the same
+      Google callback, we determine the
+      action based on which section the
+      credential originated from.
+
+      For our simple test page we will
+      ask the user through a prompt.
+      */
+
+        const action = window.confirm(
+          'Click OK for Google Sign Up.\nClick Cancel for Google Sign In.',
+        )
+          ? 'signup'
+          : 'signin';
+
+        if (action === 'signup') {
+          await googleSignup(response.credential);
+
+          return;
+        }
+
+        await googleSignin(response.credential);
+      }
+
+      /*
+    |--------------------------------------------------------------------------
+    | Google Signup
+    |--------------------------------------------------------------------------
+    */
+
+      async function googleSignup(credential) {
         const resultElement = document.getElementById('result');
 
         const gender = document.getElementById('gender').value;
@@ -74,15 +195,15 @@
         const mobileNumber = document.getElementById('mobileNumber').value;
 
         if (!dob || !mobileNumber) {
-          resultElement.textContent = 'Please enter date of birth and mobile number first.';
+          resultElement.textContent = 'Please enter DOB and mobile number.';
 
           return;
         }
 
         try {
-          resultElement.textContent = 'Creating your Wazfnee account...';
+          resultElement.textContent = 'Creating Google account...';
 
-          const apiResponse = await fetch(API_URL, {
+          const response = await fetch(`${API_BASE_URL}/google/signup`, {
             method: 'POST',
 
             headers: {
@@ -90,22 +211,70 @@
             },
 
             body: JSON.stringify({
-              credential: response.credential,
+              credential,
               gender,
               dob,
               mobileNumber,
             }),
           });
 
-          const data = await apiResponse.json();
+          const data = await response.json();
 
-          console.log('Backend response:', data);
+          console.log('Google Signup:', data);
 
           resultElement.textContent = JSON.stringify(data, null, 2);
+
+          if (data.success && data.data) {
+            localStorage.setItem('accessToken', data.data.accessToken);
+
+            localStorage.setItem('refreshToken', data.data.refreshToken);
+          }
         } catch (error) {
           console.error(error);
 
-          resultElement.textContent = 'Failed to connect to Wazfnee backend.';
+          resultElement.textContent = 'Failed to connect to backend.';
+        }
+      }
+
+      /*
+    |--------------------------------------------------------------------------
+    | Google Signin
+    |--------------------------------------------------------------------------
+    */
+
+      async function googleSignin(credential) {
+        const resultElement = document.getElementById('result');
+
+        try {
+          resultElement.textContent = 'Signing in...';
+
+          const response = await fetch(`${API_BASE_URL}/google/signin`, {
+            method: 'POST',
+
+            headers: {
+              'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify({
+              credential,
+            }),
+          });
+
+          const data = await response.json();
+
+          console.log('Google Signin:', data);
+
+          resultElement.textContent = JSON.stringify(data, null, 2);
+
+          if (data.success && data.data) {
+            localStorage.setItem('accessToken', data.data.accessToken);
+
+            localStorage.setItem('refreshToken', data.data.refreshToken);
+          }
+        } catch (error) {
+          console.error(error);
+
+          resultElement.textContent = 'Failed to connect to backend.';
         }
       }
     </script>
