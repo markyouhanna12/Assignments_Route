@@ -21,4 +21,10 @@ router.post(
   authController.googleSignup,
 );
 
+router.post(
+  '/google/signin',
+  validation(authValidation.googleSigninSchema),
+  authController.googleSignin,
+);
+
 export default router;

@@ -5,11 +5,21 @@ import { Provider } from '../../Utils/enums/provider.enum';
 import { Role } from '../../Utils/enums/role.enum';
 import { emailEvents } from '../../Utils/events/email.event';
 import { generateOTP } from '../../Utils/generateOTP';
-import { ConflictException, UnauthorizedException } from '../../Utils/response/error.response';
+import {
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from '../../Utils/response/error.response';
 import { genrateHash, compareHash } from '../../Utils/security/hash.security';
 import { googleService } from '../../Utils/services/google.service';
 import { TokenService } from '../../Utils/services/token.service';
-import { ConfirmEmailDTO, GoogleSignUpDTO, SignInDTO, SignUpDTO } from './auth.DTO';
+import {
+  ConfirmEmailDTO,
+  GoogleSignInDTO,
+  GoogleSignUpDTO,
+  SignInDTO,
+  SignUpDTO,
+} from './auth.DTO';
 
 export class AuthService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -222,6 +232,41 @@ export class AuthService {
       throw new ConflictException('Failed to create Google account');
     }
 
+    const tokenService = new TokenService();
+
+    const { accessToken, refreshToken } = await tokenService.getNewLoginCredentials({
+      _id: user._id.toString(),
+      role: user.role,
+    });
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
+  };
+
+  googleSignin = async (data: GoogleSignInDTO) => {
+    const googleUser = await googleService.verifyToken(data.credential);
+
+    const user = await this._userRepo.findOne({
+      filter: {
+        provider: Provider.GOOGLE,
+        providerId: googleUser.sub,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Google account is not registered');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been deleted');
+    }
+
+    if (user.bannedAt) {
+      throw new UnauthorizedException('Account has been banned');
+    }
     const tokenService = new TokenService();
 
     const { accessToken, refreshToken } = await tokenService.getNewLoginCredentials({

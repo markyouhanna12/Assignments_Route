@@ -65,3 +65,8 @@ export class GoogleSignUpDTO {
   @generalFields.phone()
   mobileNumber!: string;
 }
+
+export class GoogleSignInDTO {
+  @IsString()
+  credential!: string;
+}
