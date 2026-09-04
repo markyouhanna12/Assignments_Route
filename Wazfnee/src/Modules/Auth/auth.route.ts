@@ -13,4 +13,6 @@ router.post(
   authController.confirmEmail,
 );
 
+router.post('/signin', validation(authValidation.signinSchema), authController.signin);
+
 export default router;

@@ -5,9 +5,10 @@ import { Provider } from '../../Utils/enums/provider.enum';
 import { Role } from '../../Utils/enums/role.enum';
 import { emailEvents } from '../../Utils/events/email.event';
 import { generateOTP } from '../../Utils/generateOTP';
-import { ConflictException } from '../../Utils/response/error.response';
+import { ConflictException, UnauthorizedException } from '../../Utils/response/error.response';
 import { genrateHash, compareHash } from '../../Utils/security/hash.security';
-import { ConfirmEmailDTO, SignUpDTO } from './auth.DTO';
+import { TokenService } from '../../Utils/services/token.service';
+import { ConfirmEmailDTO, SignInDTO, SignUpDTO } from './auth.DTO';
 
 export class AuthService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -122,6 +123,53 @@ export class AuthService {
     });
 
     return updatedUser;
+  };
+
+  signin = async (data: SignInDTO) => {
+    const { email, password } = data;
+
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+    });
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (user.provider !== Provider.SYSTEM) {
+      throw new UnauthorizedException('This account must sign in using its provider');
+    }
+
+    if (!user.isConfirmed) {
+      throw new UnauthorizedException('Please confirm your email first');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been deleted');
+    }
+
+    if (user.bannedAt) {
+      throw new UnauthorizedException('Account has been banned');
+    }
+
+    const isPasswordValid = await compareHash(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+    const tokenService = new TokenService();
+
+    const { accessToken, refreshToken } = await tokenService.getNewLoginCredentials({
+      _id: user._id.toString(),
+      role: user.role,
+    });
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
   };
 }
 

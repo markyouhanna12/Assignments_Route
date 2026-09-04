@@ -40,3 +40,12 @@ export class ConfirmEmailDTO {
   @generalFields.otp()
   otp!: string;
 }
+
+export class SignInDTO {
+  @generalFields.email()
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  email!: string;
+
+  @generalFields.password()
+  password!: string;
+}

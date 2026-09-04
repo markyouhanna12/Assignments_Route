@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ConfirmEmailDTO, SignUpDTO } from './auth.DTO';
+import { ConfirmEmailDTO, SignInDTO, SignUpDTO } from './auth.DTO';
 import { authService } from './auth.service';
 import { successResponse } from '../../Utils/response/success.response';
 
@@ -37,6 +37,30 @@ export class AuthController {
           email: user?.email,
           isConfirmed: user?.isConfirmed,
         },
+      },
+    });
+  };
+
+  signin = async (req: Request, res: Response): Promise<Response> => {
+    const data = req.body as SignInDTO;
+
+    const { user, accessToken, refreshToken } = await authService.signin(data);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Signed in successfully',
+      data: {
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          isConfirmed: user.isConfirmed,
+        },
+        accessToken,
+        refreshToken,
       },
     });
   };
