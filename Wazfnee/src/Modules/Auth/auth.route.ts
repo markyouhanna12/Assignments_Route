@@ -15,4 +15,10 @@ router.post(
 
 router.post('/signin', validation(authValidation.signinSchema), authController.signin);
 
+router.post(
+  '/google/signup',
+  validation(authValidation.googleSignupSchema),
+  authController.googleSignup,
+);
+
 export default router;

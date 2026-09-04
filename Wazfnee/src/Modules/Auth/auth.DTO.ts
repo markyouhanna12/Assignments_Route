@@ -2,6 +2,7 @@ import { Transform, Type } from 'class-transformer';
 import { generalFields } from '../../Utils/validation/general-fields';
 import { IsMatch } from '../../Utils/validation/decorators/match.decorator';
 import { Gender } from '../../Utils/enums/gender.enum';
+import { IsString } from 'class-validator';
 
 export class SignUpDTO {
   @generalFields.firstName()
@@ -48,4 +49,19 @@ export class SignInDTO {
 
   @generalFields.password()
   password!: string;
+}
+
+export class GoogleSignUpDTO {
+  @IsString()
+  credential!: string;
+
+  @generalFields.gender()
+  gender!: Gender;
+
+  @Type(() => Date)
+  @generalFields.dob()
+  dob!: Date;
+
+  @generalFields.phone()
+  mobileNumber!: string;
 }

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Wazfnee - Google Signup</title>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+
+  <body>
+    <h1>Wazfnee</h1>
+
+    <h2>Sign Up with Google</h2>
+
+    <div id="googleButton"></div>
+
+    <br />
+
+    <label for="gender">Gender:</label>
+
+    <select id="gender">
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <br />
+    <br />
+
+    <label for="dob">Date of Birth:</label>
+
+    <input type="date" id="dob" />
+
+    <br />
+    <br />
+
+    <label for="mobileNumber">Mobile Number:</label>
+
+    <input type="text" id="mobileNumber" placeholder="01012345678" />
+
+    <br />
+    <br />
+
+    <pre id="result"></pre>
+
+    <script>
+      const GOOGLE_CLIENT_ID =
+        '469341865821-ov1en4365r32hsflpnbo0kvfnag54idv.apps.googleusercontent.com';
+
+      const API_URL = 'http://localhost:3000/api/v1/auth/google/signup';
+
+      window.onload = () => {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+
+          callback: handleGoogleCredential,
+        });
+
+        google.accounts.id.renderButton(document.getElementById('googleButton'), {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+        });
+      };
+
+      async function handleGoogleCredential(response) {
+        const resultElement = document.getElementById('result');
+
+        const gender = document.getElementById('gender').value;
+
+        const dob = document.getElementById('dob').value;
+
+        const mobileNumber = document.getElementById('mobileNumber').value;
+
+        if (!dob || !mobileNumber) {
+          resultElement.textContent = 'Please enter date of birth and mobile number first.';
+
+          return;
+        }
+
+        try {
+          resultElement.textContent = 'Creating your Wazfnee account...';
+
+          const apiResponse = await fetch(API_URL, {
+            method: 'POST',
+
+            headers: {
+              'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify({
+              credential: response.credential,
+              gender,
+              dob,
+              mobileNumber,
+            }),
+          });
+
+          const data = await apiResponse.json();
+
+          console.log('Backend response:', data);
+
+          resultElement.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          console.error(error);
+
+          resultElement.textContent = 'Failed to connect to Wazfnee backend.';
+        }
+      }
+    </script>
+  </body>
+</html>

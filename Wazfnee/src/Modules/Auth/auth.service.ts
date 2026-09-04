@@ -7,8 +7,9 @@ import { emailEvents } from '../../Utils/events/email.event';
 import { generateOTP } from '../../Utils/generateOTP';
 import { ConflictException, UnauthorizedException } from '../../Utils/response/error.response';
 import { genrateHash, compareHash } from '../../Utils/security/hash.security';
+import { googleService } from '../../Utils/services/google.service';
 import { TokenService } from '../../Utils/services/token.service';
-import { ConfirmEmailDTO, SignInDTO, SignUpDTO } from './auth.DTO';
+import { ConfirmEmailDTO, GoogleSignUpDTO, SignInDTO, SignUpDTO } from './auth.DTO';
 
 export class AuthService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -158,6 +159,69 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
     }
+    const tokenService = new TokenService();
+
+    const { accessToken, refreshToken } = await tokenService.getNewLoginCredentials({
+      _id: user._id.toString(),
+      role: user.role,
+    });
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
+  };
+
+  googleSignup = async (data: GoogleSignUpDTO) => {
+    const googleUser = await googleService.verifyToken(data.credential);
+
+    const existingByProviderId = await this._userRepo.findOne({
+      filter: {
+        provider: Provider.GOOGLE,
+        providerId: googleUser.sub,
+      },
+    });
+
+    if (existingByProviderId) {
+      throw new ConflictException('Google account is already registered');
+    }
+
+    const existingByEmail = await this._userRepo.findOne({
+      filter: {
+        email: googleUser.email,
+      },
+    });
+    if (existingByEmail) {
+      throw new ConflictException('Email is already registered');
+    }
+
+    const users = await this._userRepo.create({
+      data: [
+        {
+          firstName: googleUser.given_name || 'Google',
+          lastName: googleUser.family_name || 'User',
+          email: googleUser.email,
+          provider: Provider.GOOGLE,
+          providerId: googleUser.sub,
+          gender: data.gender,
+          dob: data.dob,
+          mobileNumber: data.mobileNumber,
+          role: Role.USER,
+          isConfirmed: true,
+        },
+      ],
+      options: {
+        validateBeforeSave: true,
+      },
+    });
+
+    const user = users?.[0];
+
+    if (!user) {
+      throw new ConflictException('Failed to create Google account');
+    }
+
     const tokenService = new TokenService();
 
     const { accessToken, refreshToken } = await tokenService.getNewLoginCredentials({

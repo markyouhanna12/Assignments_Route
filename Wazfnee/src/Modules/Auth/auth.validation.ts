@@ -1,4 +1,4 @@
-import { ConfirmEmailDTO, SignInDTO, SignUpDTO } from './auth.DTO';
+import { ConfirmEmailDTO, GoogleSignUpDTO, SignInDTO, SignUpDTO } from './auth.DTO';
 
 export const authValidation = {
   signupSchema: {
@@ -9,5 +9,8 @@ export const authValidation = {
   },
   signinSchema: {
     body: SignInDTO,
+  },
+  googleSignupSchema: {
+    body: GoogleSignUpDTO,
   },
 };
