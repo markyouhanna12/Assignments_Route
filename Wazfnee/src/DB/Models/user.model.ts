@@ -35,6 +35,8 @@ export interface IUser {
   profilePic?: IProfilePicture;
   coverPic?: IProfilePicture;
   otp?: IOTP[];
+
+  providerId?: string;
 }
 
 export type IUserDocument = HydratedDocument<IUser>;
@@ -179,6 +181,10 @@ const userSchema = new Schema<IUser>(
       type: [otpSchema],
       default: [],
     },
+    providerId: {
+      type: String,
+      sparse: true,
+    },
   },
   {
     timestamps: true,
@@ -194,6 +200,8 @@ const userSchema = new Schema<IUser>(
 userSchema.virtual('username').get(function () {
   return `${this.firstName} ${this.lastName}`.trim();
 });
+
+userSchema.index({ provider: 1, providerId: 1 }, { unique: true, sparse: true });
 
 userSchema.pre('save', async function () {
   if (this.isModified('password') && this.password) {

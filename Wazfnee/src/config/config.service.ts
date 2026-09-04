@@ -36,3 +36,5 @@ export const REFRESH_EXPIRES = requiredEnv('REFRESH_EXPIRES');
 
 export const USER_EMAIL = requiredEnv('USER_EMAIL');
 export const USER_PASSWORD = requiredEnv('USER_PASSWORD');
+
+export const GOOGLE_CLIENT_ID = requiredEnv('GOOGLE_CLIENT_ID');
