@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { SignUpDTO } from './auth.DTO';
+import { ConfirmEmailDTO, SignUpDTO } from './auth.DTO';
 import { authService } from './auth.service';
 import { successResponse } from '../../Utils/response/success.response';
 
@@ -19,6 +19,24 @@ export class AuthController {
         lastName: user.lastName,
         email: user.email,
         isConfirmed: user.isConfirmed,
+      },
+    });
+  };
+  confirmEmail = async (req: Request, res: Response): Promise<Response> => {
+    const data = req.body as ConfirmEmailDTO;
+
+    const user = await authService.confirmEmail(data);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Email confirmed successfully',
+      data: {
+        user: {
+          _id: user?._id,
+          email: user?.email,
+          isConfirmed: user?.isConfirmed,
+        },
       },
     });
   };

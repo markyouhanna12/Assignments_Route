@@ -31,3 +31,12 @@ export class SignUpDTO {
   @generalFields.phone()
   mobileNumber!: string;
 }
+
+export class ConfirmEmailDTO {
+  @generalFields.email()
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  email!: string;
+
+  @generalFields.otp()
+  otp!: string;
+}

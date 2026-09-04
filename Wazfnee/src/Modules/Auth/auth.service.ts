@@ -6,8 +6,8 @@ import { Role } from '../../Utils/enums/role.enum';
 import { emailEvents } from '../../Utils/events/email.event';
 import { generateOTP } from '../../Utils/generateOTP';
 import { ConflictException } from '../../Utils/response/error.response';
-import { genrateHash } from '../../Utils/security/hash.security';
-import { SignUpDTO } from './auth.DTO';
+import { genrateHash, compareHash } from '../../Utils/security/hash.security';
+import { ConfirmEmailDTO, SignUpDTO } from './auth.DTO';
 
 export class AuthService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -71,6 +71,57 @@ export class AuthService {
     });
 
     return user;
+  };
+
+  confirmEmail = async (data: ConfirmEmailDTO) => {
+    const { email, otp } = data;
+
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+      select: 'email isConfirmed otp',
+    });
+    if (!user) {
+      throw new ConflictException('User does not exist');
+    }
+
+    if (user.isConfirmed) {
+      throw new ConflictException('Email is already confirmed');
+    }
+
+    const confirmEmailOTP = user.otp?.find((item) => item.type === OTPType.CONFIRM_EMAIL);
+
+    if (!confirmEmailOTP) {
+      throw new ConflictException('Confirmation OTP not found');
+    }
+
+    if (confirmEmailOTP.expiresIn.getTime() < Date.now()) {
+      throw new ConflictException('Confirmation OTP has expired');
+    }
+
+    const isOTPValid = await compareHash(otp, confirmEmailOTP.code);
+
+    if (!isOTPValid) {
+      throw new ConflictException('Invalid confirmation OTP');
+    }
+
+    const updatedUser = await this._userRepo.findOneAndUpdate({
+      filter: {
+        _id: user._id,
+      },
+      update: {
+        isConfirmed: true,
+        $pull: {
+          otp: {
+            type: OTPType.CONFIRM_EMAIL,
+          },
+        },
+      },
+      select: 'email isConfirmed',
+    });
+
+    return updatedUser;
   };
 }
 

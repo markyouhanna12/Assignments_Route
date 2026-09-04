@@ -7,4 +7,10 @@ const router = Router();
 
 router.post('/signup', validation(authValidation.signupSchema), authController.signup);
 
+router.post(
+  '/confirm-email',
+  validation(authValidation.confirmEmailSchema),
+  authController.confirmEmail,
+);
+
 export default router;
