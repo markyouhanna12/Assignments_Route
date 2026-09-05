@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 
 import { Gender } from '../../Utils/enums/gender.enum';
 import { generalFields } from '../../Utils/validation/general-fields';
+import { IsMatch } from '../../Utils/validation/decorators/match.decorator';
 
 export class UpdateAccountDTO {
   @generalFields.optional()
@@ -29,4 +30,16 @@ export class UpdateAccountDTO {
 export class GetUserProfileDTO {
   @generalFields.id()
   userId!: string;
+}
+
+export class UpdatePasswordDTO {
+  @generalFields.password()
+  currentPassword!: string;
+
+  @generalFields.password()
+  newPassword!: string;
+
+  @generalFields.confirmPassword()
+  @IsMatch('newPassword')
+  confirmPassword!: string;
 }

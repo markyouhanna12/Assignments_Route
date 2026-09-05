@@ -1,4 +1,4 @@
-import { GetUserProfileDTO, UpdateAccountDTO } from './user.dto';
+import { GetUserProfileDTO, UpdateAccountDTO, UpdatePasswordDTO } from './user.dto';
 
 export const userValidation = {
   updateAccountSchema: {
@@ -6,5 +6,8 @@ export const userValidation = {
   },
   getUserProfileSchema: {
     params: GetUserProfileDTO,
+  },
+  updatePasswordSchema: {
+    body: UpdatePasswordDTO,
   },
 };

@@ -1,7 +1,12 @@
 import { UserModel } from '../../DB/Models/user.model';
 import { UserRepository } from '../../DB/repositories/user.repository';
-import { NotFoundException } from '../../Utils/response/error.response';
-import { UpdateAccountDTO } from './user.dto';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '../../Utils/response/error.response';
+import { compareHash } from '../../Utils/security/hash.security';
+import { UpdateAccountDTO, UpdatePasswordDTO } from './user.dto';
 
 export class UserService {
   private readonly _userRepo = new UserRepository(UserModel);
@@ -59,6 +64,38 @@ export class UserService {
     }
 
     return user;
+  };
+
+  updatePassword = async (userId: string, data: UpdatePasswordDTO) => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.password) {
+      throw new BadRequestException('This account does not have a password');
+    }
+
+    const isPasswordValid = await compareHash(data.currentPassword, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    const isSamePassword = await compareHash(data.newPassword, user.password);
+
+    if (isSamePassword) {
+      throw new BadRequestException('New password must be different from current password');
+    }
+
+    user.password = data.newPassword;
+    user.changeCredentialTime = new Date();
+
+    await user.save();
+
+    return true;
   };
 }
 

@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { UpdateAccountDTO } from './user.dto';
+import { UpdateAccountDTO, UpdatePasswordDTO } from './user.dto';
 import { userService } from './user.service';
 import { successResponse } from '../../Utils/response/success.response';
+import { BadRequestException } from '../../Utils/response/error.response';
 
 export class UserController {
   updateAccount = async (req: Request, res: Response): Promise<Response> => {
@@ -72,6 +73,18 @@ export class UserController {
           coverPic: user.coverPic,
         },
       },
+    });
+  };
+
+  updatePassword = async (req: Request, res: Response): Promise<Response> => {
+    const data = req.body as UpdatePasswordDTO;
+
+    await userService.updatePassword(req.user._id.toString(), data);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Password updated successfully',
     });
   };
 }

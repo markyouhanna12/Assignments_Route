@@ -39,4 +39,16 @@ router.get(
   userController.getUserProfile,
 );
 
+router.patch(
+  '/password',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(userValidation.updatePasswordSchema),
+  userController.updatePassword,
+);
+
 export default router;
