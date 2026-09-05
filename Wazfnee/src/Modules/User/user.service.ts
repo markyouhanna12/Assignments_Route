@@ -48,6 +48,18 @@ export class UserService {
     }
     return user;
   };
+
+  getUserProfile = async (userId: string) => {
+    const user = await this._userRepo.findById({
+      id: userId,
+      select: 'firstName lastName mobileNumber profilePic coverPic',
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  };
 }
 
 export const userService = new UserService();

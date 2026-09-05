@@ -25,3 +25,8 @@ export class UpdateAccountDTO {
   @generalFields.phone()
   mobileNumber?: string;
 }
+
+export class GetUserProfileDTO {
+  @generalFields.id()
+  userId!: string;
+}

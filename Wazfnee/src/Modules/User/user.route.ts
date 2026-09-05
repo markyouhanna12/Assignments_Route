@@ -27,4 +27,16 @@ router.get(
   userController.getAccount,
 );
 
+router.get(
+  '/profile/:userId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(userValidation.getUserProfileSchema),
+  userController.getUserProfile,
+);
+
 export default router;

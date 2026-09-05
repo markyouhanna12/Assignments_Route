@@ -54,6 +54,26 @@ export class UserController {
       },
     });
   };
+
+  getUserProfile = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.params as any;
+
+    const user = await userService.getUserProfile(userId);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'User profile retrieved successfully',
+      data: {
+        user: {
+          username: user.username,
+          mobileNumber: user.mobileNumber,
+          profilePic: user.profilePic,
+          coverPic: user.coverPic,
+        },
+      },
+    });
+  };
 }
 
 export const userController = new UserController();
