@@ -49,4 +49,16 @@ router.post(
 
 router.post('/logout', authentication({ tokenType: TokenType.ACCESS }), authController.logout);
 
+router.post(
+  '/restore-account/request',
+  validation(authValidation.restoreAccountRequestSchema),
+  authController.requestRestoreAccount,
+);
+
+router.post(
+  '/restore-account/confirm',
+  validation(authValidation.restoreAccountConfirmSchema),
+  authController.restoreAccount,
+);
+
 export default router;

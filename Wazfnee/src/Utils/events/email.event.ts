@@ -2,6 +2,7 @@ import EventEmitter from 'node:events';
 import { generateHTML } from '../email/generateHTML';
 import { sendEmail } from '../email/send-email';
 import { generateForgotPasswordHTML } from '../email/templates/forgot-password.template';
+import { generateRestoreAccountHTML } from '../email/templates/restore-account.template';
 
 export const emailEvents = new EventEmitter();
 
@@ -40,5 +41,23 @@ emailEvents.on('forgetPassword', async (data: IForgotPasswordPayload) => {
     });
   } catch (error) {
     console.error('Failed to send forgot-password email:', error);
+  }
+});
+
+interface IRestoreAccountPayload {
+  email: string;
+  firstName: string;
+  otp: string;
+}
+
+emailEvents.on('restoreAccount', async (data: IRestoreAccountPayload) => {
+  try {
+    await sendEmail({
+      to: data.email,
+      subject: 'Restore your Wazfnee account',
+      html: generateRestoreAccountHTML(data.firstName, data.otp),
+    });
+  } catch (error) {
+    console.error('Failed to send restore-account email:', error);
   }
 });

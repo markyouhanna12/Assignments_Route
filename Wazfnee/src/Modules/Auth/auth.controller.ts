@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   ConfirmEmailDTO,
   ForgetPasswordDTO,
@@ -172,6 +172,34 @@ export class AuthController {
       statusCode: 200,
       message: 'Logged out successfully',
     });
+  };
+
+  requestRestoreAccount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      await authService.requestRestoreAccount(req.body.email, req.body.password);
+
+      res.status(200).json({
+        message: 'Restore OTP has been sent to your email',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  restoreAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await authService.restoreAccount(req.body.email, req.body.otp);
+
+      res.status(200).json({
+        message: 'Account restored successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 }
 

@@ -97,3 +97,19 @@ export class RefreshTokenDTO {
   @IsString()
   refreshToken!: string;
 }
+
+export class RestoreAccountRequestDTO {
+  @generalFields.email()
+  email!: string;
+
+  @generalFields.password()
+  password!: string;
+}
+
+export class RestoreAccountConfirmDTO {
+  @generalFields.email()
+  email!: string;
+
+  @generalFields.otp()
+  otp!: string;
+}

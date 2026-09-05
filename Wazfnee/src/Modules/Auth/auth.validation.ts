@@ -5,6 +5,8 @@ import {
   GoogleSignUpDTO,
   RefreshTokenDTO,
   ResetPasswordDTO,
+  RestoreAccountConfirmDTO,
+  RestoreAccountRequestDTO,
   SignInDTO,
   SignUpDTO,
 } from './auth.DTO';
@@ -36,5 +38,13 @@ export const authValidation = {
 
   refreshTokenSchema: {
     body: RefreshTokenDTO,
+  },
+
+  restoreAccountRequestSchema: {
+    body: RestoreAccountRequestDTO,
+  },
+
+  restoreAccountConfirmSchema: {
+    body: RestoreAccountConfirmDTO,
   },
 };

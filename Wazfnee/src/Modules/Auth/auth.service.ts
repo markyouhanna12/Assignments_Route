@@ -6,11 +6,12 @@ import { Role } from '../../Utils/enums/role.enum';
 import { emailEvents } from '../../Utils/events/email.event';
 import { generateOTP } from '../../Utils/generateOTP';
 import {
+  BadRequestException,
   ConflictException,
   NotFoundException,
   UnauthorizedException,
 } from '../../Utils/response/error.response';
-import { genrateHash, compareHash } from '../../Utils/security/hash.security';
+import { compareHash, genrateHash } from '../../Utils/security/hash.security';
 import { googleService } from '../../Utils/services/google.service';
 import { TokenService } from '../../Utils/services/token.service';
 import {
@@ -381,6 +382,107 @@ export class AuthService {
     await tokenService.revokeToken({
       userId,
       jti,
+    });
+  };
+
+  requestRestoreAccount = async (email: string, password: string): Promise<void> => {
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.deletedAt) {
+      throw new BadRequestException('Account is not deleted');
+    }
+
+    if (user.provider !== Provider.SYSTEM) {
+      throw new BadRequestException('This account cannot be restored using password');
+    }
+
+    if (!user.password) {
+      throw new BadRequestException('Account password is not available');
+    }
+
+    const isPasswordValid = await compareHash(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
+    const otp = generateOTP();
+
+    const hashedOTP = await genrateHash(otp);
+
+    const expiresIn = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.otp = [
+      ...(user.otp ?? []).filter((item) => item.type !== OTPType.RESTORE_ACCOUNT),
+      {
+        code: hashedOTP,
+        type: OTPType.RESTORE_ACCOUNT,
+        expiresIn,
+      },
+    ];
+
+    await user.save();
+
+    emailEvents.emit('restoreAccount', {
+      email: user.email,
+      firstName: user.firstName,
+      otp,
+    });
+  };
+
+  restoreAccount = async (email: string, otp: string): Promise<void> => {
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.deletedAt) {
+      throw new BadRequestException('Account is not deleted');
+    }
+
+    const restoreOtp = user.otp?.find((item) => item.type === OTPType.RESTORE_ACCOUNT);
+
+    if (!restoreOtp) {
+      throw new BadRequestException('Restore OTP not found');
+    }
+
+    if (restoreOtp.expiresIn < new Date()) {
+      throw new BadRequestException('Restore OTP has expired');
+    }
+
+    const isOtpValid = await compareHash(otp, restoreOtp.code);
+
+    if (!isOtpValid) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    const now = new Date();
+
+    await user.updateOne({
+      $unset: {
+        deletedAt: 1,
+      },
+      $set: {
+        changeCredentialTime: now,
+      },
+      $pull: {
+        otp: {
+          type: OTPType.RESTORE_ACCOUNT,
+        },
+      },
     });
   };
 }
