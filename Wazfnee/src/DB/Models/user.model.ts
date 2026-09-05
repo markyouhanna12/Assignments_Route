@@ -6,12 +6,12 @@ import { HydratedDocument, model, Schema, Types } from 'mongoose';
 import { genrateHash } from '../../Utils/security/hash.security';
 import { decryptSync, encrypt } from '../../Utils/security/encryption.security';
 
-interface IProfilePicture {
+export interface IProfilePicture {
   secure_url: string;
   public_id: string;
 }
 
-interface IOTP {
+export interface IOTP {
   code: string;
   type: OTPType;
   expiresIn: Date;
