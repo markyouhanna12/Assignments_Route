@@ -17,6 +17,7 @@ const requiredEnv = (key: string): string => {
 
 export const PORT = requiredEnv('PORT');
 export const dbUrl = requiredEnv('DB_URL');
+export const REDIS_URI = requiredEnv('REDIS_URI');
 
 export const WHITE_LIST = requiredEnv('WHITE_LIST');
 

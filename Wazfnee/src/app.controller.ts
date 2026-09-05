@@ -4,12 +4,9 @@ import helmet from 'helmet';
 import { corsOptions } from './Utils/cors/cors.utils';
 import { globalErrorHandler, NotFoundException } from './Utils/response/error.response';
 import { customRateLimiter } from './Middlewares/rateLimitter.middleware';
-import connectDB from './DB/connection';
 import AuthRouter from './Modules/Auth/auth.route';
 
 const app = express();
-
-connectDB();
 
 app.use(express.json());
 app.use(cors(corsOptions));
