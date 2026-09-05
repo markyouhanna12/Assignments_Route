@@ -15,6 +15,7 @@ import { googleService } from '../../Utils/services/google.service';
 import { TokenService } from '../../Utils/services/token.service';
 import {
   ConfirmEmailDTO,
+  ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
   SignInDTO,
@@ -279,6 +280,49 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  };
+
+  forgetPassword = async (data: ForgetPasswordDTO) => {
+    const { email } = data;
+
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.isConfirmed) {
+      throw new UnauthorizedException('Please confirm your email first');
+    }
+
+    const otp = generateOTP();
+
+    const hashedOTP = await genrateHash(otp);
+
+    const expiresIn = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.otp = [
+      ...(user.otp ?? []).filter((item) => item.type !== OTPType.FORGET_PASSWORD),
+      {
+        code: hashedOTP,
+        type: OTPType.FORGET_PASSWORD,
+        expiresIn,
+      },
+    ];
+
+    await user.save();
+
+    emailEvents.emit('forgetPassword', {
+      email: user.email,
+      firstName: user.firstName,
+      otp,
+    });
+
+    return true;
   };
 }
 

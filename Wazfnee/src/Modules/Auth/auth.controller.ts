@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   ConfirmEmailDTO,
+  ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
   SignInDTO,
@@ -116,6 +117,18 @@ export class AuthController {
         accessToken,
         refreshToken,
       },
+    });
+  };
+
+  forgetPassword = async (req: Request, res: Response): Promise<Response> => {
+    const data = req.body as ForgetPasswordDTO;
+
+    await authService.forgetPassword(data);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Password reset OTP sent successfully',
     });
   };
 }

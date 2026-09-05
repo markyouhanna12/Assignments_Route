@@ -70,3 +70,9 @@ export class GoogleSignInDTO {
   @IsString()
   credential!: string;
 }
+
+export class ForgetPasswordDTO {
+  @generalFields.email()
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  email!: string;
+}

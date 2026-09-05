@@ -1,5 +1,6 @@
 import {
   ConfirmEmailDTO,
+  ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
   SignInDTO,
@@ -21,5 +22,9 @@ export const authValidation = {
   },
   googleSigninSchema: {
     body: GoogleSignInDTO,
+  },
+
+  forgetPasswordSchema: {
+    body: ForgetPasswordDTO,
   },
 };

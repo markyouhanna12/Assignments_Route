@@ -27,4 +27,10 @@ router.post(
   authController.googleSignin,
 );
 
+router.post(
+  '/forget-password',
+  validation(authValidation.forgetPasswordSchema),
+  authController.forgetPassword,
+);
+
 export default router;
