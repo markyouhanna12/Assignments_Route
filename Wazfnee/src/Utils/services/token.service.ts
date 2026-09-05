@@ -17,6 +17,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '../response/error.response';
+import { get, set } from '../../DB/redis/redis.repository';
+import { revokeTokenKey } from '../../DB/redis/redis.keys';
 
 export interface CustomJwtPayload extends JwtPayload {
   id: string;
@@ -135,6 +137,17 @@ export class TokenService {
       throw new UnauthorizedException('Invalid token');
     }
 
+    const isRevoked = await get({
+      key: revokeTokenKey({
+        userId: user._id.toString(),
+        jti: decoded.jti,
+      }),
+    });
+
+    if (isRevoked) {
+      throw new UnauthorizedException('Token is revoked');
+    }
+
     if (
       user.changeCredentialTime &&
       decoded.iat &&
@@ -185,6 +198,17 @@ export class TokenService {
 
     const decoded = await this.verify(refreshToken, signature.refreshSignature);
 
+    const isRevoked = await get({
+      key: revokeTokenKey({
+        userId: user._id.toString(),
+        jti: decoded.jti,
+      }),
+    });
+
+    if (isRevoked) {
+      throw new UnauthorizedException('Refresh token is revoked');
+    }
+
     if (!decoded.id || decoded.id !== user._id.toString()) {
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -211,5 +235,16 @@ export class TokenService {
     return {
       accessToken: newAccessToken,
     };
+  };
+
+  revokeToken = async ({ userId, jti }: { userId: string; jti: string }): Promise<void> => {
+    await set({
+      key: revokeTokenKey({
+        userId,
+        jti,
+      }),
+      value: '1',
+      ttl: Number(REFRESH_EXPIRES),
+    });
   };
 }

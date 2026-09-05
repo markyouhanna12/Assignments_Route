@@ -160,6 +160,19 @@ export class AuthController {
       },
     });
   };
+
+  logout = async (req: Request, res: Response): Promise<Response> => {
+    await authService.logout({
+      userId: req.user._id.toString(),
+      jti: req.decoded.jti,
+    });
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Logged out successfully',
+    });
+  };
 }
 
 export const authController = new AuthController();

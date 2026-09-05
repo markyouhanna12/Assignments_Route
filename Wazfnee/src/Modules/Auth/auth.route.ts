@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { validation } from '../../Middlewares/validation.middleware';
 import { authValidation } from './auth.validation';
 import { authController } from './auth.controller';
+import { authentication } from '../../Middlewares/authentication.middleware';
+import { TokenType } from '../../Utils/enums/auth.enum';
 
 const router = Router();
 
@@ -44,5 +46,7 @@ router.post(
   validation(authValidation.refreshTokenSchema),
   authController.refreshToken,
 );
+
+router.post('/logout', authentication({ tokenType: TokenType.ACCESS }), authController.logout);
 
 export default router;

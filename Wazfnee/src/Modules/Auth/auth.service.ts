@@ -374,6 +374,15 @@ export class AuthService {
 
     return await tokenService.refreshAccessToken(refreshToken);
   };
+
+  logout = async ({ userId, jti }: { userId: string; jti: string }): Promise<void> => {
+    const tokenService = new TokenService();
+
+    await tokenService.revokeToken({
+      userId,
+      jti,
+    });
+  };
 }
 
 export const authService = new AuthService();
