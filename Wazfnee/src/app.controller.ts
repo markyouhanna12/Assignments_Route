@@ -5,6 +5,7 @@ import { corsOptions } from './Utils/cors/cors.utils';
 import { globalErrorHandler, NotFoundException } from './Utils/response/error.response';
 import { customRateLimiter } from './Middlewares/rateLimitter.middleware';
 import AuthRouter from './Modules/Auth/auth.route';
+import UserRouter from './Modules/User/user.route';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(helmet());
 app.use(customRateLimiter);
 
 app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/user', UserRouter);
 
 app.use(globalErrorHandler);
 
