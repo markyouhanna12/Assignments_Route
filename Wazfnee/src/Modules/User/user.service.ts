@@ -176,10 +176,8 @@ export class UserService {
       throw new BadRequestException('User does not have a cover picture');
     }
 
-    // Delete the physical file
     await deleteLocalFile(user.coverPic.secure_url);
 
-    // Remove coverPic field from MongoDB
     await user.updateOne({
       $unset: {
         coverPic: 1,
@@ -188,6 +186,30 @@ export class UserService {
 
     return {
       coverPic: null,
+    };
+  };
+
+  softDeleteAccount = async (userId: string): Promise<{ deletedAt: Date }> => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.deletedAt) {
+      throw new BadRequestException('Account is already deleted');
+    }
+    const deletedAt = new Date();
+
+    user.deletedAt = deletedAt;
+    user.changeCredentialTime = deletedAt;
+
+    await user.save();
+
+    return {
+      deletedAt,
     };
   };
 }

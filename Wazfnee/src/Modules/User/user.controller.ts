@@ -147,6 +147,19 @@ export class UserController {
       next(error);
     }
   };
+
+  softDeleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await userService.softDeleteAccount(req.user._id.toString());
+
+      res.status(200).json({
+        message: 'Account deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const userController = new UserController();

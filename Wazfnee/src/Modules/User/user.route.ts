@@ -106,4 +106,15 @@ router.delete(
   userController.deleteCoverPic,
 );
 
+router.delete(
+  '/account',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  userController.softDeleteAccount,
+);
+
 export default router;
