@@ -87,6 +87,40 @@ export class UserController {
       message: 'Password updated successfully',
     });
   };
+
+  uploadProfilePic = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.file) {
+      throw new BadRequestException('Profile picture is required');
+    }
+
+    const profilePic = await userService.uploadProfilePic(req.user._id.toString(), req.file);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Profile picture uploaded successfully',
+      data: {
+        profilePic,
+      },
+    });
+  };
+
+  uploadCoverPic = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.file) {
+      throw new BadRequestException('Cover picture is required');
+    }
+
+    const coverPic = await userService.uploadCoverPic(req.user._id.toString(), req.file);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Cover picture uploaded successfully',
+      data: {
+        coverPic,
+      },
+    });
+  };
 }
 
 export const userController = new UserController();

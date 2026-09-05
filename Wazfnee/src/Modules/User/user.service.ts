@@ -97,6 +97,44 @@ export class UserService {
 
     return true;
   };
+
+  uploadProfilePic = async (userId: string, file: Express.Multer.File) => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.profilePic = {
+      secure_url: `/uploads/profile/${userId}/${file.filename}`,
+      public_id: file.filename,
+    };
+
+    await user.save();
+
+    return user.profilePic;
+  };
+
+  uploadCoverPic = async (userId: string, file: Express.Multer.File) => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.coverPic = {
+      secure_url: `/uploads/cover/${userId}/${file.filename}`,
+      public_id: file.filename,
+    };
+
+    await user.save();
+
+    return user.coverPic;
+  };
 }
 
 export const userService = new UserService();

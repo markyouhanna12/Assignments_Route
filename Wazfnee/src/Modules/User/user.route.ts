@@ -5,6 +5,7 @@ import { Role } from '../../Utils/enums/role.enum';
 import { validation } from '../../Middlewares/validation.middleware';
 import { userValidation } from './user.validation';
 import { userController } from './user.controller';
+import { fileValidation, localFileUpload } from '../../Utils/multer/local.multer';
 
 const router = Router();
 
@@ -49,6 +50,38 @@ router.patch(
   }),
   validation(userValidation.updatePasswordSchema),
   userController.updatePassword,
+);
+
+router.patch(
+  '/profile-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  localFileUpload({
+    customPath: 'profile',
+    validation: fileValidation.images,
+    maxFileSize: 5 * 1024 * 1024,
+  }).single('profilePic'),
+  userController.uploadProfilePic,
+);
+
+router.patch(
+  '/cover-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  localFileUpload({
+    customPath: 'cover',
+    validation: fileValidation.images,
+    maxFileSize: 5 * 1024 * 1024,
+  }).single('coverPic'),
+  userController.uploadCoverPic,
 );
 
 export default router;
