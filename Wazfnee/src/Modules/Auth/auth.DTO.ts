@@ -92,3 +92,8 @@ export class ResetPasswordDTO {
   @IsMatch('password')
   confirmPassword!: string;
 }
+
+export class RefreshTokenDTO {
+  @IsString()
+  refreshToken!: string;
+}

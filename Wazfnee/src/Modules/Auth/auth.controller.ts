@@ -4,6 +4,7 @@ import {
   ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
+  RefreshTokenDTO,
   ResetPasswordDTO,
   SignInDTO,
   SignUpDTO,
@@ -142,6 +143,21 @@ export class AuthController {
       res,
       statusCode: 200,
       message: 'Password reset successfully',
+    });
+  };
+
+  refreshToken = async (req: Request, res: Response): Promise<Response> => {
+    const { refreshToken } = req.body as RefreshTokenDTO;
+
+    const { accessToken } = await authService.refreshToken(refreshToken);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Access token refreshed successfully',
+      data: {
+        accessToken,
+      },
     });
   };
 }

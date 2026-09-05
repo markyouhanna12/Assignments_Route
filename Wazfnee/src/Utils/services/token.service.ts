@@ -156,4 +156,60 @@ export class TokenService {
       decoded,
     };
   };
+
+  refreshAccessToken = async (refreshToken: string) => {
+    const decodedWithoutVerification = jwt.decode(refreshToken) as CustomJwtPayload | null;
+
+    if (!decodedWithoutVerification?.id) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const user = await this.userRepository.findById({
+      id: decodedWithoutVerification.id,
+    });
+    if (!user) {
+      throw new NotFoundException('Not Registered Account');
+    }
+
+    if (user.deletedAt) {
+      throw new UnauthorizedException('Account has been deleted');
+    }
+
+    if (user.bannedAt) {
+      throw new UnauthorizedException('Account has been banned');
+    }
+
+    const signature = this.getSignature(
+      user.role === Role.ADMIN ? Signature.ADMIN : Signature.USER,
+    );
+
+    const decoded = await this.verify(refreshToken, signature.refreshSignature);
+
+    if (!decoded.id || decoded.id !== user._id.toString()) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    if (
+      user.changeCredentialTime &&
+      decoded.iat &&
+      user.changeCredentialTime.getTime() > decoded.iat * 1000
+    ) {
+      throw new UnauthorizedException('Refresh token expired because credentials were changed');
+    }
+
+    const newAccessToken = await this.sign(
+      {
+        id: user._id.toString(),
+        jti: decoded.jti,
+      },
+      signature.accessSignature,
+      {
+        expiresIn: Number(ACCESS_EXPIRES),
+      },
+    );
+
+    return {
+      accessToken: newAccessToken,
+    };
+  };
 }

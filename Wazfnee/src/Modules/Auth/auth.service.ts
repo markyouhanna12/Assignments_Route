@@ -18,6 +18,7 @@ import {
   ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
+  RefreshTokenDTO,
   ResetPasswordDTO,
   SignInDTO,
   SignUpDTO,
@@ -366,6 +367,12 @@ export class AuthService {
     await user.save();
 
     return true;
+  };
+
+  refreshToken = async (refreshToken: string) => {
+    const tokenService = new TokenService();
+
+    return await tokenService.refreshAccessToken(refreshToken);
   };
 }
 
