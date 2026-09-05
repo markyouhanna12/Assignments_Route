@@ -26,6 +26,34 @@ export class UserController {
       },
     });
   };
+  getAccount = async (req: Request, res: Response): Promise<Response> => {
+    const user = await userService.getAccount(req.user._id.toString());
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Account data retrieved successfully',
+      data: {
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+          email: user.email,
+          provider: user.provider,
+          gender: user.gender,
+          dob: user.dob,
+          mobileNumber: user.mobileNumber,
+          role: user.role,
+          isConfirmed: user.isConfirmed,
+          profilePic: user.profilePic,
+          coverPic: user.coverPic,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+      },
+    });
+  };
 }
 
 export const userController = new UserController();

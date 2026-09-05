@@ -4,7 +4,7 @@ import { Role } from '../../Utils/enums/role.enum';
 import { OTPType } from '../../Utils/enums/otp-type.enum';
 import { HydratedDocument, model, Schema, Types } from 'mongoose';
 import { genrateHash } from '../../Utils/security/hash.security';
-import { encrypt } from '../../Utils/security/encryption.security';
+import { decryptSync, encrypt } from '../../Utils/security/encryption.security';
 
 interface IProfilePicture {
   secure_url: string;
@@ -20,6 +20,7 @@ interface IOTP {
 export interface IUser {
   firstName: string;
   lastName: string;
+  username?: string;
   email: string;
   password: string;
   provider: Provider;
@@ -37,6 +38,8 @@ export interface IUser {
   otp?: IOTP[];
 
   providerId?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type IUserDocument = HydratedDocument<IUser>;
@@ -134,6 +137,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+      get: (value: string): string => decryptSync(value),
     },
 
     role: {
@@ -190,14 +194,16 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
     toJSON: {
       virtuals: true,
+      getters: true,
     },
     toObject: {
       virtuals: true,
+      getters: true,
     },
   },
 );
 
-userSchema.virtual('username').get(function () {
+userSchema.virtual('username').get(function (this: HydratedDocument<IUser>) {
   return `${this.firstName} ${this.lastName}`.trim();
 });
 

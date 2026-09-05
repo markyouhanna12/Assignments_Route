@@ -36,3 +36,21 @@ export const decrypt = async (text: string): Promise<string> => {
 
   return decryptedData;
 };
+
+export const decryptSync = (text: string): string => {
+  const [ivHex, encryptedData] = text.split(':');
+
+  if (!ivHex || !encryptedData) {
+    throw new Error('Invalid encrypted text');
+  }
+
+  const iv: Buffer = Buffer.from(ivHex, 'hex');
+
+  const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+
+  let decryptedData = decipher.update(encryptedData, 'hex', 'utf8');
+
+  decryptedData += decipher.final('utf8');
+
+  return decryptedData;
+};

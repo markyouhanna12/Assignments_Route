@@ -38,6 +38,16 @@ export class UserService {
 
     return user;
   };
+
+  getAccount = async (userId: string) => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  };
 }
 
 export const userService = new UserService();

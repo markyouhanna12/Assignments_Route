@@ -16,4 +16,15 @@ router.patch(
   userController.updateAccount,
 );
 
+router.get(
+  '/account',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  userController.getAccount,
+);
+
 export default router;
