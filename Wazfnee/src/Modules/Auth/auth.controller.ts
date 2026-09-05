@@ -4,6 +4,7 @@ import {
   ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
+  ResetPasswordDTO,
   SignInDTO,
   SignUpDTO,
 } from './auth.DTO';
@@ -129,6 +130,18 @@ export class AuthController {
       res,
       statusCode: 200,
       message: 'Password reset OTP sent successfully',
+    });
+  };
+
+  resetPassword = async (req: Request, res: Response): Promise<Response> => {
+    const data = req.body as ResetPasswordDTO;
+
+    await authService.resetPassword(data);
+
+    return successResponse({
+      res,
+      statusCode: 200,
+      message: 'Password reset successfully',
     });
   };
 }

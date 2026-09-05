@@ -76,3 +76,19 @@ export class ForgetPasswordDTO {
   @Transform(({ value }) => value?.trim().toLowerCase())
   email!: string;
 }
+
+export class ResetPasswordDTO {
+  @generalFields.email()
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  email!: string;
+
+  @generalFields.otp()
+  otp!: string;
+
+  @generalFields.password()
+  password!: string;
+
+  @generalFields.confirmPassword()
+  @IsMatch('password')
+  confirmPassword!: string;
+}

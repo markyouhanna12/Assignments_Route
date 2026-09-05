@@ -3,6 +3,7 @@ import {
   ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
+  ResetPasswordDTO,
   SignInDTO,
   SignUpDTO,
 } from './auth.DTO';
@@ -26,5 +27,9 @@ export const authValidation = {
 
   forgetPasswordSchema: {
     body: ForgetPasswordDTO,
+  },
+
+  resetPasswordSchema: {
+    body: ResetPasswordDTO,
   },
 };

@@ -18,6 +18,7 @@ import {
   ForgetPasswordDTO,
   GoogleSignInDTO,
   GoogleSignUpDTO,
+  ResetPasswordDTO,
   SignInDTO,
   SignUpDTO,
 } from './auth.DTO';
@@ -321,6 +322,48 @@ export class AuthService {
       firstName: user.firstName,
       otp,
     });
+
+    return true;
+  };
+
+  resetPassword = async (data: ResetPasswordDTO) => {
+    const { email, otp, password } = data;
+
+    const user = await this._userRepo.findOne({
+      filter: {
+        email,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.provider !== Provider.SYSTEM) {
+      throw new UnauthorizedException('Password reset is only available for system accounts');
+    }
+
+    const forgetPasswordOTP = user.otp?.find((item) => item.type === OTPType.FORGET_PASSWORD);
+
+    if (!forgetPasswordOTP) {
+      throw new ConflictException('Password reset OTP not found');
+    }
+
+    if (forgetPasswordOTP.expiresIn.getTime() < Date.now()) {
+      throw new ConflictException('Password reset OTP has expired');
+    }
+
+    const isOTPValid = await compareHash(otp, forgetPasswordOTP.code);
+
+    if (!isOTPValid) {
+      throw new ConflictException('Invalid password reset OTP');
+    }
+
+    user.password = password;
+    user.changeCredentialTime = new Date();
+
+    user.otp = (user.otp ?? []).filter((item) => item.type !== OTPType.FORGET_PASSWORD);
+
+    await user.save();
 
     return true;
   };
