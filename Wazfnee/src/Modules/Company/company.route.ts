@@ -1,0 +1,28 @@
+import { Router } from 'express';
+
+import { authentication, authorization } from '../../Middlewares/authentication.middleware';
+import { validation } from '../../Middlewares/validation.middleware';
+
+import { Role } from '../../Utils/enums/role.enum';
+import { TokenType } from '../../Utils/enums/auth.enum';
+
+import { CompanyController } from './company.controller';
+import { companyValidation } from './company.validation';
+
+const router = Router();
+
+const companyController = new CompanyController();
+
+router.post(
+  '/',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(companyValidation.addCompanySchema),
+  companyController.addCompany,
+);
+
+export default router;

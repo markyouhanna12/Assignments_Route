@@ -6,6 +6,7 @@ import { globalErrorHandler, NotFoundException } from './Utils/response/error.re
 import { customRateLimiter } from './Middlewares/rateLimitter.middleware';
 import AuthRouter from './Modules/Auth/auth.route';
 import UserRouter from './Modules/User/user.route';
+import CompanyRouter from './Modules/Company/company.route';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(customRateLimiter);
 
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/user', UserRouter);
+app.use('/api/v1/company', CompanyRouter);
 
 app.use(globalErrorHandler);
 
