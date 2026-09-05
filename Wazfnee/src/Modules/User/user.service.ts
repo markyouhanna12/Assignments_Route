@@ -1,5 +1,6 @@
 import { UserModel } from '../../DB/Models/user.model';
 import { UserRepository } from '../../DB/repositories/user.repository';
+import { deleteLocalFile } from '../../Utils/multer/local-file.utils';
 import {
   BadRequestException,
   NotFoundException,
@@ -134,6 +135,60 @@ export class UserService {
     await user.save();
 
     return user.coverPic;
+  };
+
+  deleteProfilePic = async (userId: string): Promise<{ profilePic: null }> => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.profilePic?.secure_url) {
+      throw new BadRequestException('User does not have a profile picture');
+    }
+
+    await deleteLocalFile(user.profilePic.secure_url);
+
+    await user.updateOne({
+      $unset: {
+        profilePic: 1,
+      },
+    });
+
+    return {
+      profilePic: null,
+    };
+  };
+
+  deleteCoverPic = async (userId: string): Promise<{ coverPic: null }> => {
+    const user = await this._userRepo.findById({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.coverPic?.secure_url) {
+      throw new BadRequestException('User does not have a cover picture');
+    }
+
+    // Delete the physical file
+    await deleteLocalFile(user.coverPic.secure_url);
+
+    // Remove coverPic field from MongoDB
+    await user.updateOne({
+      $unset: {
+        coverPic: 1,
+      },
+    });
+
+    return {
+      coverPic: null,
+    };
   };
 }
 

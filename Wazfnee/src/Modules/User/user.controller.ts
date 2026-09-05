@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UpdateAccountDTO, UpdatePasswordDTO } from './user.dto';
 import { userService } from './user.service';
 import { successResponse } from '../../Utils/response/success.response';
@@ -120,6 +120,32 @@ export class UserController {
         coverPic,
       },
     });
+  };
+
+  deleteProfilePic = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await userService.deleteProfilePic(req.user._id.toString());
+
+      res.status(200).json({
+        message: 'Profile picture deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteCoverPic = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await userService.deleteCoverPic(req.user._id.toString());
+
+      res.status(200).json({
+        message: 'Cover picture deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 }
 

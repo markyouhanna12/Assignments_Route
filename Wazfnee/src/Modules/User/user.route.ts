@@ -84,4 +84,26 @@ router.patch(
   userController.uploadCoverPic,
 );
 
+router.delete(
+  '/profile-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  userController.deleteProfilePic,
+);
+
+router.delete(
+  '/cover-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  userController.deleteCoverPic,
+);
+
 export default router;
