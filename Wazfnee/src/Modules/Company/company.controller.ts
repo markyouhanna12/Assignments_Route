@@ -9,7 +9,9 @@ export class CompanyController {
     try {
       const data = await this._companyService.addCompany(req.user._id.toString(), req.body);
 
-      res.status(201).json({
+      successResponse({
+        res,
+        statusCode: 201,
         message: 'Company created successfully',
         data,
       });
@@ -25,7 +27,10 @@ export class CompanyController {
         req.params['companyId'] as string,
         req.body,
       );
-      res.status(200).json({
+
+      successResponse({
+        res,
+        statusCode: 200,
         message: 'Company updated successfully',
         data,
       });
@@ -42,8 +47,10 @@ export class CompanyController {
         req.user.role,
       );
 
-      res.status(200).json({
-        message: 'Companies found successfully',
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Company deleted successfully',
         data,
       });
     } catch (error) {
