@@ -8,4 +8,17 @@ export const dashboardResolvers = {
       return await dashboardService.getDashboardData();
     },
   },
+  Mutation: {
+    toggleUserBan: async (_: unknown, { userId }: { userId: string }) => {
+      return await dashboardService.toggleUserBan(userId);
+    },
+
+    toggleCompanyBan: async (_: unknown, { companyId }: { companyId: string }) => {
+      return await dashboardService.toggleCompanyBan(companyId);
+    },
+
+    approveCompany: async (_: unknown, { companyId }: { companyId: string }) => {
+      return await dashboardService.approveCompany(companyId);
+    },
+  },
 };

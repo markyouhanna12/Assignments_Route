@@ -33,4 +33,10 @@ export const dashboardTypeDefs = gql`
   type Query {
     dashboard: Dashboard!
   }
+
+  type Mutation {
+    toggleUserBan(userId: ID!): User!
+    toggleCompanyBan(companyId: ID!): Company!
+    approveCompany(companyId: ID!): Company!
+  }
 `;
