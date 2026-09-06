@@ -98,4 +98,32 @@ router.patch(
   companyController.uploadCompanyCoverPic,
 );
 
+router.delete(
+  '/:companyId/logo',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation({
+    params: CompanyIdDTO,
+  }),
+  companyController.deleteCompanyLogo,
+);
+
+router.delete(
+  '/:companyId/cover-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation({
+    params: CompanyIdDTO,
+  }),
+  companyController.deleteCompanyCoverPic,
+);
+
 export default router;

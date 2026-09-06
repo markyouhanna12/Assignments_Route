@@ -126,4 +126,44 @@ export class CompanyController {
       next(error);
     }
   };
+
+  deleteCompanyLogo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._companyService.deleteCompanyLogo(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Company logo deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteCompanyCoverPic = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const data = await this._companyService.deleteCompanyCoverPic(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Company cover picture deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

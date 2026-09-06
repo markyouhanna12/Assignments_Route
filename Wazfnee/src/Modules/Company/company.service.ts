@@ -280,4 +280,84 @@ export class CompanyService {
 
     return company.coverPic;
   };
+
+  deleteCompanyLogo = async (userId: string, companyId: string): Promise<{ logo: null }> => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can delete the company logo');
+    }
+
+    if (!company.logo?.secure_url) {
+      throw new BadRequestException('Company does not have a logo');
+    }
+
+    await deleteLocalFile(company.logo.secure_url);
+
+    await company.updateOne({
+      $unset: {
+        logo: 1,
+      },
+    });
+
+    return {
+      logo: null,
+    };
+  };
+
+  deleteCompanyCoverPic = async (
+    userId: string,
+    companyId: string,
+  ): Promise<{ coverPic: null }> => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (!company.coverPic?.secure_url) {
+      throw new BadRequestException('Company does not have a cover picture');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can delete the company cover picture');
+    }
+
+    // Delete physical file
+    await deleteLocalFile(company.coverPic.secure_url);
+
+    // Remove coverPic from MongoDB
+    await company.updateOne({
+      $unset: {
+        coverPic: 1,
+      },
+    });
+
+    return {
+      coverPic: null,
+    };
+  };
 }
