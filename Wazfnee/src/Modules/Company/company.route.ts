@@ -126,4 +126,16 @@ router.delete(
   companyController.deleteCompanyCoverPic,
 );
 
+router.post(
+  '/:companyId/hr',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(companyValidation.addCompanyHRSchema),
+  companyController.addCompanyHR,
+);
+
 export default router;

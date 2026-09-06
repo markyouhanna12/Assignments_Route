@@ -1,4 +1,10 @@
-import { AddCompanyDTO, CompanyIdDTO, SearchCompanyDTO, UpdateCompanyDTO } from './company.dto';
+import {
+  AddCompanyDTO,
+  AddCompanyHRDTO,
+  CompanyIdDTO,
+  SearchCompanyDTO,
+  UpdateCompanyDTO,
+} from './company.dto';
 
 export const companyValidation = {
   addCompanySchema: {
@@ -13,5 +19,10 @@ export const companyValidation = {
   },
   searchCompanySchema: {
     query: SearchCompanyDTO,
+  },
+
+  addCompanyHRSchema: {
+    params: CompanyIdDTO,
+    body: AddCompanyHRDTO,
   },
 };

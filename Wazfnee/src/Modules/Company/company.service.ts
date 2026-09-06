@@ -10,9 +10,12 @@ import {
 import { AddCompanyDTO, UpdateCompanyDTO } from './company.dto';
 import { Role } from '../../Utils/enums/role.enum';
 import { deleteLocalFile } from '../../Utils/multer/local-file.utils';
+import { UserRepository } from '../../DB/repositories/user.repository';
+import { UserModel } from '../../DB/Models/user.model';
 
 export class CompanyService {
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
+  private readonly _userRepo = new UserRepository(UserModel);
 
   addCompany = async (userId: string, data: AddCompanyDTO) => {
     const { companyName, companyEmail } = data;
@@ -359,5 +362,72 @@ export class CompanyService {
     return {
       coverPic: null,
     };
+  };
+
+  addCompanyHR = async (userId: string, companyId: string, hrUserId: string) => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can add HRs');
+    }
+
+    const hrUser = await this._userRepo.findById({
+      id: hrUserId,
+    });
+
+    if (!hrUser) {
+      throw new NotFoundException('HR user not found');
+    }
+
+    if (hrUser.deletedAt) {
+      throw new BadRequestException('Cannot add a deleted user as HR');
+    }
+
+    if (hrUser.bannedAt) {
+      throw new BadRequestException('Cannot add a banned user as HR');
+    }
+
+    if (!hrUser.isConfirmed) {
+      throw new BadRequestException('Cannot add an unconfirmed user as HR');
+    }
+
+    // Company owner should not be added as HR.
+    if (company.createdBy.toString() === hrUser._id.toString()) {
+      throw new BadRequestException('Company owner cannot be assigned as HR');
+    }
+
+    const alreadyHR = company.hrs.some((hrId) => hrId.toString() === hrUser._id.toString());
+
+    if (alreadyHR) {
+      throw new ConflictException('User is already an HR for this company');
+    }
+
+    const updatedCompany = await this._companyRepo.findByIdAndUpdate({
+      id: companyId,
+      update: {
+        $addToSet: {
+          hrs: hrUser._id,
+        },
+      },
+    });
+
+    if (!updatedCompany) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return hrUser;
   };
 }

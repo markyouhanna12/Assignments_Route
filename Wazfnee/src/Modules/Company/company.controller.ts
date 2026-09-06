@@ -166,4 +166,27 @@ export class CompanyController {
       next(error);
     }
   };
+
+  addCompanyHR = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._companyService.addCompanyHR(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+        req.body.userId,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'HR added to company successfully',
+        data: {
+          userId: data._id,
+          username: data.username,
+          email: data.email,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

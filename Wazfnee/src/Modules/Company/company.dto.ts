@@ -93,3 +93,8 @@ export class SearchCompanyDTO {
   @MaxLength(100)
   name!: string;
 }
+
+export class AddCompanyHRDTO {
+  @generalFields.id()
+  userId!: string;
+}
