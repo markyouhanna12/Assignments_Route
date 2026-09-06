@@ -1,8 +1,13 @@
 import { Types } from 'mongoose';
 import { CompanyModel } from '../../DB/Models/company.model';
 import { CompanyRepository } from '../../DB/repositories/company.repository';
-import { BadRequestException, ConflictException } from '../../Utils/response/error.response';
-import { AddCompanyDTO } from './company.dto';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '../../Utils/response/error.response';
+import { AddCompanyDTO, UpdateCompanyDTO } from './company.dto';
 
 export class CompanyService {
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
@@ -56,5 +61,87 @@ export class CompanyService {
     }
 
     return company;
+  };
+
+  updateCompany = async (userId: string, companyId: string, data: UpdateCompanyDTO) => {
+    const company = await this._companyRepo.findById({ id: companyId });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can update the company');
+    }
+
+    if (data.companyName !== undefined) {
+      const companyName = data.companyName.trim();
+
+      if (companyName.toLowerCase() !== company.companyName.toLowerCase()) {
+        const existingCompany = await this._companyRepo.findOne({
+          filter: {
+            companyName,
+            _id: {
+              $ne: companyId,
+            },
+          },
+        });
+
+        if (existingCompany) {
+          throw new ConflictException('Company name already exists');
+        }
+      }
+    }
+
+    if (data.companyEmail !== undefined) {
+      const companyEmail = data.companyEmail.trim().toLowerCase();
+
+      if (companyEmail !== company.companyEmail.toLowerCase()) {
+        const existingCompany = await this._companyRepo.findOne({
+          filter: {
+            companyEmail,
+            _id: {
+              $ne: companyId,
+            },
+          },
+        });
+
+        if (existingCompany) {
+          throw new ConflictException('Company email already exists');
+        }
+      }
+    }
+
+    const updateData: Partial<UpdateCompanyDTO> = {
+      ...data,
+    };
+
+    if (updateData.companyName !== undefined) {
+      updateData.companyName = updateData.companyName.trim();
+    }
+
+    if (updateData.companyEmail !== undefined) {
+      updateData.companyEmail = updateData.companyEmail.trim().toLowerCase();
+    }
+
+    const updatedCompany = await this._companyRepo.findByIdAndUpdate({
+      id: companyId,
+      update: {
+        $set: updateData,
+      },
+    });
+
+    if (!updatedCompany) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return updatedCompany;
   };
 }

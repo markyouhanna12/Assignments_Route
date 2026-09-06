@@ -16,4 +16,20 @@ export class CompanyController {
       next(error);
     }
   };
+
+  updateCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._companyService.updateCompany(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+        req.body,
+      );
+      res.status(200).json({
+        message: 'Company updated successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

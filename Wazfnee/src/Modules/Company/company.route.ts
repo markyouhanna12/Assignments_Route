@@ -25,4 +25,16 @@ router.post(
   companyController.addCompany,
 );
 
+router.patch(
+  '/:companyId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(companyValidation.updateCompanySchema),
+  companyController.updateCompany,
+);
+
 export default router;
