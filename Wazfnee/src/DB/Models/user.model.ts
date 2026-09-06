@@ -17,10 +17,6 @@ export interface IOTP {
   expiresIn: Date;
 }
 
-export interface IUserMethods {
-  getMobileNumber(): string;
-}
-
 export interface IUser {
   firstName: string;
   lastName: string;
@@ -46,7 +42,7 @@ export interface IUser {
   updatedAt: Date;
 }
 
-export type IUserDocument = HydratedDocument<IUser, IUserMethods>;
+export type IUserDocument = HydratedDocument<IUser>;
 
 const profilePictureSchema = new Schema<IProfilePicture>(
   {
@@ -87,7 +83,7 @@ const otpSchema = new Schema<IOTP>(
   },
 );
 
-const userSchema = new Schema<IUser, {}, IUserMethods>(
+const userSchema = new Schema<IUser>(
   {
     firstName: {
       type: String,
@@ -221,14 +217,6 @@ userSchema.index(
   },
 );
 
-userSchema.methods.getMobileNumber = function (this: IUserDocument): string {
-  const encryptedMobileNumber = this.get('mobileNumber', null, {
-    getters: false,
-  }) as string;
-
-  return decryptSync(encryptedMobileNumber);
-};
-
 userSchema.pre('save', async function (this: IUserDocument): Promise<void> {
   if (this.isModified('password') && this.password) {
     this.password = await genrateHash(this.password);
@@ -237,6 +225,29 @@ userSchema.pre('save', async function (this: IUserDocument): Promise<void> {
   if (this.isModified('mobileNumber') && this.mobileNumber) {
     this.mobileNumber = await encrypt(this.mobileNumber);
   }
+});
+
+// Decrypts mobileNumber on any doc(s) about to be returned from a query.
+// Works for single docs, arrays (from `find`), and lean objects.
+function decryptMobileNumberOnDoc(doc: any): void {
+  if (!doc) return;
+
+  if (Array.isArray(doc)) {
+    doc.forEach(decryptMobileNumberOnDoc);
+    return;
+  }
+
+  if (doc.mobileNumber) {
+    try {
+      doc.mobileNumber = decryptSync(doc.mobileNumber);
+    } catch {
+      // already plaintext / not encrypted yet — leave as-is
+    }
+  }
+}
+
+userSchema.post(['find', 'findOne', 'findOneAndUpdate'], function (result) {
+  decryptMobileNumberOnDoc(result);
 });
 
 export const UserModel = model<IUser>('User', userSchema);
