@@ -25,4 +25,16 @@ router.post(
   jobController.addJob,
 );
 
+router.patch(
+  '/:jobId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.updateJobSchema),
+  jobController.updateJob,
+);
+
 export default router;

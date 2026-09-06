@@ -3,8 +3,12 @@ import { CompanyModel } from '../../DB/Models/company.model';
 import { JobModel } from '../../DB/Models/job.model';
 import { CompanyRepository } from '../../DB/repositories/company.repository';
 import { JobRepository } from '../../DB/repositories/job.repository';
-import { BadRequestException, NotFoundException } from '../../Utils/response/error.response';
-import { AddJobDTO } from './job.dto';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '../../Utils/response/error.response';
+import { AddJobDTO, UpdateJobDTO } from './job.dto';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
@@ -49,5 +53,55 @@ export class JobService {
     }
 
     return job;
+  };
+
+  updateJob = async (userId: string, jobId: string, data: UpdateJobDTO) => {
+    const job = await this._jobRepo.findById({
+      id: jobId,
+    });
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    if (job.closed) {
+      throw new BadRequestException('Cannot update a closed job');
+    }
+
+    const company = await this._companyRepo.findById({
+      id: job.companyId.toString(),
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can update the job');
+    }
+
+    const updatedJob = await this._jobRepo.findByIdAndUpdate({
+      id: jobId,
+      update: {
+        $set: {
+          ...data,
+          updatedBy: new Types.ObjectId(userId),
+        },
+      },
+    });
+
+    if (!updatedJob) {
+      throw new NotFoundException('Job not found');
+    }
+
+    return updatedJob;
   };
 }

@@ -19,4 +19,22 @@ export class JobController {
       next(error);
     }
   };
+
+  updateJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._jobService.updateJob(
+        req.user._id.toString(),
+        req.params['jobId'] as string,
+        req.body,
+      );
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Job updated successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
