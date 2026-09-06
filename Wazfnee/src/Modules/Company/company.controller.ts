@@ -32,4 +32,21 @@ export class CompanyController {
       next(error);
     }
   };
+
+  softDeleteCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._companyService.softDeleteCompany(
+        req.params['companyId'] as string,
+        req.user._id.toString(),
+        req.user.role,
+      );
+
+      res.status(200).json({
+        message: 'Company deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

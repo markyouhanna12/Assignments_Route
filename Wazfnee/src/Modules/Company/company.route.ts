@@ -8,6 +8,7 @@ import { TokenType } from '../../Utils/enums/auth.enum';
 
 import { CompanyController } from './company.controller';
 import { companyValidation } from './company.validation';
+import { CompanyIdDTO } from './company.dto';
 
 const router = Router();
 
@@ -35,6 +36,18 @@ router.patch(
   }),
   validation(companyValidation.updateCompanySchema),
   companyController.updateCompany,
+);
+
+router.delete(
+  '/:companyId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER, Role.ADMIN],
+  }),
+  validation(companyValidation.companyIdSchema),
+  companyController.softDeleteCompany,
 );
 
 export default router;

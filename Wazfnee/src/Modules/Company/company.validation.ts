@@ -8,4 +8,7 @@ export const companyValidation = {
     params: CompanyIdDTO,
     body: UpdateCompanyDTO,
   },
+  companyIdSchema: {
+    params: CompanyIdDTO,
+  },
 };

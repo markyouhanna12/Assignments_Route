@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '../../Utils/response/error.response';
 import { AddCompanyDTO, UpdateCompanyDTO } from './company.dto';
+import { Role } from '../../Utils/enums/role.enum';
 
 export class CompanyService {
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
@@ -143,5 +144,49 @@ export class CompanyService {
     }
 
     return updatedCompany;
+  };
+
+  softDeleteCompany = async (
+    companyId: string,
+    userId: string,
+    userRole: Role,
+  ): Promise<{ deletedAt: Date }> => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company is already deleted');
+    }
+
+    const isAdmin = userRole === Role.ADMIN;
+
+    const isOwner = company.createdBy.toString() === userId;
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException('Only the company owner or admin can delete the company');
+    }
+
+    const deletedAt = new Date();
+
+    const deletedCompany = await this._companyRepo.findByIdAndUpdate({
+      id: companyId,
+      update: {
+        $set: {
+          deletedAt,
+        },
+      },
+    });
+    if (!deletedCompany) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return {
+      deletedAt,
+    };
   };
 }
