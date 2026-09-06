@@ -189,4 +189,24 @@ export class CompanyService {
       deletedAt,
     };
   };
+
+  searchCompany = async (name: string) => {
+    const searchName = name.trim();
+
+    const companies = await this._companyRepo.find({
+      filter: {
+        companyName: {
+          $regex: searchName,
+          $options: 'i',
+        },
+        deletedAt: {
+          $exists: false,
+        },
+      },
+      select:
+        'companyName description industry address numberOfEmployees companyEmail logo coverPic approvedByAdmin createdBy',
+    });
+
+    return companies;
+  };
 }

@@ -1,4 +1,4 @@
-import { AddCompanyDTO, CompanyIdDTO, UpdateCompanyDTO } from './company.dto';
+import { AddCompanyDTO, CompanyIdDTO, SearchCompanyDTO, UpdateCompanyDTO } from './company.dto';
 
 export const companyValidation = {
   addCompanySchema: {
@@ -10,5 +10,8 @@ export const companyValidation = {
   },
   companyIdSchema: {
     params: CompanyIdDTO,
+  },
+  searchCompanySchema: {
+    query: SearchCompanyDTO,
   },
 };

@@ -50,4 +50,13 @@ router.delete(
   companyController.softDeleteCompany,
 );
 
+router.get(
+  '/search',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  validation(companyValidation.searchCompanySchema),
+  companyController.searchCompany,
+);
+
 export default router;

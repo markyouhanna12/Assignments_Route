@@ -85,3 +85,11 @@ export class CompanyIdDTO {
   @generalFields.id()
   companyId!: string;
 }
+
+export class SearchCompanyDTO {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(2)
+  @MaxLength(100)
+  name!: string;
+}

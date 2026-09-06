@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { CompanyService } from './company.service';
+import { successResponse } from '../../Utils/response/success.response';
 
 export class CompanyController {
   private readonly _companyService = new CompanyService();
@@ -42,7 +43,22 @@ export class CompanyController {
       );
 
       res.status(200).json({
-        message: 'Company deleted successfully',
+        message: 'Companies found successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  searchCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._companyService.searchCompany(req.query['name'] as string);
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Companies found successfully',
         data,
       });
     } catch (error) {

@@ -40,7 +40,7 @@ export const validation = (schema: ValidationSchema) => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const validationErrors: Array<{
       key: ValidationSource;
-      errors: ValidationError[];
+      errors: IFormattedValidationError[];
     }> = [];
 
     for (const key of Object.keys(schema) as ValidationSource[]) {
@@ -50,7 +50,9 @@ export const validation = (schema: ValidationSchema) => {
         continue;
       }
 
-      const dtoInstance = plainToInstance(DTOClass, req[key], {
+      const source = req[key];
+
+      const dtoInstance = plainToInstance(DTOClass, source, {
         enableImplicitConversion: true,
       });
 
@@ -69,7 +71,22 @@ export const validation = (schema: ValidationSchema) => {
         continue;
       }
 
-      req[key] = dtoInstance as never;
+      /*
+       * req.query is read-only in the current Express setup,
+       * so don't replace req[key] directly.
+       *
+       * For body/params/headers, we can copy the validated
+       * properties back into the existing object.
+       */
+      if (key === 'query') {
+        Object.keys(dtoInstance).forEach((property) => {
+          (req.query as Record<string, unknown>)[property] = (
+            dtoInstance as Record<string, unknown>
+          )[property];
+        });
+      } else {
+        Object.assign(req[key], dtoInstance);
+      }
     }
 
     if (validationErrors.length > 0) {
