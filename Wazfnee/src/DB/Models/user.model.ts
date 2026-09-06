@@ -17,6 +17,10 @@ export interface IOTP {
   expiresIn: Date;
 }
 
+export interface IUserMethods {
+  getMobileNumber(): string;
+}
+
 export interface IUser {
   firstName: string;
   lastName: string;
@@ -42,7 +46,7 @@ export interface IUser {
   updatedAt: Date;
 }
 
-export type IUserDocument = HydratedDocument<IUser>;
+export type IUserDocument = HydratedDocument<IUser, IUserMethods>;
 
 const profilePictureSchema = new Schema<IProfilePicture>(
   {
@@ -83,7 +87,7 @@ const otpSchema = new Schema<IOTP>(
   },
 );
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, {}, IUserMethods>(
   {
     firstName: {
       type: String,
@@ -137,7 +141,6 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
-      get: (value: string): string => decryptSync(value),
     },
 
     role: {
@@ -194,11 +197,9 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      getters: true,
     },
     toObject: {
       virtuals: true,
-      getters: true,
     },
   },
 );
@@ -207,12 +208,32 @@ userSchema.virtual('username').get(function (this: HydratedDocument<IUser>) {
   return `${this.firstName} ${this.lastName}`.trim();
 });
 
-userSchema.index({ provider: 1, providerId: 1 }, { unique: true, sparse: true });
+userSchema.index(
+  { providerId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      provider: Provider.GOOGLE,
+      providerId: {
+        $exists: true,
+      },
+    },
+  },
+);
 
-userSchema.pre('save', async function () {
+userSchema.methods.getMobileNumber = function (this: IUserDocument): string {
+  const encryptedMobileNumber = this.get('mobileNumber', null, {
+    getters: false,
+  }) as string;
+
+  return decryptSync(encryptedMobileNumber);
+};
+
+userSchema.pre('save', async function (this: IUserDocument): Promise<void> {
   if (this.isModified('password') && this.password) {
     this.password = await genrateHash(this.password);
   }
+
   if (this.isModified('mobileNumber') && this.mobileNumber) {
     this.mobileNumber = await encrypt(this.mobileNumber);
   }
