@@ -9,6 +9,7 @@ import { TokenType } from '../../Utils/enums/auth.enum';
 import { CompanyController } from './company.controller';
 import { companyValidation } from './company.validation';
 import { CompanyIdDTO } from './company.dto';
+import { fileValidation, localFileUpload } from '../../Utils/multer/local.multer';
 
 const router = Router();
 
@@ -57,6 +58,44 @@ router.get(
   }),
   validation(companyValidation.searchCompanySchema),
   companyController.searchCompany,
+);
+
+router.patch(
+  '/:companyId/logo',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation({
+    params: CompanyIdDTO,
+  }),
+  localFileUpload({
+    customPath: 'company/logo',
+    validation: fileValidation.images,
+    maxFileSize: 5 * 1024 * 1024,
+  }).single('logo'),
+  companyController.uploadCompanyLogo,
+);
+
+router.patch(
+  '/:companyId/cover-pic',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation({
+    params: CompanyIdDTO,
+  }),
+  localFileUpload({
+    customPath: 'company/cover',
+    validation: fileValidation.images,
+    maxFileSize: 5 * 1024 * 1024,
+  }).single('coverPic'),
+  companyController.uploadCompanyCoverPic,
 );
 
 export default router;

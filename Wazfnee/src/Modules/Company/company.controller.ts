@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { CompanyService } from './company.service';
 import { successResponse } from '../../Utils/response/success.response';
+import { BadRequestException } from '../../Utils/response/error.response';
 
 export class CompanyController {
   private readonly _companyService = new CompanyService();
@@ -67,6 +68,59 @@ export class CompanyController {
         statusCode: 200,
         message: 'Companies found successfully',
         data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  uploadCompanyLogo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.file) {
+        throw new BadRequestException('Company logo is required');
+      }
+
+      const data = await this._companyService.uploadCompanyLogo(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+        req.file,
+      );
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Company logo uploaded successfully',
+        data: {
+          logo: data,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  uploadCompanyCoverPic = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      if (!req.file) {
+        throw new BadRequestException('Company cover picture is required');
+      }
+
+      const data = await this._companyService.uploadCompanyCoverPic(
+        req.user._id.toString(),
+        req.params['companyId'] as string,
+        req.file,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Company cover picture uploaded successfully',
+        data: {
+          coverPic: data,
+        },
       });
     } catch (error) {
       next(error);

@@ -9,6 +9,7 @@ import {
 } from '../../Utils/response/error.response';
 import { AddCompanyDTO, UpdateCompanyDTO } from './company.dto';
 import { Role } from '../../Utils/enums/role.enum';
+import { deleteLocalFile } from '../../Utils/multer/local-file.utils';
 
 export class CompanyService {
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
@@ -208,5 +209,75 @@ export class CompanyService {
     });
 
     return companies;
+  };
+
+  uploadCompanyLogo = async (userId: string, companyId: string, file: Express.Multer.File) => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can upload the company logo');
+    }
+
+    if (company.logo?.secure_url) {
+      await deleteLocalFile(company.logo.secure_url);
+    }
+
+    company.logo = {
+      secure_url: `/uploads/company/logo/${companyId}/${file.filename}`,
+      public_id: file.filename,
+    };
+
+    await company.save();
+
+    return company.logo;
+  };
+
+  uploadCompanyCoverPic = async (userId: string, companyId: string, file: Express.Multer.File) => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (company.createdBy.toString() !== userId) {
+      throw new ForbiddenException('Only the company owner can upload the company cover picture');
+    }
+
+    // Delete old cover picture if it exists
+    if (company.coverPic?.secure_url) {
+      await deleteLocalFile(company.coverPic.secure_url);
+    }
+
+    company.coverPic = {
+      secure_url: `/uploads/company/cover/${companyId}/${file.filename}`,
+      public_id: file.filename,
+    };
+
+    await company.save();
+
+    return company.coverPic;
   };
 }
