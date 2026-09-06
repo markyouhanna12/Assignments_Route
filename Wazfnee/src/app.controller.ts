@@ -7,8 +7,8 @@ import { customRateLimiter } from './Middlewares/rateLimitter.middleware';
 import AuthRouter from './Modules/Auth/auth.route';
 import UserRouter from './Modules/User/user.route';
 import CompanyRouter from './Modules/Company/company.route';
+import JobRouter from './Modules/Job/job.route';
 import { getGraphQLMiddleware } from './GraphQL/graphql.middleware';
-
 const app = express();
 
 app.use(express.json());
@@ -19,6 +19,7 @@ app.use(customRateLimiter);
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/user', UserRouter);
 app.use('/api/v1/company', CompanyRouter);
+app.use('/api/v1/job', JobRouter);
 
 export const setupGraphQL = () => {
   app.use('/graphql', getGraphQLMiddleware());

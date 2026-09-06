@@ -111,4 +111,6 @@ export const generalFields = {
   number: () => composeDecorators(IsNumber()),
 
   optional: () => composeDecorators(IsOptional()),
+
+  string: () => composeDecorators(IsString()),
 };

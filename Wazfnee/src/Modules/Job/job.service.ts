@@ -1,0 +1,53 @@
+import { Types } from 'mongoose';
+import { CompanyModel } from '../../DB/Models/company.model';
+import { JobModel } from '../../DB/Models/job.model';
+import { CompanyRepository } from '../../DB/repositories/company.repository';
+import { JobRepository } from '../../DB/repositories/job.repository';
+import { BadRequestException, NotFoundException } from '../../Utils/response/error.response';
+import { AddJobDTO } from './job.dto';
+
+export class JobService {
+  private readonly _jobRepo = new JobRepository(JobModel);
+  private readonly _companyRepo = new CompanyRepository(CompanyModel);
+
+  addJob = async (userId: string, data: AddJobDTO) => {
+    const company = await this._companyRepo.findById({
+      id: data.companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    const isOwner = company.createdBy.toString() === userId;
+
+    const isHR = company.hrs.some((hrId) => hrId.toString() === userId);
+
+    const jobs = await this._jobRepo.create({
+      data: [
+        {
+          ...data,
+          addedBy: new Types.ObjectId(userId),
+          companyId: company._id,
+          closed: false,
+        },
+      ],
+    });
+
+    const job = jobs?.[0];
+
+    if (!job) {
+      throw new BadRequestException('Failed to create job');
+    }
+
+    return job;
+  };
+}
