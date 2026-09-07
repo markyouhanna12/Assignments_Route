@@ -9,4 +9,7 @@ export const jobValidation = {
     params: JobIdDTO,
     body: UpdateJobDTO,
   },
+  deleteJobSchema: {
+    params: JobIdDTO,
+  },
 };

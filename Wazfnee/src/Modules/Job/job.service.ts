@@ -104,4 +104,45 @@ export class JobService {
 
     return updatedJob;
   };
+
+  deleteJob = async (userId: string, jobId: string): Promise<{ jobId: string }> => {
+    const job = await this._jobRepo.findById({
+      id: jobId,
+    });
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const company = await this._companyRepo.findById({
+      id: job.companyId.toString(),
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    const isCompanyHR = company.hrs.some((hrId) => hrId.toString() === userId);
+
+    if (!isCompanyHR) {
+      throw new ForbiddenException('Only an HR of this company can delete the job');
+    }
+
+    await this._jobRepo.deleteOne({
+      filter: {
+        _id: jobId,
+      },
+    });
+
+    return {
+      jobId,
+    };
+  };
 }

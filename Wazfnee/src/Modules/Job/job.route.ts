@@ -37,4 +37,16 @@ router.patch(
   jobController.updateJob,
 );
 
+router.delete(
+  '/:jobId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.deleteJobSchema),
+  jobController.deleteJob,
+);
+
 export default router;

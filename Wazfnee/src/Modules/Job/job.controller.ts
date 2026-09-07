@@ -37,4 +37,22 @@ export class JobController {
       next(error);
     }
   };
+
+  deleteJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._jobService.deleteJob(
+        req.user._id.toString(),
+        req.params['jobId'] as string,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Job deleted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
