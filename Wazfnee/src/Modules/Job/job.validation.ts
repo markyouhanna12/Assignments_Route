@@ -1,4 +1,4 @@
-import { AddJobDTO, JobIdDTO, UpdateJobDTO } from './job.dto';
+import { AddJobDTO, GetJobsParamsDTO, GetJobsQueryDTO, JobIdDTO, UpdateJobDTO } from './job.dto';
 
 export const jobValidation = {
   addJobSchema: {
@@ -11,5 +11,9 @@ export const jobValidation = {
   },
   deleteJobSchema: {
     params: JobIdDTO,
+  },
+  getJobsSchema: {
+    params: GetJobsParamsDTO,
+    query: GetJobsQueryDTO,
   },
 };

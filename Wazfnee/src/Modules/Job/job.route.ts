@@ -49,4 +49,28 @@ router.delete(
   jobController.deleteJob,
 );
 
+router.get(
+  '/:companyId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.getJobsSchema),
+  jobController.getJobs,
+);
+
+router.get(
+  '/:companyId/:jobId',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.getJobsSchema),
+  jobController.getJobs,
+);
+
 export default router;

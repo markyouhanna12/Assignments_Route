@@ -8,7 +8,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '../../Utils/response/error.response';
-import { AddJobDTO, UpdateJobDTO } from './job.dto';
+import { AddJobDTO, GetJobsQueryDTO, UpdateJobDTO } from './job.dto';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
@@ -143,6 +143,93 @@ export class JobService {
 
     return {
       jobId,
+    };
+  };
+
+  getJobs = async (companyId: string, jobId?: string, query?: GetJobsQueryDTO) => {
+    const page = query?.page ?? 1;
+    const limit = query?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const sort = query?.sort ?? '-createdAt';
+
+    let targetCompanyId = companyId;
+
+    if (query?.companyName) {
+      const company = await this._companyRepo.findOne({
+        filter: {
+          companyName: {
+            $regex: query.companyName.trim(),
+            $options: 'i',
+          },
+        },
+        select: '_id',
+      });
+
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+
+      if (company._id.toString() !== companyId) {
+        throw new BadRequestException('Company name does not match company ID');
+      }
+
+      targetCompanyId = company._id.toString();
+    }
+
+    if (jobId) {
+      const job = await this._jobRepo.findOne({
+        filter: {
+          _id: jobId,
+          companyId: targetCompanyId,
+        },
+        select:
+          'jobTitle jobLocation workingTime seniorityLevel jobDescription technicalSkills softSkills addedBy updatedBy closed companyId createdAt updatedAt',
+      });
+
+      if (!job) {
+        throw new NotFoundException('Job not found');
+      }
+
+      return {
+        jobs: [job],
+        pagination: {
+          page: 1,
+          limit: 1,
+          total: 1,
+          totalPages: 1,
+        },
+      };
+    }
+
+    const filter = {
+      companyId: targetCompanyId,
+    };
+
+    const [jobs, total] = await Promise.all([
+      this._jobRepo.find({
+        filter,
+        select:
+          'jobTitle jobLocation workingTime seniorityLevel jobDescription technicalSkills softSkills addedBy updatedBy closed companyId createdAt updatedAt',
+        options: {
+          skip,
+          limit,
+        },
+      }),
+
+      this._jobRepo.countDocuments({
+        filter,
+      }),
+    ]);
+
+    return {
+      jobs,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   };
 }

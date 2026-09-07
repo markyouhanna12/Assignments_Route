@@ -74,6 +74,7 @@ export abstract class DatabaseRepository<TDocument> {
 
     if (options?.skip) doc.skip(options.skip);
     if (options?.limit) doc.limit(options.limit);
+    if (options?.sort) doc.sort(options.sort);
 
     return await doc.exec();
   }
