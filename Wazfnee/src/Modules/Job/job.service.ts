@@ -8,11 +8,20 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '../../Utils/response/error.response';
-import { AddJobDTO, FilterJobsDTO, GetJobsQueryDTO, UpdateJobDTO } from './job.dto';
+import {
+  AddJobDTO,
+  FilterJobsDTO,
+  GetJobApplicationsDTO,
+  GetJobsQueryDTO,
+  UpdateJobDTO,
+} from './job.dto';
+import { ApplicationRepository } from '../../DB/repositories/application.repository';
+import { ApplicationModel } from '../../DB/Models/application.model';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
+  private readonly _applicationRepo = new ApplicationRepository(ApplicationModel);
 
   addJob = async (userId: string, data: AddJobDTO) => {
     const company = await this._companyRepo.findById({
@@ -296,6 +305,87 @@ export class JobService {
     return {
       jobs,
 
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  };
+
+  getJobApplications = async (userId: string, jobId: string, query: GetJobApplicationsDTO) => {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    const skip = (page - 1) * limit;
+    const sort = query.sort ?? '-createdAt';
+
+    const job = await this._jobRepo.findById({
+      id: jobId,
+    });
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const company = await this._companyRepo.findById({
+      id: job.companyId.toString(),
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    const isOwner = company.createdBy.toString() === userId;
+
+    const isHR = company.hrs.some((hrId) => hrId.toString() === userId);
+
+    if (!isOwner && !isHR) {
+      throw new ForbiddenException('Only the company owner or HR can view applications');
+    }
+
+    const total = await this._applicationRepo.countDocuments({
+      filter: {
+        jobId: new Types.ObjectId(jobId),
+      },
+    });
+
+    const populatedJob = await this._jobRepo.findById({
+      id: jobId,
+      options: {
+        populate: [
+          {
+            path: 'applications',
+            options: {
+              skip,
+              limit,
+              sort,
+            },
+            populate: {
+              path: 'userId',
+              select: 'firstName lastName email gender dob profilePic',
+            },
+          },
+        ],
+      },
+    });
+
+    if (!populatedJob) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const populatedApplications = (populatedJob as any).applications ?? [];
+
+    const applications = populatedApplications.map((application: any) => {
+      const { userId, ...applicationData } = application.toObject();
+
+      return {
+        ...applicationData,
+        user: userId,
+      };
+    });
+
+    return {
+      applications,
       pagination: {
         page,
         limit,

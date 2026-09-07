@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { JobService } from './job.service';
 import { successResponse } from '../../Utils/response/success.response';
-import { FilterJobsDTO, GetJobsQueryDTO } from './job.dto';
+import { FilterJobsDTO, GetJobApplicationsDTO, GetJobsQueryDTO } from './job.dto';
 
 export class JobController {
   private readonly _jobService = new JobService();
@@ -84,6 +84,25 @@ export class JobController {
         res,
         statusCode: 200,
         message: 'Jobs retrieved successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getJobApplications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._jobService.getJobApplications(
+        req.user._id.toString(),
+        req.params['jobId'] as string,
+        req.query as unknown as GetJobApplicationsDTO,
+      );
+
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Applications retrieved successfully',
         data,
       });
     } catch (error) {

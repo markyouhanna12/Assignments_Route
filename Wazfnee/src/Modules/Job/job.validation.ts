@@ -1,6 +1,7 @@
 import {
   AddJobDTO,
   FilterJobsDTO,
+  GetJobApplicationsDTO,
   GetJobsParamsDTO,
   GetJobsQueryDTO,
   JobIdDTO,
@@ -25,5 +26,9 @@ export const jobValidation = {
   },
   filterJobsSchema: {
     query: FilterJobsDTO,
+  },
+  getJobApplicationsSchema: {
+    params: JobIdDTO,
+    query: GetJobApplicationsDTO,
   },
 };

@@ -25,6 +25,18 @@ router.post(
   jobController.addJob,
 );
 
+router.get(
+  '/:jobId/applications',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.getJobApplicationsSchema),
+  jobController.getJobApplications,
+);
+
 router.patch(
   '/:jobId',
   authentication({
@@ -50,7 +62,7 @@ router.delete(
 );
 
 router.get(
-  '/:companyId',
+  '/:companyId/:jobId',
   authentication({
     tokenType: TokenType.ACCESS,
   }),
@@ -62,7 +74,7 @@ router.get(
 );
 
 router.get(
-  '/:companyId/:jobId',
+  '/:companyId',
   authentication({
     tokenType: TokenType.ACCESS,
   }),

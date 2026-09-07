@@ -99,9 +99,21 @@ const jobSchema = new Schema<IJob>(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
   },
 );
 
 jobSchema.index({ companyId: 1 });
+
+jobSchema.virtual('applications', {
+  ref: 'Application',
+  localField: '_id',
+  foreignField: 'jobId',
+});
 
 export const JobModel: Model<IJob> = model<IJob>('Job', jobSchema);
