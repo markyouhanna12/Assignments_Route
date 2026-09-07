@@ -8,7 +8,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '../../Utils/response/error.response';
-import { AddJobDTO, GetJobsQueryDTO, UpdateJobDTO } from './job.dto';
+import { AddJobDTO, FilterJobsDTO, GetJobsQueryDTO, UpdateJobDTO } from './job.dto';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
@@ -224,6 +224,78 @@ export class JobService {
 
     return {
       jobs,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  };
+
+  filterJobs = async (query: FilterJobsDTO) => {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+
+    const skip = (page - 1) * limit;
+
+    const sort = query.sort ?? '-createdAt';
+
+    const filter: Record<string, unknown> = {
+      closed: false,
+    };
+    if (query.workingTime) {
+      filter['workingTime'] = query.workingTime;
+    }
+
+    if (query.jobLocation) {
+      filter['jobLocation'] = query.jobLocation;
+    }
+
+    if (query.seniorityLevel) {
+      filter['seniorityLevel'] = query.seniorityLevel;
+    }
+
+    if (query.jobTitle) {
+      filter['jobTitle'] = {
+        $regex: query.jobTitle.trim(),
+        $options: 'i',
+      };
+    }
+
+    if (query.technicalSkills) {
+      const skills = query.technicalSkills
+        .split(',')
+        .map((skill) => skill.trim())
+        .filter(Boolean);
+
+      if (skills.length > 0) {
+        filter['technicalSkills'] = {
+          $all: skills,
+        };
+      }
+    }
+
+    const [jobs, total] = await Promise.all([
+      this._jobRepo.find({
+        filter,
+        select:
+          'jobTitle jobLocation workingTime seniorityLevel jobDescription technicalSkills softSkills addedBy updatedBy closed companyId createdAt updatedAt',
+        options: {
+          skip,
+          limit,
+          sort,
+        },
+      }),
+
+      this._jobRepo.countDocuments({
+        filter,
+      }),
+    ]);
+
+    return {
+      jobs,
+
       pagination: {
         page,
         limit,

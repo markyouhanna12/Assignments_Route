@@ -73,4 +73,16 @@ router.get(
   jobController.getJobs,
 );
 
+router.get(
+  '/',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.filterJobsSchema),
+  jobController.filterJobs,
+);
+
 export default router;

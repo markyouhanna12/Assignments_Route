@@ -111,3 +111,42 @@ export class GetJobsParamsDTO {
   @generalFields.id()
   jobId?: string;
 }
+
+export class FilterJobsDTO {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  sort?: string = '-createdAt';
+
+  @IsOptional()
+  @IsEnum(WorkingTime)
+  workingTime?: WorkingTime;
+
+  @IsOptional()
+  @IsEnum(JobLocation)
+  jobLocation?: JobLocation;
+
+  @IsOptional()
+  @IsEnum(SeniorityLevel)
+  seniorityLevel?: SeniorityLevel;
+
+  @IsOptional()
+  @IsString()
+  jobTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  technicalSkills?: string;
+}
