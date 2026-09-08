@@ -45,4 +45,24 @@ export class NotificationController {
       next(error);
     }
   };
+
+  registerDevice = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { token, platform } = req.body;
+
+      const device = await this._notificationService.registerDevice({
+        userId: req.user._id,
+        token,
+        platform,
+      });
+
+      successResponse({
+        res,
+        statusCode: 201,
+        data: device,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

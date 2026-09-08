@@ -1,4 +1,4 @@
-import { GetNotificationsDTO, NotificationIdDTO } from './notification.dto';
+import { GetNotificationsDTO, NotificationIdDTO, RegisterDeviceDTO } from './notification.dto';
 
 export const notificationValidation = {
   getNotificationsSchema: {
@@ -6,5 +6,8 @@ export const notificationValidation = {
   },
   markAsReadSchema: {
     params: NotificationIdDTO,
+  },
+  registerDeviceSchema: {
+    body: RegisterDeviceDTO,
   },
 };

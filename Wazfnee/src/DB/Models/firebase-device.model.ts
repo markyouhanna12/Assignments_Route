@@ -8,7 +8,7 @@ export enum DevicePlatform {
 
 export interface IFirebaseDevice {
   userId: Types.ObjectId;
-  fid: string;
+  token: string;
   platform: DevicePlatform;
   lastUsedAt: Date;
   createdAt: Date;
@@ -26,7 +26,7 @@ const firebaseDeviceSchema = new Schema<IFirebaseDevice>(
       index: true,
     },
 
-    fid: {
+    token: {
       type: String,
       required: true,
       unique: true,

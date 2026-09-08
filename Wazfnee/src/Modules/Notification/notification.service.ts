@@ -4,6 +4,8 @@ import { NotificationRepository } from '../../DB/repositories/notification.repos
 import { NotificationType } from '../../Utils/enums/notification.enum';
 import { BadRequestException } from '../../Utils/response/error.response';
 import { emitToUser } from '../../Utils/socket/socket.events';
+import { FirebaseDeviceRepository } from '../../DB/repositories/firebase-device.repository';
+import { DevicePlatform, FirebaseDeviceModel } from '../../DB/Models/firebase-device.model';
 
 export interface INewApplicationNotificationData {
   applicationId: string;
@@ -15,6 +17,7 @@ export interface INewApplicationNotificationData {
 
 export class NotificationService {
   private readonly _notificationRepo = new NotificationRepository(NotificationModel);
+  private readonly _firebaseDeviceRepo = new FirebaseDeviceRepository(FirebaseDeviceModel);
 
   createNewApplicationNotifications = async ({
     hrIds,
@@ -152,5 +155,50 @@ export class NotificationService {
     });
 
     return updatedNotification;
+  };
+
+  registerDevice = async ({
+    userId,
+    token,
+    platform,
+  }: {
+    userId: Types.ObjectId;
+    token: string;
+    platform: DevicePlatform;
+  }) => {
+    const device = await this._firebaseDeviceRepo.findOne({
+      filter: {
+        token,
+      },
+    });
+
+    if (device) {
+      const updatedDevice = await this._firebaseDeviceRepo.findByIdAndUpdate({
+        id: device._id.toString(),
+        update: {
+          userId,
+          platform,
+          lastUsedAt: new Date(),
+        },
+        options: {
+          new: true,
+        },
+      });
+
+      return updatedDevice;
+    }
+
+    const createdDevice = await this._firebaseDeviceRepo.create({
+      data: [
+        {
+          userId,
+          token,
+          platform,
+          lastUsedAt: new Date(),
+        },
+      ],
+    });
+
+    return createdDevice?.[0];
   };
 }

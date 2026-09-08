@@ -36,4 +36,16 @@ router.patch(
   notificationController.markAsRead,
 );
 
+router.post(
+  '/device',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(notificationValidation.registerDeviceSchema),
+  notificationController.registerDevice,
+);
+
 export default router;

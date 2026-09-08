@@ -1,6 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsMongoId, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { generalFields } from '../../Utils/validation/general-fields';
+import { DevicePlatform } from '../../DB/Models/firebase-device.model';
 
 export class GetNotificationsDTO {
   @IsOptional()
@@ -24,4 +34,13 @@ export class GetNotificationsDTO {
 export class NotificationIdDTO {
   @generalFields.id()
   notificationId!: string;
+}
+
+export class RegisterDeviceDTO {
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+
+  @IsEnum(DevicePlatform)
+  platform!: DevicePlatform;
 }
