@@ -7,8 +7,10 @@ import { startSchedulers } from './Utils/scheduler/scheduler';
 import connectDB from './DB/connection';
 import { redisConnection } from './DB/redis/redis.connection';
 import { apolloServer } from './GraphQL/graphql.server';
+import { initializeSocket } from './Utils/socket/socket.server';
 
 const httpServer = createServer(app);
+initializeSocket(httpServer);
 
 const startServer = async () => {
   try {
