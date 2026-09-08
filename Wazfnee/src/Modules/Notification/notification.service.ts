@@ -68,4 +68,54 @@ export class NotificationService {
       });
     }
   };
+
+  async getUserNotifications({
+    userId,
+    page = 1,
+    limit = 10,
+    sort = '-createdAt',
+  }: {
+    userId: Types.ObjectId;
+    page?: number;
+    limit?: number;
+    sort?: string;
+  }) {
+    const skip = (page - 1) * limit;
+    const [notifications, total, unreadCount] = await Promise.all([
+      this._notificationRepo.find({
+        filter: {
+          recipientId: userId,
+        },
+        options: {
+          skip,
+          limit,
+          sort,
+        },
+      }),
+
+      this._notificationRepo.countDocuments({
+        filter: {
+          recipientId: userId,
+        },
+      }),
+
+      this._notificationRepo.countDocuments({
+        filter: {
+          recipientId: userId,
+          isRead: false,
+        },
+      }),
+    ]);
+
+    return {
+      notifications,
+      unreadCount,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
 }
