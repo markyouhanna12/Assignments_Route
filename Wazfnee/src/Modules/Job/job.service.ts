@@ -20,11 +20,13 @@ import { ApplicationRepository } from '../../DB/repositories/application.reposit
 import { ApplicationModel } from '../../DB/Models/application.model';
 import { ApplicationStatus } from '../../Utils/enums/application.enum';
 import { emitNewApplication, emitToUser } from '../../Utils/socket/socket.events';
+import { NotificationService } from '../Notification/notification.service';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
   private readonly _applicationRepo = new ApplicationRepository(ApplicationModel);
+  private readonly _notificationService = new NotificationService();
 
   addJob = async (userId: string, data: AddJobDTO) => {
     const company = await this._companyRepo.findById({
@@ -465,18 +467,20 @@ export class JobService {
       throw new BadRequestException('Failed to create job application');
     }
 
-    const notification = {
-      applicationId: application._id.toString(),
-      jobId: job._id.toString(),
-      companyId: company._id.toString(),
-      applicantId: userId,
-      jobTitle: job.jobTitle,
-      message: `A new application has been submitted for ${job.jobTitle}`,
-    };
+    await this._notificationService.createNewApplicationNotifications({
+      hrIds: company.hrs,
+      data: {
+        applicationId: application._id.toString(),
 
-    for (const hrId of company.hrs) {
-      emitNewApplication(hrId.toString(), notification);
-    }
+        jobId: job._id.toString(),
+
+        companyId: company._id.toString(),
+
+        applicantId: userId,
+
+        jobTitle: job.jobTitle,
+      },
+    });
 
     return application;
   };
