@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsMongoId, IsOptional, IsString, Max, Min } from 'class-validator';
+import { generalFields } from '../../Utils/validation/general-fields';
 
 export class GetNotificationsDTO {
   @IsOptional()
@@ -18,4 +19,9 @@ export class GetNotificationsDTO {
   @IsOptional()
   @IsString()
   sort?: string = '-createdAt';
+}
+
+export class NotificationIdDTO {
+  @generalFields.id()
+  notificationId!: string;
 }

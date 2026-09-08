@@ -24,4 +24,16 @@ router.get(
   notificationController.getUserNotifications,
 );
 
+router.patch(
+  '/:notificationId/read',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(notificationValidation.markAsReadSchema),
+  notificationController.markAsRead,
+);
+
 export default router;

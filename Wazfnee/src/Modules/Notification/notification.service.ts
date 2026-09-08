@@ -69,7 +69,7 @@ export class NotificationService {
     }
   };
 
-  async getUserNotifications({
+  getUserNotifications = async ({
     userId,
     page = 1,
     limit = 10,
@@ -79,7 +79,7 @@ export class NotificationService {
     page?: number;
     limit?: number;
     sort?: string;
-  }) {
+  }) => {
     const skip = (page - 1) * limit;
     const [notifications, total, unreadCount] = await Promise.all([
       this._notificationRepo.find({
@@ -117,5 +117,40 @@ export class NotificationService {
         pages: Math.ceil(total / limit),
       },
     };
-  }
+  };
+
+  markAsRead = async ({
+    notificationId,
+    userId,
+  }: {
+    notificationId: Types.ObjectId;
+    userId: Types.ObjectId;
+  }) => {
+    const notification = await this._notificationRepo.findOne({
+      filter: {
+        _id: notificationId,
+        recipientId: userId,
+      },
+    });
+
+    if (!notification) {
+      throw new BadRequestException('Notification not found');
+    }
+
+    if (notification.isRead) {
+      return notification;
+    }
+
+    const updatedNotification = await this._notificationRepo.findByIdAndUpdate({
+      id: notificationId.toString(),
+      update: {
+        isRead: true,
+      },
+      options: {
+        new: true,
+      },
+    });
+
+    return updatedNotification;
+  };
 }
