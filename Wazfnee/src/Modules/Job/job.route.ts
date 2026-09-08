@@ -8,6 +8,7 @@ import { TokenType } from '../../Utils/enums/auth.enum';
 
 import { JobController } from './job.controller';
 import { jobValidation } from './job.validation';
+import { fileValidation, localFileUpload } from '../../Utils/multer/local.multer';
 
 const router = Router();
 
@@ -95,6 +96,23 @@ router.get(
   }),
   validation(jobValidation.filterJobsSchema),
   jobController.filterJobs,
+);
+
+router.post(
+  '/:jobId/apply',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.applyToJobSchema),
+  localFileUpload({
+    customPath: 'application/cv',
+    validation: fileValidation.pdf,
+    maxFileSize: 5 * 1024 * 1024,
+  }).single('userCV'),
+  jobController.applyToJob,
 );
 
 export default router;

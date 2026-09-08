@@ -31,4 +31,7 @@ export const jobValidation = {
     params: JobIdDTO,
     query: GetJobApplicationsDTO,
   },
+  applyToJobSchema: {
+    params: JobIdDTO,
+  },
 };

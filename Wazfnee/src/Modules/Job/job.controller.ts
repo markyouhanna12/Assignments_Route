@@ -109,4 +109,22 @@ export class JobController {
       next(error);
     }
   };
+
+  applyToJob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this._jobService.applyToJob(
+        req.user._id.toString(),
+        req.params['jobId'] as string,
+        req.file!,
+      );
+      successResponse({
+        res,
+        statusCode: 201,
+        message: 'Job application submitted successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

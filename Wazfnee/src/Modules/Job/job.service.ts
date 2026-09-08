@@ -5,6 +5,7 @@ import { CompanyRepository } from '../../DB/repositories/company.repository';
 import { JobRepository } from '../../DB/repositories/job.repository';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '../../Utils/response/error.response';
@@ -17,6 +18,7 @@ import {
 } from './job.dto';
 import { ApplicationRepository } from '../../DB/repositories/application.repository';
 import { ApplicationModel } from '../../DB/Models/application.model';
+import { ApplicationStatus } from '../../Utils/enums/application.enum';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
@@ -393,5 +395,86 @@ export class JobService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  };
+
+  applyToJob = async (userId: string, jobId: string, file: Express.Multer.File) => {
+    if (!file) {
+      throw new BadRequestException('CV file is required');
+    }
+
+    const job = await this._jobRepo.findById({
+      id: jobId,
+    });
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    if (job.closed) {
+      throw new BadRequestException('This job is closed and no longer accepting applications');
+    }
+
+    const company = await this._companyRepo.findById({
+      id: job.companyId.toString(),
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    if (!company.approvedByAdmin) {
+      throw new BadRequestException('Company has not been approved by admin');
+    }
+
+    const existingApplication = await this._applicationRepo.findOne({
+      filter: {
+        jobId: new Types.ObjectId(jobId),
+        userId: new Types.ObjectId(userId),
+      },
+    });
+    if (existingApplication) {
+      throw new ConflictException('You have already applied to this job');
+    }
+
+    const applications = await this._applicationRepo.create({
+      data: [
+        {
+          jobId: job._id,
+          userId: new Types.ObjectId(userId),
+          userCV: {
+            secure_url: `/uploads/application/cv/${userId}/${file.filename}`,
+            public_id: file.filename,
+          },
+          status: ApplicationStatus.PENDING,
+        },
+      ],
+    });
+
+    const application = applications?.[0];
+    if (!application) {
+      throw new BadRequestException('Failed to create job application');
+    }
+
+    const notificationPayload = {
+      applicationId: application._id.toString(),
+      jobId: job._id.toString(),
+      companyId: company._id.toString(),
+      applicantId: userId,
+      jobTitle: job.jobTitle,
+      message: `A new application has been submitted for ${job.jobTitle}`,
+    };
+
+    // for (const hrId of company.hrs) {
+    //   socketService.emitToUser(hrId.toString(), 'newApplication', notificationPayload);
+    // }
+
+    return application;
   };
 }
