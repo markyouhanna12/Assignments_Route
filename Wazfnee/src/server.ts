@@ -8,6 +8,7 @@ import connectDB from './DB/connection';
 import { redisConnection } from './DB/redis/redis.connection';
 import { apolloServer } from './GraphQL/graphql.server';
 import { initializeSocket } from './Utils/socket/socket.server';
+import { initializeFirebase } from './Utils/notification/notification.config';
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
@@ -17,6 +18,7 @@ const startServer = async () => {
     startSchedulers();
     await connectDB();
     await redisConnection();
+    await initializeFirebase();
 
     await apolloServer.start();
 

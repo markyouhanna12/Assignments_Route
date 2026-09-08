@@ -11,6 +11,7 @@ import {
   MongooseUpdateQueryOptions,
   SaveOptions,
   HydratedDocument,
+  Types,
 } from 'mongoose';
 
 export abstract class DatabaseRepository<TDocument> {
@@ -208,4 +209,14 @@ export abstract class DatabaseRepository<TDocument> {
   }) {
     return await this.model.updateMany(filter, { ...update, $inc: { __v: 1 } }, options);
   }
+
+  getDevicesByUsers = async ({ userIds }: { userIds: Types.ObjectId[] }) => {
+    return await this.find({
+      filter: {
+        userId: {
+          $in: userIds,
+        },
+      },
+    });
+  };
 }
