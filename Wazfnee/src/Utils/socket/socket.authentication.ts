@@ -3,23 +3,23 @@ import { TokenService } from '../services/token.service';
 
 const tokenService = new TokenService();
 
-export const socsocketAuthentication = async (socket: Socket): Promise<void> => {
-  try {
-    const authorization = socket.handshake.headers.authorization;
+export const socketAuthentication = async (socket: Socket): Promise<void> => {
+  const authToken = socket.handshake.auth['token'] as string;
 
-    if (!authorization) {
-      throw new Error('Authorization header is required');
-    }
+  const authorization = authToken || socket.handshake.headers.authorization;
 
-    const { user, decoded } = await tokenService.decodedToken({
-      authorization,
-    });
-
-    socket.data.user = user;
-    socket.data.decoded = decoded;
-  } catch (error) {
-    console.log(`Socket authentication failed: ${socket.id}`);
-
-    throw error;
+  if (!authorization) {
+    throw new Error('Authorization token is required');
   }
+
+  const normalizedAuthorization = authorization.startsWith('Bearer ')
+    ? authorization
+    : `Bearer ${authorization}`;
+
+  const { user, decoded } = await tokenService.decodedToken({
+    authorization: normalizedAuthorization,
+  });
+
+  socket.data.user = user;
+  socket.data.decoded = decoded;
 };

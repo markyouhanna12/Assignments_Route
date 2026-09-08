@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { socsocketAuthentication } from './socket.authentication';
+
+import { socketAuthentication } from './socket.authentication';
 
 export let io: Server;
 
@@ -13,7 +14,7 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
 
   io.use(async (socket, next) => {
     try {
-      await socsocketAuthentication(socket);
+      await socketAuthentication(socket);
 
       next();
     } catch (error) {
@@ -26,10 +27,15 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
 
     socket.join(`user:${userId}`);
 
-    console.log(`Socket connected: ${socket.id}`);
+    console.log(`Socket connected: ${socket.id} | User: ${userId}`);
+
+    socket.emit('testNotification', {
+      message: 'Socket.IO notification is working!',
+      userId,
+    });
 
     socket.on('disconnect', (reason) => {
-      console.log(`Socket disconnected: ${socket.id} - ${reason}`);
+      console.log(`Socket disconnected: ${socket.id} | User: ${userId} | Reason: ${reason}`);
     });
   });
 

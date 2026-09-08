@@ -19,6 +19,7 @@ import {
 import { ApplicationRepository } from '../../DB/repositories/application.repository';
 import { ApplicationModel } from '../../DB/Models/application.model';
 import { ApplicationStatus } from '../../Utils/enums/application.enum';
+import { emitNewApplication, emitToUser } from '../../Utils/socket/socket.events';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
@@ -439,6 +440,7 @@ export class JobService {
         userId: new Types.ObjectId(userId),
       },
     });
+
     if (existingApplication) {
       throw new ConflictException('You have already applied to this job');
     }
@@ -458,11 +460,12 @@ export class JobService {
     });
 
     const application = applications?.[0];
+
     if (!application) {
       throw new BadRequestException('Failed to create job application');
     }
 
-    const notificationPayload = {
+    const notification = {
       applicationId: application._id.toString(),
       jobId: job._id.toString(),
       companyId: company._id.toString(),
@@ -471,9 +474,9 @@ export class JobService {
       message: `A new application has been submitted for ${job.jobTitle}`,
     };
 
-    // for (const hrId of company.hrs) {
-    //   socketService.emitToUser(hrId.toString(), 'newApplication', notificationPayload);
-    // }
+    for (const hrId of company.hrs) {
+      emitNewApplication(hrId.toString(), notification);
+    }
 
     return application;
   };
