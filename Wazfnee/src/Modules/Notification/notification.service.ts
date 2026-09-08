@@ -28,14 +28,8 @@ export class NotificationService {
     data: INewApplicationNotificationData;
   }): Promise<void> => {
     if (!hrIds.length) {
-      console.log('[Notification] No HRs found');
       return;
     }
-
-    console.log(
-      '[Notification] HR IDs:',
-      hrIds.map((id) => id.toString()),
-    );
 
     const notifications: Partial<INotification>[] = hrIds.map((hrId) => ({
       recipientId: hrId,
@@ -60,8 +54,6 @@ export class NotificationService {
       throw new BadRequestException('Failed to create notifications');
     }
 
-    console.log(`[Notification] Created ${createdNotifications.length} notification(s)`);
-
     for (const notification of createdNotifications) {
       emitToUser(notification.recipientId.toString(), 'newApplication', {
         notificationId: notification._id.toString(),
@@ -74,13 +66,9 @@ export class NotificationService {
       });
     }
 
-    console.log('[Notification] Socket notifications emitted');
-
     const devices = await this._firebaseDeviceRepo.getDevicesByUsers({
       userIds: hrIds,
     });
-
-    console.log('[Notification] Firebase devices:', devices);
 
     if (!devices.length) {
       console.log('[Notification] No Firebase devices found for HRs');
@@ -89,11 +77,7 @@ export class NotificationService {
 
     const tokens = devices.map((device) => device.token);
 
-    console.log('[Notification] Firebase tokens count:', tokens.length);
-
     try {
-      console.log('[Notification] Sending FCM notification...');
-
       await sendPushNotificationToMultipleDevices({
         tokens,
         title: 'New Job Application',
@@ -105,8 +89,6 @@ export class NotificationService {
           applicantId: data.applicantId,
         },
       });
-
-      console.log('[Notification] FCM send completed');
     } catch (error) {
       console.error('[Notification] FCM failed:', error);
     }
