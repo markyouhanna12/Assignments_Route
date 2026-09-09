@@ -1,10 +1,12 @@
 import {
   AddJobDTO,
+  ApplicationIdDTO,
   FilterJobsDTO,
   GetJobApplicationsDTO,
   GetJobsParamsDTO,
   GetJobsQueryDTO,
   JobIdDTO,
+  UpdateApplicationStatusDTO,
   UpdateJobDTO,
 } from './job.dto';
 
@@ -33,5 +35,9 @@ export const jobValidation = {
   },
   applyToJobSchema: {
     params: JobIdDTO,
+  },
+  updateApplicationStatusSchema: {
+    params: ApplicationIdDTO,
+    body: UpdateApplicationStatusDTO,
   },
 };

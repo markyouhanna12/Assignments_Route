@@ -127,4 +127,24 @@ export class JobController {
       next(error);
     }
   };
+  updateApplicationStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { applicationId } = req.params;
+      const { status } = req.body;
+
+      const data = await this._jobService.updateApplicationStatus({
+        userId: req.user._id.toString(),
+        applicationId: applicationId as string,
+        status,
+      });
+      successResponse({
+        res,
+        statusCode: 200,
+        message: 'Application status updated successfully',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

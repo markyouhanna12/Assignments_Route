@@ -11,6 +11,7 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApplicationDecision } from '../../Utils/enums/application.enum';
 
 export class AddJobDTO {
   @generalFields.string()
@@ -168,4 +169,14 @@ export class GetJobApplicationsDTO {
   @IsOptional()
   @IsString()
   sort?: string = '-createdAt';
+}
+
+export class ApplicationIdDTO {
+  @generalFields.id()
+  applicationId!: string;
+}
+
+export class UpdateApplicationStatusDTO {
+  @IsEnum(ApplicationDecision)
+  status!: ApplicationDecision;
 }

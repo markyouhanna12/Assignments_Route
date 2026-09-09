@@ -5,3 +5,8 @@ export enum ApplicationStatus {
   IN_CONSIDERATION = 'in consideration',
   REJECTED = 'rejected',
 }
+
+export enum ApplicationDecision {
+  ACCEPTED = ApplicationStatus.ACCEPTED,
+  REJECTED = ApplicationStatus.REJECTED,
+}

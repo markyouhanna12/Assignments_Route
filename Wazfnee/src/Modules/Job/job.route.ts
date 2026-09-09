@@ -115,4 +115,16 @@ router.post(
   jobController.applyToJob,
 );
 
+router.patch(
+  '/application/:applicationId/status',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(jobValidation.updateApplicationStatusSchema),
+  jobController.updateApplicationStatus,
+);
+
 export default router;

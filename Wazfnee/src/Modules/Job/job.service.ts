@@ -18,14 +18,19 @@ import {
 } from './job.dto';
 import { ApplicationRepository } from '../../DB/repositories/application.repository';
 import { ApplicationModel } from '../../DB/Models/application.model';
-import { ApplicationStatus } from '../../Utils/enums/application.enum';
+import { ApplicationDecision, ApplicationStatus } from '../../Utils/enums/application.enum';
 import { emitNewApplication, emitToUser } from '../../Utils/socket/socket.events';
 import { NotificationService } from '../Notification/notification.service';
+import { UserRepository } from '../../DB/repositories/user.repository';
+import { UserModel } from '../../DB/Models/user.model';
+import { emailEvents } from '../../Utils/events/email.event';
 
 export class JobService {
   private readonly _jobRepo = new JobRepository(JobModel);
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
   private readonly _applicationRepo = new ApplicationRepository(ApplicationModel);
+  private readonly _userRepo = new UserRepository(UserModel);
+
   private readonly _notificationService = new NotificationService();
 
   addJob = async (userId: string, data: AddJobDTO) => {
@@ -483,5 +488,99 @@ export class JobService {
     });
 
     return application;
+  };
+
+  updateApplicationStatus = async ({
+    userId,
+    applicationId,
+    status,
+  }: {
+    userId: string;
+    applicationId: string;
+    status: ApplicationDecision;
+  }) => {
+    const application = await this._applicationRepo.findById({
+      id: applicationId,
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    const job = await this._jobRepo.findById({
+      id: application.jobId.toString(),
+    });
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const company = await this._companyRepo.findById({
+      id: job.companyId.toString(),
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    const isHR = company.hrs.some((hrId) => hrId.toString() === userId);
+
+    if (!isHR) {
+      throw new ForbiddenException('Only an HR of this company can update the application status');
+    }
+
+    if (
+      application.status === ApplicationStatus.ACCEPTED ||
+      application.status === ApplicationStatus.REJECTED
+    ) {
+      throw new BadRequestException('This application has already been finalized');
+    }
+
+    const updatedApplication = await this._applicationRepo.findByIdAndUpdate({
+      id: applicationId,
+      update: {
+        $set: {
+          status,
+        },
+      },
+      options: {
+        new: true,
+      },
+    });
+
+    if (!updatedApplication) {
+      throw new NotFoundException('Application not found');
+    }
+
+    const applicant = await this._userRepo.findById({
+      id: application.userId.toString(),
+    });
+
+    if (!applicant) {
+      throw new NotFoundException('Applicant not found');
+    }
+
+    const emailPayload = {
+      email: applicant.email,
+      firstName: applicant.firstName,
+      jobTitle: job.jobTitle,
+      companyName: company.companyName,
+    };
+
+    if (status === ApplicationDecision.ACCEPTED) {
+      emailEvents.emit('applicationAccepted', emailPayload);
+    } else {
+      emailEvents.emit('applicationRejected', emailPayload);
+    }
+
+    return updatedApplication;
   };
 }
