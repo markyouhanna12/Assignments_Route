@@ -12,10 +12,19 @@ import { Role } from '../../Utils/enums/role.enum';
 import { deleteLocalFile } from '../../Utils/multer/local-file.utils';
 import { UserRepository } from '../../DB/repositories/user.repository';
 import { UserModel } from '../../DB/Models/user.model';
+import { ApplicationRepository } from '../../DB/repositories/application.repository';
+import { ApplicationModel } from '../../DB/Models/application.model';
+import { JobRepository } from '../../DB/repositories/job.repository';
+import { JobModel } from '../../DB/Models/job.model';
+import ExcelJS from 'exceljs';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 
 export class CompanyService {
   private readonly _companyRepo = new CompanyRepository(CompanyModel);
   private readonly _userRepo = new UserRepository(UserModel);
+  private readonly _applicationRepo = new ApplicationRepository(ApplicationModel);
+  private readonly _jobRepo = new JobRepository(JobModel);
 
   addCompany = async (userId: string, data: AddCompanyDTO) => {
     const { companyName, companyEmail } = data;
@@ -429,5 +438,187 @@ export class CompanyService {
     }
 
     return hrUser;
+  };
+
+  exportApplications = async ({
+    companyId,
+    userId,
+    date,
+  }: {
+    companyId: string;
+    userId: string;
+    date: string;
+  }) => {
+    const company = await this._companyRepo.findById({
+      id: companyId,
+    });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    if (company.deletedAt) {
+      throw new BadRequestException('Company has been deleted');
+    }
+
+    if (company.bannedAt) {
+      throw new BadRequestException('Company has been banned');
+    }
+
+    const isOwner = company.createdBy.toString() === userId;
+
+    const isHR = company.hrs.some((hrId) => hrId.toString() === userId);
+
+    if (!isOwner && !isHR) {
+      throw new ForbiddenException('Only the company owner or HR can export applications');
+    }
+    const startOfDay = new Date(`${date}T00:00:00.000Z`);
+    const endOfDay = new Date(`${date}T23:59:59.999Z`);
+
+    const jobs = await this._jobRepo.find({
+      filter: {
+        companyId: company._id,
+      },
+      select: '_id jobTitle',
+    });
+
+    if (!jobs.length) {
+      throw new NotFoundException('No jobs found for this company');
+    }
+
+    const jobIds = jobs.map((job) => job._id);
+
+    const applications = await this._applicationRepo.find({
+      filter: {
+        jobId: {
+          $in: jobIds,
+        },
+        createdAt: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+      },
+      options: {
+        populate: [
+          {
+            path: 'userId',
+            select: 'firstName lastName email',
+          },
+          {
+            path: 'jobId',
+            select: 'jobTitle',
+          },
+        ],
+        sort: '-createdAt',
+      },
+    });
+
+    const workbook = new ExcelJS.Workbook();
+
+    const worksheet = workbook.addWorksheet('Applications');
+
+    worksheet.columns = [
+      {
+        header: 'Application ID',
+        key: 'applicationId',
+        width: 28,
+      },
+      {
+        header: 'Applicant Name',
+        key: 'applicantName',
+        width: 28,
+      },
+      {
+        header: 'Applicant Email',
+        key: 'applicantEmail',
+        width: 35,
+      },
+      {
+        header: 'Job Title',
+        key: 'jobTitle',
+        width: 35,
+      },
+      {
+        header: 'Status',
+        key: 'status',
+        width: 20,
+      },
+      {
+        header: 'Applied At',
+        key: 'appliedAt',
+        width: 22,
+      },
+      {
+        header: 'CV',
+        key: 'cv',
+        width: 55,
+      },
+    ];
+    for (const application of applications) {
+      const applicant = application.userId as any;
+      const job = application.jobId as any;
+
+      worksheet.addRow({
+        applicationId: application._id.toString(),
+
+        applicantName: `${applicant?.firstName ?? ''} ${applicant?.lastName ?? ''}`.trim(),
+
+        applicantEmail: applicant?.email ?? '',
+
+        jobTitle: job?.jobTitle ?? '',
+
+        status: application.status,
+
+        appliedAt: application.createdAt,
+
+        cv: application.userCV?.secure_url ?? '',
+      });
+    }
+    const headerRow = worksheet.getRow(1);
+
+    headerRow.font = {
+      bold: true,
+    };
+
+    headerRow.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
+
+    headerRow.height = 24;
+
+    worksheet.getColumn('appliedAt').numFmt = 'yyyy-mm-dd hh:mm:ss';
+
+    worksheet.autoFilter = {
+      from: 'A1',
+      to: 'G1',
+    };
+
+    worksheet.views = [
+      {
+        state: 'frozen',
+        ySplit: 1,
+      },
+    ];
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const filename = `${company.companyName}-applications-${date}.xlsx`;
+
+    // Save a copy on the server
+    const downloadDirectory = path.join(process.cwd(), 'downloads', 'excels');
+
+    await mkdir(downloadDirectory, {
+      recursive: true,
+    });
+
+    const filePath = path.join(downloadDirectory, filename);
+
+    await workbook.xlsx.writeFile(filePath);
+
+    return {
+      buffer,
+      filename,
+    };
   };
 }

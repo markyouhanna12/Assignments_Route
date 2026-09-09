@@ -2,6 +2,7 @@ import {
   AddCompanyDTO,
   AddCompanyHRDTO,
   CompanyIdDTO,
+  ExportApplicationsDTO,
   SearchCompanyDTO,
   UpdateCompanyDTO,
 } from './company.dto';
@@ -17,6 +18,7 @@ export const companyValidation = {
   companyIdSchema: {
     params: CompanyIdDTO,
   },
+
   searchCompanySchema: {
     query: SearchCompanyDTO,
   },
@@ -24,5 +26,8 @@ export const companyValidation = {
   addCompanyHRSchema: {
     params: CompanyIdDTO,
     body: AddCompanyHRDTO,
+  },
+  exportApplicationsSchema: {
+    query: ExportApplicationsDTO,
   },
 };

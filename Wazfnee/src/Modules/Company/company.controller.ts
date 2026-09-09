@@ -189,4 +189,25 @@ export class CompanyController {
       next(error);
     }
   };
+  exportApplications = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { companyId } = req.params;
+      const { date } = req.query;
+
+      const { buffer, filename } = await this._companyService.exportApplications({
+        companyId: companyId as string,
+        userId: req.user._id.toString(),
+        date: date as string,
+      });
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+      res.send(buffer);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

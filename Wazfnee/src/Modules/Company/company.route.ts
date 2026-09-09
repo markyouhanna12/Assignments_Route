@@ -138,4 +138,16 @@ router.post(
   companyController.addCompanyHR,
 );
 
+router.get(
+  '/:companyId/applications/export',
+  authentication({
+    tokenType: TokenType.ACCESS,
+  }),
+  authorization({
+    accessRoles: [Role.USER],
+  }),
+  validation(companyValidation.exportApplicationsSchema),
+  companyController.exportApplications,
+);
+
 export default router;
