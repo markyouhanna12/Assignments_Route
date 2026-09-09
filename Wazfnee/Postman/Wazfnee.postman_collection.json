@@ -1,0 +1,1393 @@
+{
+  "info": {
+    "_postman_id": "d1ba924f-4aca-4855-9262-dd32a70be959",
+    "name": "Wazfnee",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53693814",
+    "_collection_link": "https://go.postman.co/collection/53693814-d1ba924f-4aca-4855-9262-dd32a70be959?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"firstName\": \"Mary\",\r\n  \"lastName\": \"Lamay\",\r\n  \"email\": \"lamaymary88@gmail.com\",\r\n  \"password\": \"markyou12@\",\r\n  \"confirmPassword\": \"markyou12@\",\r\n  \"gender\": \"Female\",\r\n  \"dob\": \"2001-11-16\",\r\n  \"mobileNumber\": \"01229421810\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/signup",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm OTP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"lamaymary88@gmail.com\",\r\n  \"otp\" : \"109325\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/confirm-email",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "confirm-email"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"markyouhanna335@gmail.com\",\r\n  \"password\" : \"markyou12@\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/signin",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP for Forget password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"markyouhanna1@gmail.com\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/forget-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forget-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"markyouhanna1@gmail.com\",\r\n  \"otp\" : \"988037\",\r\n  \"password\" : \"markyou12@\",\r\n  \"confirmPassword\" : \"markyou12@\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/reset-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Restore Account",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"markyouhanna1@gmail.com\",\r\n\r\n  \"otp\" : \"436292\"\r\n\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/restore-account/confirm",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "restore-account",
+                "confirm"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP for restore Account",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n  \"email\": \"markyouhanna1@gmail.com\",\r\n  \r\n  \"password\" : \"markyou12@\"\r\n\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/restore-account/request",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "restore-account",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\"refreshToken\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImVmZDA4MTI3LWMzMDItNGNhYi1iOTc1LTgzZTFiOThkODhmZCIsImlhdCI6MTc4ODU4NDAyOCwiZXhwIjoxNzg4NjcwNDI4fQ.LvF5T7W5ZhaC91W7Ze3BOy885XYeidune0iEM5UTjmk\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/refresh-token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImVmZDA4MTI3LWMzMDItNGNhYi1iOTc1LTgzZTFiOThkODhmZCIsImlhdCI6MTc4ODU4NDAyOCwiZXhwIjoxNzg4NTg3NjI4fQ.olkEfwoGqgxqrdg-3VG7XlzzaVH0zr2fHfZzpRDYx7o"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Update user account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImM3OWMwNTFjLTgzMGYtNDViNy1hMDYzLTAwZjQyZDg2YTJlMSIsImlhdCI6MTc4ODYyMzMzMSwiZXhwIjoxNzg4NjI2OTMxfQ.UNIC6LCXEVUyKvtX6Sn41yjtSjK8t7m8oHP2DX_fzMU"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"firstName\": \"Mark\",\r\n  \"lastName\": \"Youhanna\",\r\n  \"gender\": \"Male\",\r\n  \"dob\": \"2001-11-16\",\r\n  \"mobileNumber\": \"01207746985\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/account",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "account"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get login user account data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6ImMwMWY5MGFmLTA2OWItNGIzZi04ODEyLWZmOGNhNDU2MjQ3MiIsImlhdCI6MTc4ODY1NTQ5NCwiZXhwIjoxNzg4NjU5MDk0fQ.bzUpwp0SKHGfxBUlt1YcU-0K4qp_TrrlRqNSKN22a0M"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/account",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "account"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get profile data for another user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiMDdhMjc5ZWU2NTk4MWUwZGFkMyIsImp0aSI6IjcyMmRmNjk4LWU0MzItNGQxOS1iZWFmLTk2MTVkOWIyYjcxMyIsImlhdCI6MTc4ODY1Mzc4OCwiZXhwIjoxNzg4NjU3Mzg4fQ.gcrOUPS-rflov4fsFj92A5XVkNsIUiL51JRiOU7xpH4"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/profile/6a9a0b1b0486105f59163b1e",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile",
+                "6a9a0b1b0486105f59163b1e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6IjY3MmU0MGQ2LTQ0NDEtNDZlMS04ZjBhLWVjNDdjYTBiZWEwNiIsImlhdCI6MTc4ODYyNjU4MywiZXhwIjoxNzg4NjMwMTgzfQ.FNUe-Bu8XJKrHQXIFZmxu5MnY_JUreGoOIqCy7zI02U"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"currentPassword\": \"Password123!\",\r\n  \"newPassword\": \"NewPassword123!\",\r\n  \"confirmPassword\": \"NewPassword123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/profile/password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile",
+                "password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Profile Pic",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijk3OGE2Yzc3LTFmMjYtNGFhMS1iYWE0LTA2YWQwMjYyYjM5NyIsImlhdCI6MTc4ODYzNTA1MSwiZXhwIjoxNzg4NjM4NjUxfQ.Xb8-JQYSvyvyqbM1YtAvOrIj10OiG3i-EEuBi0Nk7KM"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profilePic",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/marky/Downloads/ghost of yotei image.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/profile-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Profile Pic",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijk3OGE2Yzc3LTFmMjYtNGFhMS1iYWE0LTA2YWQwMjYyYjM5NyIsImlhdCI6MTc4ODYzNTA1MSwiZXhwIjoxNzg4NjM4NjUxfQ.Xb8-JQYSvyvyqbM1YtAvOrIj10OiG3i-EEuBi0Nk7KM"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/profile-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Cover Pic",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijk3OGE2Yzc3LTFmMjYtNGFhMS1iYWE0LTA2YWQwMjYyYjM5NyIsImlhdCI6MTc4ODYzNTA1MSwiZXhwIjoxNzg4NjM4NjUxfQ.Xb8-JQYSvyvyqbM1YtAvOrIj10OiG3i-EEuBi0Nk7KM"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "coverPic",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/marky/Downloads/ghost of yotei image.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/cover-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "cover-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Cover Pic",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijk3OGE2Yzc3LTFmMjYtNGFhMS1iYWE0LTA2YWQwMjYyYjM5NyIsImlhdCI6MTc4ODYzNTA1MSwiZXhwIjoxNzg4NjM4NjUxfQ.Xb8-JQYSvyvyqbM1YtAvOrIj10OiG3i-EEuBi0Nk7KM"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/cover-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "cover-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft delete account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijk3OGE2Yzc3LTFmMjYtNGFhMS1iYWE0LTA2YWQwMjYyYjM5NyIsImlhdCI6MTc4ODYzNTA1MSwiZXhwIjoxNzg4NjM4NjUxfQ.Xb8-JQYSvyvyqbM1YtAvOrIj10OiG3i-EEuBi0Nk7KM"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/user/account",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "account"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Company",
+      "item": [
+        {
+          "name": "Add company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6ImMwMWY5MGFmLTA2OWItNGIzZi04ODEyLWZmOGNhNDU2MjQ3MiIsImlhdCI6MTc4ODY1NTQ5NCwiZXhwIjoxNzg4NjU5MDk0fQ.bzUpwp0SKHGfxBUlt1YcU-0K4qp_TrrlRqNSKN22a0M"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"companyName\": \"Nile Care Healthcare\",\r\n  \"description\": \"A healthcare organization providing mental health support, employee wellness programs, and online counseling services.\",\r\n  \"industry\": \"Mental Health Care\",\r\n  \"address\": \"Dokki, Giza, Egypt\",\r\n  \"numberOfEmployees\": \"21-50\",\r\n  \"companyEmail\": \"info@nilecare.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update company data",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6IjI0N2NjNzYwLTcyODAtNDc1Ny1hZmYxLTc5N2QyZTVmNDMwYSIsImlhdCI6MTc4ODY1NzI1NywiZXhwIjoxNzg4NjYwODU3fQ.KEEo2fIbrSSlA66Hjtb9pdvX7nNYVjnFAJgxZ7rFh7U"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"companyName\": \"Cairo Digital Solutions Updated\",\r\n  \"description\": \"We provide modern software development, cloud infrastructure, and digital transformation services.\",\r\n  \"industry\": \"Information Technology\",\r\n  \"address\": \"New Cairo, Cairo, Egypt\",\r\n  \"numberOfEmployees\": \"21-50\",\r\n  \"companyEmail\": \"hello@cairodigital.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft delete company",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6IjY0M2U5ZDM4LTYwYjktNGNhYy1hZWZjLWE3NjkxOGNjNjIxNiIsImlhdCI6MTc4ODY1OTE3OCwiZXhwIjoxNzg4NjYyNzc4fQ.yU8DRftYTn9ab7dcZgRmyw2WtfR3MAcijabPyYNwttI"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search for a company with a name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6Ijg2NGFjMjE1LWQ5ODQtNGNmZi05YTJhLTA2MzRmNzBhMDU4MyIsImlhdCI6MTc4ODY1OTc5NSwiZXhwIjoxNzg4NjYzMzk1fQ.uuluY6KiA3JuprsNrsvA7OkJTvJptj55yF3nAzlp6uk"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/search?name=nile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "nile"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload company logo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImM2ZDM4ZjU0LTJiOGItNDA0Yi1iOGFkLWE2MWQ3ZDU5ZjM0MyIsImlhdCI6MTc4ODY2MTExOCwiZXhwIjoxNzg4NjY0NzE4fQ.VxK0haDTvzAFrfYK6aUEAMWCcQQ8VQmjO-GxmRC1Joo"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/marky/Downloads/ghost of yotei image.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/logo",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "logo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete company logo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImM2ZDM4ZjU0LTJiOGItNDA0Yi1iOGFkLWE2MWQ3ZDU5ZjM0MyIsImlhdCI6MTc4ODY2MTExOCwiZXhwIjoxNzg4NjY0NzE4fQ.VxK0haDTvzAFrfYK6aUEAMWCcQQ8VQmjO-GxmRC1Joo"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/logo",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "logo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload company Cover Pic",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImM2ZDM4ZjU0LTJiOGItNDA0Yi1iOGFkLWE2MWQ3ZDU5ZjM0MyIsImlhdCI6MTc4ODY2MTExOCwiZXhwIjoxNzg4NjY0NzE4fQ.VxK0haDTvzAFrfYK6aUEAMWCcQQ8VQmjO-GxmRC1Joo"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "coverPic",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/marky/Downloads/ghost of yotei image.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/cover-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "cover-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete company Cover Pic",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImM2ZDM4ZjU0LTJiOGItNDA0Yi1iOGFkLWE2MWQ3ZDU5ZjM0MyIsImlhdCI6MTc4ODY2MTExOCwiZXhwIjoxNzg4NjY0NzE4fQ.VxK0haDTvzAFrfYK6aUEAMWCcQQ8VQmjO-GxmRC1Joo"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/cover-pic",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "cover-pic"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Company HR",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6IjMwODU5NDczLTRkMjAtNDU0ZC04ZWRlLTExZjVlODcwNGU0OSIsImlhdCI6MTc4ODY4ODcxMCwiZXhwIjoxNzg4NjkyMzEwfQ.aCj-iTf9phDnHnQz7gXi0Vc3hkkUP2w_PjSgxiaeXyQ"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": \"6a9cb7489e6e9212ba49e8d3\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/hr",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "hr"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Get Jobs",
+          "item": [
+            {
+              "name": "Get all jobs for a company",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjQ1OWU1ZWJiLTc5NTUtNDg3NS1hMzYzLThmYmM4MTU2YTMwNSIsImlhdCI6MTc4ODc3NTI3MiwiZXhwIjoxNzg4Nzc4ODcyfQ.QOsugzIcRJJ0VVfA9l3HufHY5Ar8Ft-i0OUXx3esKe0"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/v1/job/6a9cab76319f3c826f999bb0",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "v1",
+                    "job",
+                    "6a9cab76319f3c826f999bb0"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get all jobs for a company with pagination",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjQ1OWU1ZWJiLTc5NTUtNDg3NS1hMzYzLThmYmM4MTU2YTMwNSIsImlhdCI6MTc4ODc3NTI3MiwiZXhwIjoxNzg4Nzc4ODcyfQ.QOsugzIcRJJ0VVfA9l3HufHY5Ar8Ft-i0OUXx3esKe0"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/v1/job/6a9cab76319f3c826f999bb0?page=1&limit=5&sort=-createdAt",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "v1",
+                    "job",
+                    "6a9cab76319f3c826f999bb0"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "-createdAt"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get one specific job",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjQ1OWU1ZWJiLTc5NTUtNDg3NS1hMzYzLThmYmM4MTU2YTMwNSIsImlhdCI6MTc4ODc3NTI3MiwiZXhwIjoxNzg4Nzc4ODcyfQ.QOsugzIcRJJ0VVfA9l3HufHY5Ar8Ft-i0OUXx3esKe0"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/v1/job/6a9cab76319f3c826f999bb0/6a9e07d5859d72ee3dc43ff6",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "v1",
+                    "job",
+                    "6a9cab76319f3c826f999bb0",
+                    "6a9e07d5859d72ee3dc43ff6"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Jobs with Filters",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6ImVlMmMyNjE0LThmODAtNGU0ZC05NTYxLWMwYzk0Y2QyNDIxZSIsImlhdCI6MTc4ODc5NDQ5NCwiZXhwIjoxNzg4Nzk4MDk0fQ.7PzEzxh8qA34OAx_YVkkZbRH6oERF3B_wege3lv6Sz4"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/v1/job?jobTitle=NodeJs&workingTime=full-time&jobLocation=hybrid&seniorityLevel=Junior&technicalSkills=NodeJs,TypeScript&page=1&limit=5&sort=-createdAt",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "v1",
+                    "job"
+                  ],
+                  "query": [
+                    {
+                      "key": "jobTitle",
+                      "value": "NodeJs"
+                    },
+                    {
+                      "key": "workingTime",
+                      "value": "full-time"
+                    },
+                    {
+                      "key": "jobLocation",
+                      "value": "hybrid"
+                    },
+                    {
+                      "key": "seniorityLevel",
+                      "value": "Junior"
+                    },
+                    {
+                      "key": "technicalSkills",
+                      "value": "NodeJs,TypeScript"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "-createdAt"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Add job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjJlM2U0YzBlLWE1YmUtNDA4ZC05NWIzLTg0NjA0Mzg1MWRhNCIsImlhdCI6MTc4ODc0MTUzMywiZXhwIjoxNzg4NzQ1MTMzfQ.cZYJzexbmfgfX8-qFyGsBOyTo4imL_Fjea7P7hr9rMY"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"companyId\": \"6a9cab76319f3c826f999bb0\",\r\n  \"jobTitle\": \"NodeJs Back-End Developer\",\r\n  \"jobLocation\": \"hybrid\",\r\n  \"workingTime\": \"full-time\",\r\n  \"seniorityLevel\": \"Junior\",\r\n  \"jobDescription\": \"We are looking for a NodeJs back-end developer to build and maintain scalable APIs and backend services.\",\r\n  \"technicalSkills\": [\r\n    \"NodeJs\",\r\n    \"TypeScript\",\r\n    \"Express\",\r\n    \"MongoDB\"\r\n  ],\r\n  \"softSkills\": [\r\n    \"Time Management\",\r\n    \"Team Worker\",\r\n    \"Problem Solving\"\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWEwYjFiMDQ4NjEwNWY1OTE2M2IxZSIsImp0aSI6ImIzYTQ3YjIzLWQ1N2MtNDNhMi04NjVlLWI0ODQ5Mjc0NmIyYiIsImlhdCI6MTc4ODcwNDc5NCwiZXhwIjoxNzg4NzA4Mzk0fQ.JlelOwn17EnHBGXHwdn5-Vmk1MwVLEZg5eB2KX3VaHs"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"jobTitle\": \"Senior NodeJs Back-End Developer\",\r\n  \"jobLocation\": \"remote\",\r\n  \"workingTime\": \"full-time\",\r\n  \"seniorityLevel\": \"Senior\",\r\n  \"jobDescription\": \"We are looking for a senior backend developer to design scalable APIs and mentor backend developers.\",\r\n  \"technicalSkills\": [\r\n    \"NodeJs\",\r\n    \"TypeScript\",\r\n    \"Express\",\r\n    \"MongoDB\",\r\n    \"Redis\"\r\n  ],\r\n  \"softSkills\": [\r\n    \"Leadership\",\r\n    \"Problem Solving\",\r\n    \"Communication\"\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job/6a9d7086b222bc5db2e73241",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job",
+                "6a9d7086b222bc5db2e73241"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjJlM2U0YzBlLWE1YmUtNDA4ZC05NWIzLTg0NjA0Mzg1MWRhNCIsImlhdCI6MTc4ODc0MTUzMywiZXhwIjoxNzg4NzQ1MTMzfQ.cZYJzexbmfgfX8-qFyGsBOyTo4imL_Fjea7P7hr9rMY"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"jobTitle\": \"Senior NodeJs Back-End Developer\",\r\n  \"jobLocation\": \"remote\",\r\n  \"workingTime\": \"full-time\",\r\n  \"seniorityLevel\": \"Senior\",\r\n  \"jobDescription\": \"We are looking for a senior backend developer to design scalable APIs and mentor backend developers.\",\r\n  \"technicalSkills\": [\r\n    \"NodeJs\",\r\n    \"TypeScript\",\r\n    \"Express\",\r\n    \"MongoDB\",\r\n    \"Redis\"\r\n  ],\r\n  \"softSkills\": [\r\n    \"Leadership\",\r\n    \"Problem Solving\",\r\n    \"Communication\"\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job/6a9d7086b222bc5db2e73241",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job",
+                "6a9d7086b222bc5db2e73241"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Get all applications for specific Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjdlMGQzNTJiLTQxZjUtNDM0NS05N2E3LTFmNmI3NGE3YWVlNyIsImlhdCI6MTc4ODgzNjQxMSwiZXhwIjoxNzg4ODQwMDExfQ.A2otKhJwSfqFfvH98rEclD6gHqConZpa36DRHbYYmfY"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job/6a9e07d5859d72ee3dc43ff6/applications",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job",
+                "6a9e07d5859d72ee3dc43ff6",
+                "applications"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Apply to Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWQ0ZjU3MDYxY2M5ZjRkN2MyYjZlMyIsImp0aSI6IjAzMzMxMzlmLTdmZGUtNDhhMi1iMmMxLTUyNGE0Njk4NzE5MyIsImlhdCI6MTc4ODkxMjQwNSwiZXhwIjoxNzg4OTE2MDA1fQ.QJ-u8kqmfnMDilAMLPfJMheyiCl0E-RG4PlzMaRinm8"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "userCV",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/marky/OneDrive/Desktop/Modified/Resume.pdf"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job/6a9e07d5859d72ee3dc43ff6/apply",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job",
+                "6a9e07d5859d72ee3dc43ff6",
+                "apply"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Accept or Reject an Applicant",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6ImMxNDZmMWNmLWI0NGMtNDU5ZC05NmQwLTFhNTg4NzA2NjM0MiIsImlhdCI6MTc4ODkxMjMxMCwiZXhwIjoxNzg4OTE1OTEwfQ.CiQeBQoZcYqoJStC-XgN1e-QASJK6sRgS94vlOLuGwU"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"accepted\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/job/application/6aa0a32e08e30da2e39aa71a/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "job",
+                "application",
+                "6aa0a32e08e30da2e39aa71a",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Collect the applications as Excel Sheet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6IjEyMGI1YjczLWY4NjItNDQzOC04NWMzLWIxNjFiYTllOGY4ZSIsImlhdCI6MTc4ODkxNzg1MCwiZXhwIjoxNzg4OTIxNDUwfQ.bcXvXNPBB4zP41FuqbXQq0sh_bxHW9hEJv4RKbtGNLg"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/company/6a9cab76319f3c826f999bb0/applications/export?date=2026-09-09",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "company",
+                "6a9cab76319f3c826f999bb0",
+                "applications",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-09-09"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get all Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWQ0ZjU3MDYxY2M5ZjRkN2MyYjZlMyIsImp0aSI6IjI4ODdkNmVjLTg1NjEtNDNmNy04OTczLTNhNTI2MzQ3ODdiMyIsImlhdCI6MTc4ODg5MDcyNSwiZXhwIjoxNzg4ODk0MzI1fQ.IvRtIAZFuPloQaZWu_f4KsMDKW8M502CRzIZHTB3PBs"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/notification?page=1&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "notification"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWNiNzQ4OWU2ZTkyMTJiYTQ5ZThkMyIsImp0aSI6ImQ2MjZkYjk2LTQ4OGQtNDc3NS1iYTQ2LTMzMDVkOTM2MDI0NyIsImlhdCI6MTc4ODkwMjM1OSwiZXhwIjoxNzg4OTA1OTU5fQ.btvgeSvWo3awoAMFfo4mhMAg6Dt1GlwjaxaMqWe2sHQ"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"token\": \"edATwK8W2BdNkeyacTfM0x:APA91bHEv8MADvtX034rVTJ0YrwXPmpa5FLcdCTCgzkWX7E9qWGm-lhJmu8E8kGumSJDiUPKClX2bjSMlfg8LJdkreD39FvTRKHdHzCItd1TD01t30Wwf78\",\r\n  \"platform\": \"web\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/v1/notification/device",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "notification",
+                "device"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
