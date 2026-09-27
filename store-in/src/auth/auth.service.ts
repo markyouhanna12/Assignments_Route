@@ -13,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { customAlphabet } from 'nanoid';
 import { compare, hash } from 'src/Common/Security/hash.security';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 @Injectable()
 export class AuthService {
@@ -104,6 +105,46 @@ export class AuthService {
     return {
       success: true,
       message: 'Email verified successfully.',
+    };
+  }
+
+  async resendOtp(resendOtpDto: ResendOtpDto) {
+    const user = await this.userModel.findOne({
+      email: resendOtpDto.email,
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        'No Account record matches this email address',
+      );
+    }
+
+    if (user.confirmEmail) {
+      throw new BadRequestException('This email account has been confirmed');
+    }
+
+    const otp = customAlphabet('0123456789', 6)();
+
+    const hashedOTP = await hash(otp);
+
+    const expireTime = new Date();
+    expireTime.setMinutes(expireTime.getMinutes() + 5);
+
+    await this.userModel.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          confirmEmailOTP: hashedOTP,
+          otpExpiresAt: expireTime,
+        },
+      },
+    );
+
+    await this.mailService.sendVerificationOtp(user.email, otp);
+
+    return {
+      success: true,
+      message: 'A new verification code has been sent to your email.',
     };
   }
 }

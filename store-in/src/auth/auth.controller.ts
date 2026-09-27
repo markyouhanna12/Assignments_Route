@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,5 +16,10 @@ export class AuthController {
   @Post('confirm-email')
   async confirmEmail(@Body() confirmEmailDto: ConfirmEmailDto) {
     return await this.authService.confirmEmail(confirmEmailDto);
+  }
+
+  @Post('resend-otp')
+  async resendOtp(@Body() resendOtpDto: ResendOtpDto) {
+    return await this.authService.resendOtp(resendOtpDto);
   }
 }
