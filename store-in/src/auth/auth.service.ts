@@ -14,6 +14,8 @@ import { customAlphabet } from 'nanoid';
 import { compare, hash } from 'src/Common/Security/hash.security';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
+import { TokenService } from 'src/Common/Tokens/token.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
     @InjectModel(User.name) private readonly userModel: Model<HUserDocument>,
     private readonly mailService: MailService,
     private readonly encryptionService: EncryptionService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -145,6 +148,32 @@ export class AuthService {
     return {
       success: true,
       message: 'A new verification code has been sent to your email.',
+    };
+  }
+
+  async login(loginDto: LoginDto) {
+    const { email, password, FCM } = loginDto;
+
+    const user = await this.userModel.findOne({
+      email,
+      confirmEmail: { $exists: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found or email not confirmed');
+    }
+
+    const isMatched = await compare(password, user.password);
+
+    if (!isMatched) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    const tokens = this.tokenService.generateTokens(user);
+
+    return {
+      message: 'Login Successful',
+      tokens,
     };
   }
 }

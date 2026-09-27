@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,5 +22,10 @@ export class AuthController {
   @Post('resend-otp')
   async resendOtp(@Body() resendOtpDto: ResendOtpDto) {
     return await this.authService.resendOtp(resendOtpDto);
+  }
+
+  @Post('login')
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 }
