@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { EncryptionService } from 'src/Common/Encryption/encryption.service';
@@ -6,7 +11,8 @@ import { HUserDocument, User } from 'src/DB/Models/user.model';
 import { MailService } from 'src/mail/mail.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { customAlphabet } from 'nanoid';
-import { hash } from 'src/Common/Security/hash.security';
+import { compare, hash } from 'src/Common/Security/hash.security';
+import { ConfirmEmailDto } from './dto/confirm-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +59,51 @@ export class AuthService {
       message:
         'registration successful. Please check your inbox for verification code ',
       user: savedUser,
+    };
+  }
+
+  async confirmEmail(confirmEmailDto: ConfirmEmailDto) {
+    const user = await this.userModel.findOne({
+      email: confirmEmailDto.email,
+    });
+    if (!user) {
+      throw new NotFoundException(
+        'No Account record matches this email address',
+      );
+    }
+    if (user.confirmEmail) {
+      throw new BadRequestException('This email account has been confirmed');
+    }
+    if (
+      !user.confirmEmailOTP ||
+      !(await compare(confirmEmailDto.confirmEmailOTP, user.confirmEmailOTP))
+    ) {
+      throw new BadRequestException(
+        'The verfication code is provided incorrect',
+      );
+    }
+    if (new Date() > user.otpExpiresAt!) {
+      throw new BadRequestException(
+        'The verfication code has expired. Please sign up again',
+      );
+    }
+
+    await this.userModel.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          confirmEmail: new Date(),
+        },
+        $unset: {
+          confirmEmailOTP: 1,
+          otpExpiresAt: 1,
+        },
+      },
+    );
+
+    return {
+      success: true,
+      message: 'Email verified successfully.',
     };
   }
 }
