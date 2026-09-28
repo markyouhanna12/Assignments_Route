@@ -7,6 +7,8 @@ import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './Common/Middlewares/logger.middleware';
 import { AuthController } from './auth/auth.controller';
+import { CacheModule } from './cache/cache.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { AuthController } from './auth/auth.controller';
     }),
     DatabaseModule,
     MailModule,
+    CacheModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
