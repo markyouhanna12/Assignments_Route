@@ -15,7 +15,7 @@ export class UserService {
   async getProfile(user: HUserDocument) {
     const profile = await this.userModel
       .findById(user._id)
-      .select('-password - __v');
+      .select('-password -__v');
 
     if (!profile) {
       throw new NotFoundException('User not found');
