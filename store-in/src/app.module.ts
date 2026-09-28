@@ -9,6 +9,7 @@ import { LoggerMiddleware } from './Common/Middlewares/logger.middleware';
 import { AuthController } from './auth/auth.controller';
 import { CacheModule } from './cache/cache.module';
 import { UserModule } from './user/user.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     CacheModule,
     AuthModule,
     UserModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
