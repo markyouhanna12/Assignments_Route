@@ -9,6 +9,7 @@ import { LoggerMiddleware } from './Common/Middlewares/logger.middleware';
 import { AuthController } from './auth/auth.controller';
 import { CacheModule } from './cache/cache.module';
 import { UserModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
