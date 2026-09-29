@@ -10,6 +10,7 @@ import { AuthController } from './auth/auth.controller';
 import { CacheModule } from './cache/cache.module';
 import { UserModule } from './user/user.module';
 import { CategoryModule } from './category/category.module';
+import { BrandModule } from './brand/brand.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     UserModule,
     CategoryModule,
+    BrandModule,
   ],
   controllers: [AppController],
   providers: [AppService],
