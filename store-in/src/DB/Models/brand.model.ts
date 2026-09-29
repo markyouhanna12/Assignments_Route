@@ -1,0 +1,70 @@
+import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { ref } from 'process';
+
+@Schema({
+  timestamps: true,
+})
+export class Brand {
+  @Prop({
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  })
+  name!: string;
+
+  @Prop({
+    type: String,
+    required: true,
+  })
+  logo!: string;
+
+  @Prop({
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: 'User',
+  })
+  createdBy!: string;
+
+  @Prop({
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+    ],
+    required: true,
+    default: [],
+  })
+  categories!: string[];
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isDeleted!: boolean;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  deletedBy?: string;
+}
+
+export const BrandSchema = SchemaFactory.createForClass(Brand);
+
+export type HBrandDocument = HydratedDocument<Brand>;
+
+BrandSchema.index({ name: 1 });
+
+BrandSchema.index({ categories: 1 });
+
+BrandSchema.index({ isDeleted: 1 });
+
+export const BrandModel = MongooseModule.forFeature([
+  {
+    name: 'Brand',
+    schema: BrandSchema,
+  },
+]);
