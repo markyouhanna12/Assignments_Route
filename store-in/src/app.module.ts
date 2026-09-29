@@ -11,6 +11,7 @@ import { CacheModule } from './cache/cache.module';
 import { UserModule } from './user/user.module';
 import { CategoryModule } from './category/category.module';
 import { BrandModule } from './brand/brand.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { BrandModule } from './brand/brand.module';
     UserModule,
     CategoryModule,
     BrandModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
