@@ -1,10 +1,22 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RoleEnum } from 'src/Common/Enums/user.enums';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { GetAdminOrdersDto, GetMyOrdersDto } from './dto/get-order.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -17,5 +29,69 @@ export class OrdersController {
     const userId = req.user.id;
 
     return this.ordersService.checkout(userId, dto);
+  }
+
+  @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.USER)
+  async getMyOrders(@Req() req: any, @Query() dto: GetMyOrdersDto) {
+    const userId = req.user.id;
+
+    return this.ordersService.getMyOrders(userId, dto);
+  }
+
+  // ==================== ADMIN ====================
+
+  @Get('admin')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  async getAllOrders(@Query() dto: GetAdminOrdersDto) {
+    return this.ordersService.getAllOrders(dto);
+  }
+
+  @Get('admin/:orderId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  async getAdminOrder(@Param('orderId') orderId: string) {
+    return this.ordersService.getAdminOrder(orderId);
+  }
+
+  @Patch('admin/:orderId/status')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  async updateOrderStatus(
+    @Param('orderId') orderId: string,
+    @Body() dto: UpdateOrderStatusDto,
+  ) {
+    return this.ordersService.updateOrderStatus(orderId, dto);
+  }
+
+  // ==================== CUSTOMER ORDER ACTIONS ====================
+
+  @Get(':orderId/status')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.USER)
+  async getOrderStatus(@Req() req: any, @Param('orderId') orderId: string) {
+    const userId = req.user.id;
+
+    return this.ordersService.getOrderStatus(userId, orderId);
+  }
+
+  @Patch(':orderId/cancel')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.USER)
+  async cancelOrder(@Req() req: any, @Param('orderId') orderId: string) {
+    const userId = req.user.id;
+
+    return this.ordersService.cancelOrder(userId, orderId);
+  }
+
+  @Get(':orderId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleEnum.USER)
+  async getMyOrder(@Req() req: any, @Param('orderId') orderId: string) {
+    const userId = req.user.id;
+
+    return this.ordersService.getMyOrder(userId, orderId);
   }
 }

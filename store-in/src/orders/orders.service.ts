@@ -4,13 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, QueryFilter, SortOrder, Types } from 'mongoose';
 import { Cart, HCartDocument } from 'src/DB/Models/cart.model';
 import { Coupon, HCouponDocument } from 'src/DB/Models/coupon.model';
 import { HOrderDocument, Order } from 'src/DB/Models/order.model';
 import { HProductDocument, Product } from 'src/DB/Models/products.model';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderStatusEnum } from 'src/Common/Enums/order.enums';
+import { GetAdminOrdersDto, GetMyOrdersDto } from './dto/get-order.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 @Injectable()
 export class OrdersService {
@@ -117,6 +119,271 @@ export class OrdersService {
       message: 'Checkout successful',
       status: 200,
       order: order,
+    };
+  }
+
+  async getMyOrders(userId: string, dto: GetMyOrdersDto) {
+    const page = dto.page ?? 1;
+    const limit = dto.limit ?? 10;
+
+    const skip = (page - 1) * limit;
+
+    const filter: QueryFilter<Order> = {
+      user: new Types.ObjectId(userId),
+    };
+
+    if (dto.status) {
+      filter.status = dto.status;
+    }
+
+    const [orders, total] = await Promise.all([
+      this.orderModel
+        .find(filter)
+        .populate('items.product')
+        .populate('appliedCoupon')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      this.orderModel.countDocuments(filter),
+    ]);
+
+    return {
+      message: 'Orders fetched successfully',
+      status: 200,
+      orders,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getMyOrder(userId: string, orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel
+      .findOne({
+        _id: new Types.ObjectId(orderId),
+        user: new Types.ObjectId(userId),
+      })
+      .populate('items.product')
+      .populate('appliedCoupon');
+
+    if (!order) {
+      throw new NotFoundException(
+        'Order not found or you do not have access to this order',
+      );
+    }
+
+    return {
+      message: 'Order fetched successfully',
+      status: 200,
+      order,
+    };
+  }
+
+  async cancelOrder(userId: string, orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findOne({
+      _id: new Types.ObjectId(orderId),
+      user: new Types.ObjectId(userId),
+    });
+
+    if (!order) {
+      throw new NotFoundException(
+        'Order not found or you do not have access to this order',
+      );
+    }
+
+    if (order.status === OrderStatusEnum.CANCELLED) {
+      throw new BadRequestException('Order is already cancelled');
+    }
+
+    if (
+      order.status !== OrderStatusEnum.PENDING &&
+      order.status !== OrderStatusEnum.CONFIRMED
+    ) {
+      throw new BadRequestException(
+        `Order cannot be cancelled because its current status is ${order.status}`,
+      );
+    }
+
+    for (const item of order.items) {
+      await this.productModel.findByIdAndUpdate(item.product, {
+        $inc: {
+          stock: item.quantity,
+        },
+      });
+    }
+
+    if (order.appliedCoupon) {
+      await this.couponModel.findByIdAndUpdate(order.appliedCoupon, {
+        $inc: {
+          usedCount: -1,
+        },
+        $pull: {
+          usedBy: new Types.ObjectId(userId),
+        },
+      });
+    }
+
+    order.status = OrderStatusEnum.CANCELLED;
+
+    await order.save();
+
+    return {
+      message: 'Order cancelled successfully',
+      status: 200,
+      order,
+    };
+  }
+
+  async getOrderStatus(userId: string, orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findOne(
+      {
+        _id: new Types.ObjectId(orderId),
+        user: new Types.ObjectId(userId),
+      },
+      {
+        _id: 1,
+        status: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    );
+    if (!order) {
+      throw new NotFoundException(
+        'Order not found or you do not have access to this order',
+      );
+    }
+
+    return {
+      message: 'Order status fetched successfully',
+      status: 200,
+      order: {
+        id: order._id,
+        status: order.status,
+      },
+    };
+  }
+
+  async getAllOrders(dto: GetAdminOrdersDto) {
+    const page = dto.page ?? 1;
+    const limit = dto.limit ?? 10;
+
+    const skip = (page - 1) * limit;
+
+    const filter: QueryFilter<Order> = {};
+
+    if (dto.status) {
+      filter.status = dto.status;
+    }
+
+    // Search
+    if (dto.search) {
+      const search = dto.search.trim();
+
+      if (Types.ObjectId.isValid(search)) {
+        filter.$or = [
+          {
+            _id: new Types.ObjectId(search),
+          },
+          {
+            user: new Types.ObjectId(search),
+          },
+        ];
+      }
+    }
+
+    const sort: Record<string, SortOrder> =
+      dto.sort === 'oldest' ? { createdAt: 1 } : { createdAt: -1 };
+
+    const [orders, total] = await Promise.all([
+      this.orderModel
+        .find(filter)
+        .populate('user', 'name email phone')
+        .populate('items.product')
+        .populate('appliedCoupon')
+        .sort(sort)
+        .skip(skip)
+        .limit(limit),
+
+      this.orderModel.countDocuments(filter),
+    ]);
+
+    return {
+      message: 'Orders fetched successfully',
+      status: 200,
+      orders,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getAdminOrder(orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+    const order = await this.orderModel
+      .findById(orderId)
+      .populate('user', 'name email phone')
+      .populate('items.product')
+      .populate('appliedCoupon');
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return {
+      message: 'Order fetched successfully',
+      status: 200,
+      order,
+    };
+  }
+
+  async updateOrderStatus(orderId: string, dto: UpdateOrderStatusDto) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('Invalid order ID');
+    }
+
+    const order = await this.orderModel.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (order.status === OrderStatusEnum.CANCELLED) {
+      throw new BadRequestException('Cancelled orders cannot be updated');
+    }
+
+    if (order.status === OrderStatusEnum.DELIVERED) {
+      throw new BadRequestException('Delivered orders cannot be updated');
+    }
+
+    order.status = dto.status;
+
+    await order.save();
+
+    return {
+      message: 'Order status updated successfully',
+      status: 200,
+      order,
     };
   }
 }
